@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-03-04T18:45:25+08:00</updated>
+  <updated>2012-03-04T18:48:42+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -18,8 +18,9 @@
     <link href="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/"/>
     <updated>2012-03-04T18:18:00+08:00</updated>
     <id>http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo</id>
-    <content type="html"><![CDATA[<p>命令 git remote prune <br/>
-说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
+    <content type="html"><![CDATA[<h2>git remote prune</h2>
+
+<p>说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
 使用举例：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
