@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-03-04T18:48:42+08:00</updated>
+  <updated>2012-03-07T01:08:56+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,45 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cucumber使用备忘]]></title>
+    <link href="http://fsword.github.com/blog/2012/03/07/cucumbershi-yong-bei-wang/"/>
+    <updated>2012-03-07T00:59:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/03/07/cucumbershi-yong-bei-wang</id>
+    <content type="html"><![CDATA[<p>cucumber 使用的时候默认的环境是 test ，此时配置信息为 config/environments/test.rb<br/>
+当然我们也可以使用独立的 cucumber ，修改 config/database.yml 如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>production:
+</span><span class='line'>  &lt;&lt;: *defaults
+</span><span class='line'>  database: app_development
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>cucumber:
+</span><span class='line'>  &lt;&lt;: *defaults
+</span><span class='line'>  database: app_cucumber</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此时需要复制 test.rb 为 cucumber.rb<br/>
+$ cp config/environments/test.rb config/environments/cucumber.rb<br/>
+这时需要注意，如果你使用transaction进行数据清理，那么要设置 <code>config.cache_classes = true</code>，否则会收到错误信息</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>WARNING: You have set Rails' config.cache_classes to false (most likely in config/environments/cucumber.rb).  This setting is known to cause problems with database transactions. Set config.cache_classes to true if you want to use transactions.  For more information see https://rspec.lighthouseapp.com/projects/16211/tickets/165.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过，如果这样，rails s启动的服务器将不会热更新代码，这点需要注意<br/>
+我自己的做法是，支持热更新，但是不使用 transaction 方式支持数据清理</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[不常用的git命令]]></title>
