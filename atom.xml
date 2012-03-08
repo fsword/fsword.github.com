@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-03-07T01:08:56+08:00</updated>
+  <updated>2012-03-09T00:15:45+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,50 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[通过drb集成java和ruby环境]]></title>
+    <link href="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/"/>
+    <updated>2012-03-08T23:51:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing</id>
+    <content type="html"><![CDATA[<p>ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。<br/>
+结合这两者主要有几种思路：<br/>
+* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路<br/>
+* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby on rails<br/>
+* 基于ruby的 drb 技术进行系统整合，我们同样需要借助 jruby 让java系统看起来象 ruby<br/>
+前两个不用举例，最后一个给一个简单的示例</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># server.rb
+</span><span class='line'>require 'drb'
+</span><span class='line'>
+</span><span class='line'>DRb.start_service('druby://localhost:9000', self)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上的代码如果在 rails console 上执行，就可以使用如下代码进行远程调用了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># client
+</span><span class='line'>require 'drb'
+</span><span class='line'>
+</span><span class='line'>DRb.start_service
+</span><span class='line'>this = DRbObject.new(nil, 'druby://localhost:9000')
+</span><span class='line'>
+</span><span class='line'>this.class_eval 'Rails.application.config.root'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Have fun!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[cucumber使用备忘]]></title>

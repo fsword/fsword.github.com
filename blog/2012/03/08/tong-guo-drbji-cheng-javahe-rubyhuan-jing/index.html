@@ -5,23 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>不常用的git命令 - fsword's blog</title>
+  <title>通过drb集成java和ruby环境 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="git remote prune 说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 使用举例： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-$ git branch -a
-* master remotes/origin/master remotes/origin/other &hellip;">
+  <meta name="description" content="ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。
+结合这两者主要有几种思路：
+* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路
+* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -30,7 +21,7 @@ $ git branch -a
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -79,7 +70,7 @@ $ git branch -a
   
   <header>
     
-      <h1 class="entry-title">不常用的git命令</h1>
+      <h1 class="entry-title">通过drb集成java和ruby环境</h1>
     
     
       <p class="meta">
@@ -95,17 +86,31 @@ $ git branch -a
   
 
 
-<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
+<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>git remote prune</h2>
+<div class="entry-content"><p>ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。<br/>
+结合这两者主要有几种思路：<br/>
+* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路<br/>
+* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby on rails<br/>
+* 基于ruby的 drb 技术进行系统整合，我们同样需要借助 jruby 让java系统看起来象 ruby<br/>
+前两个不用举例，最后一个给一个简单的示例</p>
 
-<p>说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
-使用举例：</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># server.rb
+</span><span class='line'>require 'drb'
+</span><span class='line'>
+</span><span class='line'>DRb.start_service('druby://localhost:9000', self)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上的代码如果在 rails console 上执行，就可以使用如下代码进行远程调用了：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -114,22 +119,16 @@ $ git branch -a
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master
-</span><span class='line'>  remotes/origin/other
-</span><span class='line'>$ git remote prune origin
-</span><span class='line'>Pruning origin
-</span><span class='line'>URL: git@github.com:fsword/my_project.git
-</span><span class='line'> * [pruned] origin/other
-</span><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'># client
+</span><span class='line'>require 'drb'
+</span><span class='line'>
+</span><span class='line'>DRb.start_service
+</span><span class='line'>this = DRbObject.new(nil, 'druby://localhost:9000')
+</span><span class='line'>
+</span><span class='line'>this.class_eval 'Rails.application.config.root'</span></code></pre></td></tr></table></div></figure>
 
+
+<p>Have fun!</p>
 </div>
 
 
@@ -152,7 +151,7 @@ $ git branch -a
   
 
 
-<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
+<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
       
 
 
@@ -160,7 +159,7 @@ $ git branch -a
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" >Tweet</a>
   
   
   
@@ -169,10 +168,8 @@ $ git branch -a
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" title="Previous Post: fixture使用时需要注意的问题">&laquo; fixture使用时需要注意的问题</a>
+        <a class="basic-alignment left" href="/blog/2012/03/07/cucumbershi-yong-bei-wang/" title="Previous Post: cucumber使用备忘">&laquo; cucumber使用备忘</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/03/07/cucumbershi-yong-bei-wang/" title="Next Post: cucumber使用备忘">cucumber使用备忘 &raquo;</a>
       
     </p>
   </footer>
