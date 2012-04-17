@@ -5,14 +5,17 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>通过drb集成java和ruby环境 - fsword's blog</title>
+  <title>让bash提示符显示彩色的git_branch - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。
-结合这两者主要有几种思路：
-* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路
-* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby &hellip;">
+  <meta name="description" content="之前一直很羡慕zsh用户，今天终于让bash也能显示彩色branch了
+具体做法：修改你的 .bashrc，添加下面几句就可以了 1
+2
+3
+4
+5
+parse_git_branch() { git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +24,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">通过drb集成java和ruby环境</h1>
+      <h1 class="entry-title">让bash提示符显示彩色的git_branch</h1>
     
     
       <p class="meta">
@@ -98,7 +101,7 @@
   
 
 
-<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+<time datetime="2012-04-17T16:06:00+08:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -107,42 +110,23 @@
   </header>
 
 
-<div class="entry-content"><p>ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。<br/>
-结合这两者主要有几种思路：<br/>
-* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路<br/>
-* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby on rails<br/>
-* 基于ruby的 drb 技术进行系统整合，我们同样需要借助 jruby 让java系统看起来象 ruby<br/>
-前两个不用举例，最后一个给一个简单的示例</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># server.rb
-</span><span class='line'>require 'drb'
-</span><span class='line'>
-</span><span class='line'>DRb.start_service('druby://localhost:9000', self)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上的代码如果在 rails console 上执行，就可以使用如下代码进行远程调用了：</p>
+<div class="entry-content"><p>之前一直很羡慕zsh用户，今天终于让bash也能显示彩色branch了
+具体做法：修改你的 .bashrc，添加下面几句就可以了</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># client
-</span><span class='line'>require 'drb'
-</span><span class='line'>
-</span><span class='line'>DRb.start_service
-</span><span class='line'>this = DRbObject.new(nil, 'druby://localhost:9000')
-</span><span class='line'>
-</span><span class='line'>this.class_eval 'Rails.application.config.root'</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>parse_git_branch() {
+</span><span class='line'>  git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
+</span><span class='line'>}                    
+</span><span class='line'>_PS1=$PS1                                                 
+</span><span class='line'>PS1="\[\e[36m\]\u:\[\e[32m\]\w\[\e[33m\]\$(parse_git_branch)\[\e[0m\]\$ "</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Have fun!</p>
+<p>                                                     <br/>
+很简单，不过之前遇到了点麻烦：添加了彩色支持以后发现对较长的命令行会显示错误，后来发现是把<code>\[\e[36m\]</code>写成了 <code>\[\e[36m</code>（丢了后面的部分），汗</p>
 </div>
 
 
@@ -165,15 +149,21 @@
   
 
 
-<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+<time datetime="2012-04-17T16:06:00+08:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bash-color-ps1/'>bash,color,PS1</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" data-via="" data-counturl="http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" >Tweet</a>
   
   
   
@@ -182,10 +172,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/03/07/cucumbershi-yong-bei-wang/" title="Previous Post: cucumber使用备忘">&laquo; cucumber使用备忘</a>
+        <a class="basic-alignment left" href="/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" title="Previous Post: 通过drb集成java和ruby环境">&laquo; 通过drb集成java和ruby环境</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" title="Next Post: 让bash提示符显示彩色的git_branch">让bash提示符显示彩色的git_branch &raquo;</a>
       
     </p>
   </footer>
@@ -281,8 +269,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/';
         var disqus_script = 'embed.js';
       
     (function () {

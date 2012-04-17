@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	<title>AppOSS与研发测试</title>
+	
+	<meta name="description" content="通用运维平台">
+	<meta name="author" content="lifu@taobao.com">
+	<meta name="viewport" content="width=1024, user-scalable=no">
+	
+	<!-- Custom CSS just for this page -->
+	<link rel="stylesheet" href="resource/main.css">
+
+	<!-- Core and extension CSS files -->
+	<link rel="stylesheet" href="resource/core/deck.core.css">
+	<link rel="stylesheet" href="resource/extensions/goto/deck.goto.css">
+	<link rel="stylesheet" href="resource/extensions/menu/deck.menu.css">
+	<link rel="stylesheet" href="resource/extensions/navigation/deck.navigation.css">
+	<link rel="stylesheet" href="resource/extensions/status/deck.status.css">
+	<link rel="stylesheet" href="resource/extensions/hash/deck.hash.css">
+	
+	<!-- Theme CSS files (menu swaps these out) -->
+	<link rel="stylesheet" id="style-theme-link" href="resource/themes/style/web-2.0.css">
+	<link rel="stylesheet" id="transition-theme-link" href="resource/themes/transition/horizontal-slide.css">
+	
+	<script src="resource/modernizr.custom.js"></script>
+	<script type="text/javascript">
+	function start_timer(){
+    document.start = new Date();
+    document.total = prompt("输入计划时间","45");
+    var trigger = function(){
+      var min = document.total - Math.floor(((new Date().getTime()) - document.start.getTime())/60000);
+      document.getElementById('timer').innerHTML = '还剩'+min+'分钟';
+    };
+    trigger();
+    setInterval(trigger,30000);
+    document.getElementById('timer_trigger').style.display = "none";
+	}
+	</script>
+</head>
+
+<body class="deck-container" >
+
+  <section class="slide">
+	  <h1>AppOSS与研发测试</h1>
+	  <h4 style="position:absolute;top:65%;right:20%">——李福@淘宝</h4>
+	  <h4 style="position:absolute;top:70%;right:20%">fswordlee@twitter</h4>
+	  <h4 style="position:absolute;top:75%;right:20%">http://weibo.com/fsword</h4>
+  </section>
+
+
+  <section class="slide">
+	  <h2>话题</h2>
+	  <ul>
+      <li class="slide">
+        <h3>AppOSS介绍</h3>
+        <ul>
+          <li><h4>系统介绍</h4></li>
+          <li><h4>目标和规划</h4></li>
+          <li><h4>使用演示</h4></li>
+	      </ul>
+	    </li>
+      <li class="slide">
+        <h3>AppOSS中的测试</h3>
+        <ul>
+          <li><h4>遇到的问题</h4></li>
+          <li><h4>从TDD到BDD</h4></li>
+          <li><h4>降低测试成本</h4></li>
+	      </ul>
+	    </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+    <h1><strong>AppOSS介绍</strong></h1>
+  </section>
+
+  <section class="slide">
+	  <h2>背景</h2>
+	  <ul>
+		  <li>
+			  <h3>在运维体系中的位置</h3>
+		  </li>
+	  </ul>
+	  <img src="resource/overview.jpg">
+  </section>
+
+  <section class="slide" id="screen">
+    <h2>界面</h2>
+    <img src="resource/screen.png" alt="" />
+  </section>
+  
+  <section class="slide">
+	  <h2>定位</h2>
+	  <ul>
+		  <li class="slide">
+			  <h3>做什么？</h3>
+			  <ul>
+          <li><h4>通用运维平台</h4></li>
+          <li><h4>多机并行能力</h4></li>
+          <li><h4>运维操作审计</h4></li>
+			  </ul>
+		  </li>
+		  <li class="slide">
+			  <h3>不做什么？</h3>
+			  <ul>
+          <li><h4>人员、组织管理</h4></li>
+          <li><h4>日志、告警采集</h4></li>
+          <li><h4>工作流</h4></li>
+          <li><h4>配置管理</h4></li>
+          <li><h4>热部署</h4></li>
+			  </ul>
+		  </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+	  <h2>架构</h2>
+	  <ul>
+		  <li>
+			  <h3>前人的做法（Artoo）</h3>
+		  </li>
+	  </ul>
+	  <img src="resource/artoo.png">
+  </section>
+
+  <section class="slide">
+	  <h2>架构</h2>
+	  <ul>
+		  <li>
+			  <h3>原则：keep it simple</h3>
+		  </li>
+	  </ul>
+	  <img src="resource/arch.png">
+  </section>
+
+  <section class="slide">
+	  <h2>方案</h2>
+	  <ul>
+		  <li>
+			  <h3>保护已有的技术积累</h3>
+			  <table width="100%">
+			    <thead>
+            <tr>
+			        <td>操作</td>
+			        <td>指令</td>
+			      </tr>
+          </thead>
+          <tbody>
+			      <tr style="border-bottom: 1px solid black;">
+              <td style="padding:4px;vertical-align:middle;border-right:1px solid black">
+                重启服务器
+              </td>
+              <td>
+                <ul>
+                  <li>jboss_ctl.sh stop</li>
+                  <li>jboss_ctl.sh start</li>
+                </ul>
+              </td>
+            </tr>
+			      <tr style="border-bottom: 1px solid black;">
+              <td style="padding:4px;vertical-align:middle;border-right:1px solid black">
+                上线部署
+              </td>
+              <td>
+                <ul>
+                  <li><strong>remove_vip.sh</strong></li>
+                  <li><strong>jboss_ctl.sh</strong> stop</li>
+                  <li><strong>rpm</strong> -e <strong>$package_name</strong></li>
+                  <li>rpm -ivh $package_name_url</li>
+                  <li>jboss_ctl.sh start</li>
+                  <li><strong>check_server.py</strong></li>
+                  <li>add_vip.sh</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+			  </table>
+		  </li>
+	  </ul>
+  </section>
+
+  <section class="slide">
+	  <h2>通用运维平台</h2>
+	  <ul>
+		  <li>
+			  <h3>现状</h3>
+			  <img src="resource/current.png">
+		  </li>
+	  </ul>
+  </section>
+
+  <section class="slide">
+	  <h1>今年规划</h1>
+	</section>
+
+  <section class="slide">
+    <h2>今年的关键字</h2>
+    <ul>
+      <li class="slide">
+        <h3><strong>安全</strong></h3>
+        <pre style="font-size:1.2em">确保 center 和 agent 被攻破的成本超过目前所有承载的应用价值</pre>
+      </li>
+      <li class="slide">
+        <h3><strong>协作</strong></h3>
+        <pre style="font-size:1.2em">实现与周边系统——cmdb、abs、监控系统有关的接口</pre>
+      </li>
+      <li class="slide">
+        <h3><strong>服务</strong></h3>
+        <pre style="font-size:1.2em">AppOSS分解自身功能，提供服务接口，为建设系统生态环境做准备</pre>
+      </li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h2>建立系统生态圈</h2>
+    <ul>
+      <li class="slide">
+        <h3><strong>整合</strong></h3>
+        <pre style="font-size:1.2em">尝试与其它类似系统整合资源</pre>
+      </li>
+      <li class="slide">
+        <h3><strong>插件化</strong></h3>
+        <pre style="font-size:1.2em">分离与公司环境紧密联系的组件</pre>
+      </li>
+      <li class="slide">
+        <h3><strong>开源</strong></h3>
+        <pre style="font-size:1.2em">通用核心部分开源</pre>
+      </li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h1><strong>AppOSS中的测试</strong></h1>
+  </section>
+
+  <section class="slide">
+    <h2 style="text-align:center">我们都很重视测试</h2>
+    <img src="resource/testing.png" />
+  </section>
+
+  <section class="slide">
+    <h2 style="text-align:center">然而测试确实很麻烦</h2>
+    <img src="resource/maze.jpg" />
+  </section>
+
+  <section class="slide">
+	  <h2>测试遇到的问题</h2>
+	  <ul>
+		  <li class="slide">
+			  <h3>如何mock数据</h3>
+		  </li>
+		  <li class="slide">
+			  <h3>难以确定单元测试的边界</h3>
+		  </li>
+		  <li class="slide">
+			  <h3>基于浏览器的功能测试</h3>
+		  </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+	  <h2>AppOSS的测试情况</h2>
+<pre style="font-size:26px;font-weight:bolder" class="slide">
+ coverage of core model  -&gt;  53%             
+</pre>
+<pre style="font-size:26px;font-weight:bolder" class="slide">
+ code to test ratio      -&gt;  1:0.7           
+</pre>
+  </section>
+
+  <section class="slide">
+    <h2>但是，AppOSS并不是用java...</h2>
+    <img src="resource/not_java.jpg" />
+    <ul>
+      <li class="slide">
+        <h3>可以尝试使用jvm上的其它语言：jruby, groovy ...</h3>
+      </li>
+      <li class="slide">
+        <h3>一起看看，哪些东西是可以运用到java项目中的</h3>
+      </li>
+    </ul>
+    <pre style="font-size:2em;text-align:center" class="slide"><strong>我们希望成长！</strong></pre>
+  </section>
+
+  <section class="slide">
+	  <h2>白盒的优势</h2>
+	  <ul>
+		  <li class="slide">
+			  <h3>浏览器+数据库</h3>
+			  <pre>
+Then /系统显示当前所有应用/ do
+  count = 0
+  @browser.html.scan(/名称/){count += 1}
+  count.should == App.reals.count
+end
+			  </pre>
+		  </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+	  <h2>数据准备</h2>
+    <pre class="slide">
+# roles.rb <strong>使用代码制造数据</strong>
+Role.create(:name => Role::Admin)
+Role.create(:name => Role::PE)
+Role.create(:name => Role::APPOPS)</pre>
+    <pre class="slide">
+# inventory.rb <strong>直接装载sql，提高测试速度</strong>
+conn = ActiveRecord::Base.connection
+data_file = "#{Rails.root}/fixtures/load_all.sql"
+
+File.readlines(data_file).each do |line| 
+  conn.execute line
+end</pre>
+  </section>
+  
+  <section class="slide">
+	  <h2>数据准备</h2>
+    <pre>
+# coffees.rb <strong>数据间的依赖</strong>
+S.define :hangzhou do
+  S[:dalian]=City.create(name: "HangZhou")
+end
+
+S.define :cafes, :req => :hangzhou do
+  S[:starbucks]=Store.create(
+    name: "Starbucks", city: S[:dalian] 
+  )
+  S[:metoo]=Store.create( name: "Metoo", city: S[:dalian] )
+end
+    </pre>
+  </section>
+  
+  <section class="slide">
+	  <h2>使用数据</h2>
+	  <ul>
+	    <li class="slide">
+	      <h3>工具方法</h3>
+	      <pre>
+def fixture *args
+  args.each do |fixture|
+    load "#{Rails.root}/fixtures/#{fixture}.rb"
+  end
+end</pre>
+	    </li>
+	    <li class="slide">
+	      <h3>测试代码</h3>
+	      <pre>
+When /应用和机器数据已经导入/ do
+  fixture :inventory
+end</pre>
+	    </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+	  <h2>自动化测试 - 从TDD到BDD</h2>
+	  <pre class="slide">
+# language: zh-CN
+功能: 基本运维
+  系统运维的基本用例
+
+场景: 用户通过系统进行一次运维操作的完整流程
+  假如创建了一个应用，名字是center
+  而且应用center包含机器localhost
+  而且基础数据已经导入
+  当lifu被任命为center的PE
+  而且lifu通过浏览器登录系统
+  那么系统显示center应用
+  而且机器列表中包含localhost
+</pre>
+  </section>
+  
+  <section class="slide">
+    <h1>这是一个测试用例</h1>
+  </section>
+  
+  <section class="slide">
+    <h1>这是一个可执行的测试用例</h1>
+    <h2 class="slide"><strong>演示一下</strong></h2>
+  </section>
+  
+  <section class="slide">
+    <h1>一个真实的例子</h1>
+  </section>
+  
+  <section class="slide">
+    <h2>很简单......</h2>
+	  <pre># 用例描述
+  当lifu开始管理自己的指令
+</pre>
+    <pre># 驱动代码
+When /(.+)开始(.+)/ do |user, behaviour|
+  user = find_or_create_user(user)
+  case behaviour
+  when '管理<strong>自己</strong>的指令'
+    @browser.link(:text, '管理<strong>我</strong>的指令').click
+  end
+end
+</pre>
+    <pre class="slide" style="font-size:2em"><center><strong>!!!发现可消除的重复</strong></center></pre>
+  </section>
+  
+  <section class="slide">
+    <h2>改进</h2>
+	  <pre># 用例描述
+  <strike>当lifu开始管理自己的指令</strike>
+  当lifu开始管理<strong>我</strong>的指令
+</pre>
+    <pre>When /(.+)开始(.+)/ do |user, behaviour|
+  user = find_or_create_user(user)
+  <strike>case behaviour
+  when '管理<strong>自己</strong>的指令'
+    @browser.link(:text, '管理<strong>我</strong>的指令').click
+  end</strike>
+  @browser.link(:text, behaviour).click
+end
+</pre>
+    <pre class="slide"><strong>小结：一致性通常能提高复用水平</strong></pre>
+  </section>
+  
+  <section class="slide">
+    <h2>接着...</h2>
+    <pre># 用例描述
+  ......
+  当lifu开始管理我的指令
+  <strong>那么系统显示我的指令列表</strong></pre>
+    <pre># 驱动代码
+Then /^系统显示(.+)列表$/ do |title|
+  @browser.<strong>html</strong>.should include(title)
+end</pre>
+    <pre class="slide" style="font-size:2em"><center><strong>!!!验证能力不足</strong></center></pre>
+  </section>
+  
+  <section class="slide">
+    <h2>改进</h2>
+    <pre># 修改视图文件view
+...
+    <strike>我的指令列表</strike>
+    <strong>&lt;span class="title"&gt;</strong>我的指令列表<strong>&lt;/span&gt;</strong>
+...
+</pre>
+	  <pre># 用例描述
+<strike>Then /^系统显示(.+)列表$/ do |title|
+  @browser.html.should include(title)
+end</strike>
+Then /^系统显示(.+)列表$/ do |title|
+  @browser.<strong>span(:text, title).class_name</strong>.should == 'title'
+end</pre>
+    <pre class="slide"><strong>小结：测试推进html文档结构化</strong></pre>
+  </section>
+
+  <section class="slide">
+  	<h2>最后的用例</h2>
+    <pre>
+# language: zh-CN
+功能: 基本运维
+  系统运维的基本用例
+
+场景: 用户通过系统进行一次运维操作的完整流程
+  假如创建了一个应用，名字是center
+  而且应用center包含机器localhost
+  而且基础数据已经导入
+
+  当lifu被任命为center的PE
+  而且lifu通过浏览器登录系统
+  那么系统显示center应用
+  而且机器列表中包含localhost
+  
+  当lifu开始管理我的指令
+  那么系统显示我的指令列表
+  
+  当lifu在其中执行创建
+  那么系统显示新增指令模板
+  ...</pre>
+  </section>
+ 
+  <section class="slide">
+	  <h2>自动化测试 - 降低测试成本</h2>
+	  <ul>
+		  <li class="slide"><h3>spork</h3></li>
+		  <li class="slide"><h3>guard</h3></li>
+		  <li class="slide"><h3>演示......</h3></li>
+	  </ul>
+  </section>
+
+  <section class="slide">
+	  <h2>测试与快速开发</h2>
+    <ul>
+      <li>
+        <h3><strong>再来看这些数据</strong></h3>
+        <pre class="slide">
+        +-------------------------+------------------+
+        | code to test ratio      |  1:0.7           |
+        +-------------------------+------------------+
+        | coverage of core model  |  53%             |
+        +-------------------------+------------------+</pre>
+      </li>
+  </section>
+  
+  <section class="slide">
+	  <h2>测试与快速开发</h2>
+    <ul>
+      <li><h3><strong>看看完整版</strong></h3></li>
+<pre class="slide">
++---------------------+--------+--------+-------+--------+
+| Name                | Lines  |   LOC  |  M/C  | LOC/M  |
++---------------------+--------+--------+-------+--------+
+| Controllers         |   415  |   332  |    2  |     5  |
+| Helpers             |    96  |    61  |    0  |    10  |
+| Models              |   747  |   546  |    3  |     7  |
+| Libraries           |   229  |   199  |    8  |    10  |
+| Model specs         |   634  |   518  |    0  |   101  |
+| View specs          |     6  |     3  |    0  |     0  |
+| Controller specs    |   109  |    89  |    0  |     0  |
+| Helper specs        |    15  |     3  |    0  |     0  |
+| Request specs       |    11  |     9  |    0  |     0  |
+| Cucumber features   |   310  |   162  |    0  |    25  |
++---------------------+--------+--------+-------+--------+
+| Total               |  2572  |  1922  |    3  |    12  |
++---------------------+--------+--------+-------+--------+
+LOC: 1138 Test LOC: 784  Code to Test Ratio: 1:0.7</pre>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h2>总结：研发测试的要点</h2>
+    <ul>
+      <li class="slide">
+        <h3>重点不是找漏洞，而是对设计任务的验证</h3>
+      </li>
+      <li class="slide">
+        <h3>借助白盒的角度，提高覆盖率</h3>
+      </li>
+      <li class="slide">
+        <h3>测试代码也需要设计和抽象</h3>
+      </li>
+      <li class="slide">
+        <h3>可执行的文档才是好文档</h3>
+      </li>
+    </ul>
+  </section>
+
+  <section class="slide">
+	  <h2>广告时间：AppOSS中的其它技术话题</h2>
+	  <ul>
+		  <li class="slide">
+			  <h3>语言中的范式：ruby、erlang</h3>
+		  </li>
+		  <li class="slide">
+			  <h3>快速开发和元编程</h3>
+		  </li>
+		  <li class="slide">
+			  <h3>可执行文档中的DSL</h3>
+		  </li>
+		  <li class="slide">
+			  <h3>单页面应用开发</h3>
+		  </li>
+	  </ul>
+  </section>
+  
+  <section class="slide">
+    <h1>Q & A</h1>
+  </section>
+
+  <section class="slide">
+    <h2>附录</h2>
+    <ul>
+      <li>
+        <h3>agent技术选择</h3>
+      </li>
+      <li>
+        <h3>center技术选择</h3>
+      </li>
+    </ul>
+  </section>
+
+  <section class="slide">
+	  <h2>agent技术选择</h2>
+	  <ul>
+		  <li class="slide"><h3>面向网络编程</h3></li>
+		  <li class="slide"><h3>有一个支持异步调用的ssh库</h3></li>
+		  <li class="slide"><h3>能够简化并发编程</h3></li>
+		  <li class="slide"><h3>有针对网络和分布式编程的基础设施</h3></li>
+		  <li class="slide"><h3>可靠性好</h3></li>
+		  <li class="slide"><h3>方便进行水平拓展（可选）</h3></li>
+	  </ul>
+	  <pre class="slide"><h4 style="text-align:center">erlang</h4></pre>
+  </section>
+
+  <section class="slide">
+	  <h2>center技术选择</h2>
+	  <ul>
+		  <li class="slide"><h3>面向web开发的基础设施</h3></li>
+		  <li class="slide"><h3>允许业务模型多变（简单易用的ORM）</h3></li>
+		  <li class="slide"><h3>支持快速原型</h3></li>
+		  <li class="slide"><h3>原型可用，可迭代</h3></li>
+		  <li class="slide"><h3>学习成本有限（如果不是现有技术）</h3></li>
+	  </ul>
+	  <pre class="slide"><h4 style="text-align:center">ruby/rails</h4></pre>
+  </section>
+
+
+<a href="#" class="deck-prev-link" title="前一页">&#8592;</a>
+<a href="#" class="deck-next-link" title="下一页">&#8594;</a>
+
+<div class="timer">
+  <a id="timer_trigger" href="javascript:start_timer();void(0);">开始</a>
+  <span id="timer"></span>
+</div>
+
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+
+<script src="resource/jquery-1.7.min.js"></script>
+
+<!-- Deck Core and extensions -->
+<script src="resource/core/deck.core.js"></script>
+<script src="resource/extensions/hash/deck.hash.js"></script>
+<script src="resource/extensions/menu/deck.menu.js"></script>
+<script src="resource/extensions/goto/deck.goto.js"></script>
+<script src="resource/extensions/status/deck.status.js"></script>
+<script src="resource/extensions/navigation/deck.navigation.js"></script>
+
+<!-- Specific to this page -->
+<script type="text/javascript">
+	$.deck('.slide');
+</script>
+
+</body>
+</html>
