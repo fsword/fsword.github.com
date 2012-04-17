@@ -1,0 +1,92 @@
+.deck-container .theme-menu {
+  display: none;
+  position: fixed;
+  z-index: 3;
+  bottom: 10px;
+  left: 10px;
+  height: 20px;
+  line-height: 20px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  font-family: sans-serif;
+  color: #888;
+}
+.js .deck-container .theme-menu {
+  display: block;
+}
+.deck-container .theme-menu h2 {
+  float: left;
+  font-size: 20px;
+  border: 0;
+  padding: 5px 10px;
+  margin: 0;
+  height: 20px;
+  position: relative;
+  top: -5px;
+  left: -5px;
+  background: #ccc;
+  color: #444;
+  text-shadow: none;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+.deck-container .theme-menu label {
+  float: left;
+  display: block;
+  font-size: 12px;
+  vertical-align: baseline;
+  margin: 0 4px 0 15px;
+}
+.deck-container .theme-menu select {
+  float: left;
+  display: block;
+  font-size: 14px;
+}
+
+table {
+  background-color: #cccccc;
+}
+
+table thead tr{
+  text-align: center;
+  background-color: #222222;
+  color:#eeeeee;
+}
+
+table tbody tr{
+  border: 1px solid black;
+  color: #222;
+}
+
+.slide td li{
+  padding: 0.5em 0;
+  font-size:1em;
+}
+
+@media print {
+  .theme-menu {
+    display: none !important;
+  }
+}
+
+strong{
+  color:red;
+}
+
+.timer {
+  position: absolute;
+  color: green;
+  z-index: 3;
+  font-size: 0.7em;
+  top: 2%;
+  right: 0%;
+  margin-top: -16px;
+  vertical-align: middle;
+  text-align: center;
+}
+

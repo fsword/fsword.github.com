@@ -9,8 +9,12 @@
   <meta name="author" content="fsword">
 
   
+<<<<<<< HEAD
   <meta name="description" content="单测时不太顺利，主要是fixture使用不熟悉，记录两个问题
 bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件如下： 1
+=======
+  <meta name="description" content="单测时不太顺利，主要是fixture使用不熟悉，记录两个问题 bug 1：经过定位发现是fixture数据始终不能灌入导致的 1
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 2
 3
 4
@@ -38,6 +42,21 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
+<<<<<<< HEAD
+=======
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29872638-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 
 </head>
 
@@ -93,13 +112,24 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
 
 <time datetime="2012-03-04T17:47:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
         
+<<<<<<< HEAD
+=======
+         | <a href="#disqus_thread">Comments</a>
+        
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
 <div class="entry-content"><p>单测时不太顺利，主要是fixture使用不熟悉，记录两个问题
 bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件如下：</p>
+=======
+<div class="entry-content"><p>单测时不太顺利，主要是fixture使用不熟悉，记录两个问题</p>
+
+<p>bug 1：经过定位发现是fixture数据始终不能灌入导致的</p>
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -115,7 +145,11 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
 </span><span class='line'>  app_id: 1</span></code></pre></td></tr></table></div></figure>
 
 
+<<<<<<< HEAD
 <p>期望有两条数据，实际只有一条，原因是在rspec灌数据时装载yml，而这里的数据是个hash，结果key相同（都是“machine1”）的entry被覆盖了，后一条被装入。
+=======
+<p>期望有两条数据，实际只有一条，原因是在rspec灌数据时装载yml，而这里的数据是个hash，结果key相同（都是“machine1”）的entry被覆盖了，后一条被装入。  <br/>
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 解决办法是：<code>检查并修改重名的fixture条目，确保不冲突</code></p>
 
 <p>bug 2：经过定位发现是fixture数据导入时，某个条目出错</p>
@@ -132,7 +166,11 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
 </span><span class='line'>  expression: 1,2</span></code></pre></td></tr></table></div></figure>
 
 
+<<<<<<< HEAD
 <p>这里的 expression 值期望为字符串 <code>1,2</code> ，然而最后总是变成 <code>12</code>，后来才发现是格式问题，对于,这种特殊字符，不能省略字符串的双引号，改为 &#8220;1,2&#8221;
+=======
+<p>这里的 expression 值期望为字符串 <code>1,2</code> ，然而最后总是变成 <code>12</code>，后来才发现是格式问题，对于,这种特殊字符，不能省略字符串的双引号，改为 &#8220;1,2&#8221;  <br/>
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 解决办法是：<code>检查并修改fixture条目中的格式特别的字符串，确保使用双引号包含</code></p>
 </div>
 
@@ -167,8 +205,11 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
   <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" >Tweet</a>
   
   
+<<<<<<< HEAD
   <div class="g-plusone" data-size="medium"></div>
   
+=======
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
   
 </div>
 
@@ -176,10 +217,24 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
     <p class="meta">
       
       
+<<<<<<< HEAD
+=======
+        <a class="basic-alignment right" href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" title="Next Post: 不常用的git命令">不常用的git命令 &raquo;</a>
+      
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
     </p>
   </footer>
 </article>
 
+<<<<<<< HEAD
+=======
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 </div>
 
 <aside class="sidebar">
@@ -189,12 +244,32 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
   <ul id="recent_posts">
     
       <li class="post">
+<<<<<<< HEAD
+=======
+        <a href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/">让bash提示符显示彩色的git_branch</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/">通过drb集成java和ruby环境</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/07/cucumbershi-yong-bei-wang/">cucumber使用备忘</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/">不常用的git命令</a>
+      </li>
+    
+      <li class="post">
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
         <a href="/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/">fixture使用时需要注意的问题</a>
       </li>
     
   </ul>
 </section>
 
+<<<<<<< HEAD
 
 
 
@@ -206,6 +281,39 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
     </a>
   </h1>
 </section>
+=======
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fsword">@fsword</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fsword',
+            count: 2,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 
 
 
@@ -223,10 +331,29 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
 </footer>
   
 
+<<<<<<< HEAD
+=======
+<script type="text/javascript">
+      var disqus_shortname = 'fswordsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 
 
 
 
+<<<<<<< HEAD
   <script type="text/javascript">
     (function() {
       var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
@@ -234,6 +361,8 @@ bug 1：经过定位发现是fixture数据始终不能灌入导致的，文件�
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
     })();
   </script>
+=======
+>>>>>>> fef54d158cad1531898cd887acdae4299e654b2c
 
 
 
