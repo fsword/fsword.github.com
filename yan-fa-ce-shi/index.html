@@ -7,7 +7,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	
-	<title>AppOSS与研发测试</title>
+	<title>AppOSS中的研发测试</title>
 	
 	<meta name="description" content="通用运维平台">
 	<meta name="author" content="lifu@taobao.com">
@@ -47,196 +47,19 @@
 <body class="deck-container" >
 
   <section class="slide">
-	  <h1>AppOSS与研发测试</h1>
+	  <h1>AppOSS中的研发测试</h1>
 	  <h4 style="position:absolute;top:65%;right:20%">——李福@淘宝</h4>
 	  <h4 style="position:absolute;top:70%;right:20%">fswordlee@twitter</h4>
 	  <h4 style="position:absolute;top:75%;right:20%">http://weibo.com/fsword</h4>
   </section>
 
-
   <section class="slide">
-	  <h2>话题</h2>
-	  <ul>
-      <li class="slide">
-        <h3>AppOSS介绍</h3>
-        <ul>
-          <li><h4>系统介绍</h4></li>
-          <li><h4>目标和规划</h4></li>
-          <li><h4>使用演示</h4></li>
-	      </ul>
-	    </li>
-      <li class="slide">
-        <h3>AppOSS中的测试</h3>
-        <ul>
-          <li><h4>遇到的问题</h4></li>
-          <li><h4>从TDD到BDD</h4></li>
-          <li><h4>降低测试成本</h4></li>
-	      </ul>
-	    </li>
-	  </ul>
-  </section>
-  
-  <section class="slide">
-    <h1><strong>AppOSS介绍</strong></h1>
-  </section>
-
-  <section class="slide">
-	  <h2>背景</h2>
-	  <ul>
-		  <li>
-			  <h3>在运维体系中的位置</h3>
-		  </li>
-	  </ul>
-	  <img src="resource/overview.jpg">
-  </section>
-
-  <section class="slide" id="screen">
-    <h2>界面</h2>
-    <img src="resource/screen.png" alt="" />
-  </section>
-  
-  <section class="slide">
-	  <h2>定位</h2>
-	  <ul>
-		  <li class="slide">
-			  <h3>做什么？</h3>
-			  <ul>
-          <li><h4>通用运维平台</h4></li>
-          <li><h4>多机并行能力</h4></li>
-          <li><h4>运维操作审计</h4></li>
-			  </ul>
-		  </li>
-		  <li class="slide">
-			  <h3>不做什么？</h3>
-			  <ul>
-          <li><h4>人员、组织管理</h4></li>
-          <li><h4>日志、告警采集</h4></li>
-          <li><h4>工作流</h4></li>
-          <li><h4>配置管理</h4></li>
-          <li><h4>热部署</h4></li>
-			  </ul>
-		  </li>
-	  </ul>
-  </section>
-  
-  <section class="slide">
-	  <h2>架构</h2>
-	  <ul>
-		  <li>
-			  <h3>前人的做法（Artoo）</h3>
-		  </li>
-	  </ul>
-	  <img src="resource/artoo.png">
-  </section>
-
-  <section class="slide">
-	  <h2>架构</h2>
-	  <ul>
-		  <li>
-			  <h3>原则：keep it simple</h3>
-		  </li>
-	  </ul>
-	  <img src="resource/arch.png">
-  </section>
-
-  <section class="slide">
-	  <h2>方案</h2>
-	  <ul>
-		  <li>
-			  <h3>保护已有的技术积累</h3>
-			  <table width="100%">
-			    <thead>
-            <tr>
-			        <td>操作</td>
-			        <td>指令</td>
-			      </tr>
-          </thead>
-          <tbody>
-			      <tr style="border-bottom: 1px solid black;">
-              <td style="padding:4px;vertical-align:middle;border-right:1px solid black">
-                重启服务器
-              </td>
-              <td>
-                <ul>
-                  <li>jboss_ctl.sh stop</li>
-                  <li>jboss_ctl.sh start</li>
-                </ul>
-              </td>
-            </tr>
-			      <tr style="border-bottom: 1px solid black;">
-              <td style="padding:4px;vertical-align:middle;border-right:1px solid black">
-                上线部署
-              </td>
-              <td>
-                <ul>
-                  <li><strong>remove_vip.sh</strong></li>
-                  <li><strong>jboss_ctl.sh</strong> stop</li>
-                  <li><strong>rpm</strong> -e <strong>$package_name</strong></li>
-                  <li>rpm -ivh $package_name_url</li>
-                  <li>jboss_ctl.sh start</li>
-                  <li><strong>check_server.py</strong></li>
-                  <li>add_vip.sh</li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-			  </table>
-		  </li>
-	  </ul>
-  </section>
-
-  <section class="slide">
-	  <h2>通用运维平台</h2>
-	  <ul>
-		  <li>
-			  <h3>现状</h3>
-			  <img src="resource/current.png">
-		  </li>
-	  </ul>
-  </section>
-
-  <section class="slide">
-	  <h1>今年规划</h1>
-	</section>
-
-  <section class="slide">
-    <h2>今年的关键字</h2>
+    <h2><strong>AppOSS中的研发测试</strong></h2>
     <ul>
-      <li class="slide">
-        <h3><strong>安全</strong></h3>
-        <pre style="font-size:1.2em">确保 center 和 agent 被攻破的成本超过目前所有承载的应用价值</pre>
-      </li>
-      <li class="slide">
-        <h3><strong>协作</strong></h3>
-        <pre style="font-size:1.2em">实现与周边系统——cmdb、abs、监控系统有关的接口</pre>
-      </li>
-      <li class="slide">
-        <h3><strong>服务</strong></h3>
-        <pre style="font-size:1.2em">AppOSS分解自身功能，提供服务接口，为建设系统生态环境做准备</pre>
-      </li>
+      <li><h3>遇到的问题</h3></li>
+      <li><h3>从TDD到BDD</h3></li>
+      <li><h3>降低测试成本</h3></li>
     </ul>
-  </section>
-
-  <section class="slide">
-    <h2>建立系统生态圈</h2>
-    <ul>
-      <li class="slide">
-        <h3><strong>整合</strong></h3>
-        <pre style="font-size:1.2em">尝试与其它类似系统整合资源</pre>
-      </li>
-      <li class="slide">
-        <h3><strong>插件化</strong></h3>
-        <pre style="font-size:1.2em">分离与公司环境紧密联系的组件</pre>
-      </li>
-      <li class="slide">
-        <h3><strong>开源</strong></h3>
-        <pre style="font-size:1.2em">通用核心部分开源</pre>
-      </li>
-    </ul>
-  </section>
-
-  <section class="slide">
-    <h1><strong>AppOSS中的测试</strong></h1>
   </section>
 
   <section class="slide">
@@ -436,7 +259,7 @@ end
 Then /^系统显示(.+)列表$/ do |title|
   @browser.<strong>html</strong>.should include(title)
 end</pre>
-    <pre class="slide" style="font-size:2em"><center><strong>!!!验证能力不足</strong></center></pre>
+    <pre class="slide" style="font-size:2em"><center><strong>验证能力不足!!!</strong></center></pre>
   </section>
   
   <section class="slide">
@@ -458,8 +281,129 @@ end</pre>
   </section>
 
   <section class="slide">
-  	<h2>最后的用例</h2>
+    <h2>更完整的代码...</h2>
+    <pre class="slide"># 驱动代码
+Then /^系统显示(.+)列表$/ do |title|
+  span = nil
+  @browser.wait_until do
+    span = @browser.span(:text, "#{title}列表")
+    span.exist?
+  end
+  @zone = span.           tap{|e| e.should_not be_nil}.
+            parent.       tap{|e| e.tag_name.should == "h2" }.
+              parent.     tap{|e| e.tag_name.should == 'div'}</pre>
+    <pre class="slide">当用户在<strong>其中</strong>执行创建...</pre>
+  </section>
+
+  <section class="slide">
+    <h2>然后...</h2>
+    <pre># 用例描述
+  ......
+  当用户填写指令date并提交
+  那么列表中出现date指令
+
+  当用户在列表中删除date指令</pre>
+
+    <pre># 驱动代码
+When /用户在列表中删除(.+)指令/ do |command|
+  @zone.span(:text, command).parent.link(:text, "删除").click
+end</pre>
+    <pre class="slide"><center style="font-size:1.5em"><strong>失败！！！</strong></center>
+    Element is no longer attached to the DOM
+</pre>
+  </section>
+  
+  <section class="slide">
+    <h2>改进：重新获取dom</h2>
+    <pre># 驱动代码
+When /用户在列表中删除(.+)指令/ do |command|
+  span = nil
+  @browser.wait_until do
+    span = @browser.span(:text, "#{<strong>title</strong>}列表")
+    span.exist?
+  end
+  @zone = span.           tap{|e| e.should_not be_nil}.
+            parent.       tap{|e| e.tag_name.should == "h2" }.
+              parent.     tap{|e| e.tag_name.should == 'div'}
+  @zone.span(:text, command).parent.link(:text, "删除").click
+end</pre>
+    <pre class="slide"><center style="font-size:1.5em"><strong>缺少变量！</strong></center></pre>
+  </section>
+  
+  <section class="slide">
+    <h2>改进：修改用例描述</h2>
+    <pre># 用例描述
+  ......
+  当用户填写指令date并提交
+  那么列表中出现date指令
+
+  当用户在<strong>我的指令列表</strong>中删除date指令</pre>
     <pre>
+When /用户在<strong>(.+)</strong>列表中删除(.+)指令/ do |<strong>title</strong>, command|
+...
+    </pre>
+    <pre class="slide">
+    <center style="font-size:1.5em"><strong>依然失败——</strong></center>
+Modal dialog present (Selenium::WebDriver::Error::UnhandledAlertError)
+</pre>
+  </section>
+  
+
+  <section class="slide">
+    <h2>改进：绕开confirm</h2>
+    <pre># 驱动代码
+When /用户在(.+)列表中删除(.+)指令/ do |title, command|
+  <strong>@browser.execute_script(
+    "window.confirm = function() {return true}"
+  )</strong>
+  span = nil
+  @browser.wait_until do
+    span = @browser.span(:text, "#{title}列表")
+    span.exist?
+  end
+  @zone = span.           tap{|e| e.should_not be_nil}.
+              parent.     tap{|e| e.tag_name.should == "h2" }.
+                parent.   tap{|e| e.tag_name.should == 'div'}
+  @zone.span(:text, command).parent.link(:text, "删除").click
+end</pre>
+    <pre class="slide" style="font-size:1.5em"><center><strong>考虑复用</strong></center></pre>
+  </section>
+
+  <section class="slide">
+    <h2>改造以后</h2>
+    <pre>
+def get_list_zone_by_title title
+  span = nil
+  @browser.wait_until do
+    span = @browser.span(:text, "#{title}列表")
+    span.exist?
+  end
+  @zone = span.           tap{|e| e.should_not be_nil}.
+            parent.       tap{|e| e.tag_name.should == "h2" }.
+              parent.     tap{|e| e.tag_name.should == 'div'}
+end</pre>
+  </section>
+  
+  <section class="slide">
+    <h2>改造以后</h2>
+    <pre>
+When /用户在(.+)列表中删除(.+)指令/ do |title, command|
+  @browser.execute_script(
+    "window.confirm = function() {return true}"
+  )
+  get_list_zone_by_title(title).
+    span(:text, command).parent.link(:text, "删除").click
+end</pre>
+    <pre>
+Then /^系统显示(.+)列表$/ do |title|
+  get_list_zone_by_title(title)
+end
+</pre>
+  </section>
+  
+  <section class="slide">
+  	<h2>最后的用例</h2>
+    <pre style="font-size:0.9em">
 # language: zh-CN
 功能: 基本运维
   系统运维的基本用例
@@ -471,15 +415,20 @@ end</pre>
 
   当lifu被任命为center的PE
   而且lifu通过浏览器登录系统
-  那么系统显示center应用
+  那么首页包含center应用
   而且机器列表中包含localhost
-  
-  当lifu开始管理我的指令
+
+  当用户开始管理我的指令
   那么系统显示我的指令列表
-  
-  当lifu在其中执行创建
-  那么系统显示新增指令模板
-  ...</pre>
+
+  当用户在其中执行创建
+  那么页面出现新增指令模板
+
+  当用户填写指令date并提交
+  那么列表中出现date指令
+
+  当用户在我的指令列表中删除date指令
+  那么列表中不出现date指令</pre>
   </section>
  
   <section class="slide">
