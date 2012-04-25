@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-04-26T01:26:56+08:00</updated>
+  <updated>2012-04-26T01:36:15+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -74,7 +74,14 @@
 
 <p>说明：<br/>
 1. 对于团队协作而言，如果环境有了变化，重复5、6两步即可 <br/>
-2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决</p>
+2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决<br/>
+3. ruby项目通过bundle管理的gem包，可以采用下面的命令进行安装，这样可以减少内外系统的重复文件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install --path ./vendor/bundle</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个做法是来自saberma同学，原文在此： http://saberma.me/linux/2011/03/03/vagrant-virtual-develop-enviroment.html</p>
 ]]></content>
   </entry>
   
