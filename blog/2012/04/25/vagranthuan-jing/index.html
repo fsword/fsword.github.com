@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: bash,color,PS1 - fsword's blog</title>
+  <title>vagrant环境 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="Category: bash,color,PS1">
+  <meta name="description" content="vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
+官方网站：http://vagrantup.com/ 今天准备了一个干净的运行环境，步骤如下： 修改locale 1
+2
+vi /etc/default/locale #将 LANG 改为 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.comblog/categories/bash-color-ps1">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,36 +78,134 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: bash,color,PS1</h1>
+    
+      <h1 class="entry-title">Vagrant环境</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
+官方网站：http://vagrantup.com/</p>
 
-  
-  <h2>2012</h2>
+<p>今天准备了一个干净的运行环境，步骤如下：</p>
 
-<article>
-  
-<h1><a href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/">让bash提示符显示彩色的git_branch</a></h1>
-<time datetime="2012-04-17T16:06:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>17</span> <span class='year'>2012</span></time>
+<p><strong> 修改locale </strong></p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/bash-color-ps1/'>bash,color,PS1</a></span>
-</footer>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
+</span><span class='line'>sudo locale-gen zh_CN.utf8</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
+<p><strong> 安装必要的本地库 </strong></p>
 
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server libmysqlclient-dev git
+</span><span class='line'>sudo apt-get install libxslt-dev libxml2-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong> 用rvm安装ruby </strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -L get.rvm.io | bash -s stable
+</span><span class='line'>source .bashrc
+</span><span class='line'>rvm install ruby-1.9.3</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>进入 /vagrant 目录，准备rails环境</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:create db:migrate
+</span><span class='line'>rails s</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后续结合puppet来进行环境管理</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/vagrant/'>vagrant</a>, <a class='category' href='/blog/categories/virtualization/'>virtualization</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/" data-via="" data-counturl="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" title="Previous Post: 让bash提示符显示彩色的git_branch">&laquo; 让bash提示符显示彩色的git_branch</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/" title="Next Post: vagrant使用步骤总结">vagrant使用步骤总结 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -208,7 +309,10 @@
       var disqus_shortname = 'fswordsblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -5,23 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>不常用的git命令 - fsword's blog</title>
+  <title>vagrant使用步骤总结 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="git remote prune 说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 使用举例： 1
+  <meta name="description" content="使用vagrant把AppOSS的项目环境打了一个包，这个东西确实很适合统一开发环境，总结一下过程吧。 基于base.box或者某个os的iso文件建立基础系统环境，相关命令为 1
 2
 3
 4
-5
-6
-7
-8
-9
-10
-11
-$ git branch -a
-* master remotes/origin/master remotes/origin/other &hellip;">
+vagrant add base &lt;base box url&gt;
+cd &lt;your &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -30,7 +23,7 @@ $ git branch -a
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -91,7 +84,7 @@ $ git branch -a
   
   <header>
     
-      <h1 class="entry-title">不常用的git命令</h1>
+      <h1 class="entry-title">Vagrant使用步骤总结</h1>
     
     
       <p class="meta">
@@ -107,7 +100,7 @@ $ git branch -a
   
 
 
-<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
+<time datetime="2012-04-26T01:04:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -116,34 +109,63 @@ $ git branch -a
   </header>
 
 
-<div class="entry-content"><h2>git remote prune</h2>
+<div class="entry-content"><p>使用vagrant把AppOSS的项目环境打了一个包，这个东西确实很适合统一开发环境，总结一下过程吧。</p>
 
-<p>说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
-使用举例：</p>
+<p><strong>基于base.box或者某个os的iso文件建立基础系统环境，相关命令为</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant add base &lt;base box url&gt;
+</span><span class='line'>cd &lt;your rails project&gt;
+</span><span class='line'>vagrnat init base
+</span><span class='line'>vagrant up</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>调整系统环境，相关命令为</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant ssh
+</span><span class='line'>curl -L get.rvm.io | bash -s stable</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>将调整过的环境打包为新的base文件，以备将来使用，相关命令为</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output base-ubuntu-rvm.box</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>修改Vagrantfile，添加puppet支持，相关内容为</strong></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master
-</span><span class='line'>  remotes/origin/other
-</span><span class='line'>$ git remote prune origin
-</span><span class='line'>Pruning origin
-</span><span class='line'>URL: git@github.com:fsword/my_project.git
-</span><span class='line'> * [pruned] origin/other
-</span><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Vagrantfile
+</span><span class='line'>config.vm.provision :puppet do |puppet|
+</span><span class='line'>  puppet.manifests_path = "manifests"
+</span><span class='line'>  puppet.manifest_file  = "ubuntu.pp"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
 
+
+<p><strong>将项目依赖的软件包（例如：libxml2-dev，libmysqlclient-dev之类），通过puppet安装好，相关命令为</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant reload</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>重新打包为box文件，这就是可以重复使用的项目环境了</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output apposs-center.box</span></code></pre></td></tr></table></div></figure>
+
+
+<p>说明：<br/>
+1. 对于团队协作而言，如果环境有了变化，重复5、6两步即可 <br/>
+2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决</p>
 </div>
 
 
@@ -166,15 +188,21 @@ $ git branch -a
   
 
 
-<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
+<time datetime="2012-04-26T01:04:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2012</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/puppet/'>puppet</a>, <a class='category' href='/blog/categories/rvm/'>rvm</a>, <a class='category' href='/blog/categories/vagrant/'>vagrant</a>, <a class='category' href='/blog/categories/virtualization/'>virtualization</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/" data-via="" data-counturl="http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/" >Tweet</a>
   
   
   
@@ -183,10 +211,8 @@ $ git branch -a
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" title="Previous Post: fixture使用时需要注意的问题">&laquo; fixture使用时需要注意的问题</a>
+        <a class="basic-alignment left" href="/blog/2012/04/25/vagranthuan-jing/" title="Previous Post: vagrant环境">&laquo; vagrant环境</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/03/07/cucumbershi-yong-bei-wang/" title="Next Post: cucumber使用备忘">cucumber使用备忘 &raquo;</a>
       
     </p>
   </footer>
@@ -301,8 +327,8 @@ $ git branch -a
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/';
         var disqus_script = 'embed.js';
       
     (function () {

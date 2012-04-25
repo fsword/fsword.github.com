@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: virtualization | fsword's blog]]></title>
+  <link href="http://fsword.github.com/blog/categories/virtualization/atom.xml" rel="self"/>
+  <link href="http://fsword.github.com/"/>
+  <updated>2012-04-26T01:26:56+08:00</updated>
+  <id>http://fsword.github.com/</id>
+  <author>
+    <name><![CDATA[fsword]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[vagrant使用步骤总结]]></title>
+    <link href="http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/"/>
+    <updated>2012-04-26T01:04:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie</id>
+    <content type="html"><![CDATA[<p>使用vagrant把AppOSS的项目环境打了一个包，这个东西确实很适合统一开发环境，总结一下过程吧。</p>
+
+<p><strong>基于base.box或者某个os的iso文件建立基础系统环境，相关命令为</strong>
+<code>
+vagrant add base &lt;base box url&gt;
+cd &lt;your rails project&gt;
+vagrnat init base
+vagrant up
+</code>
+<strong>调整系统环境，相关命令为</strong>
+<code>
+vagrant ssh
+curl -L get.rvm.io | bash -s stable
+</code>
+<strong>将调整过的环境打包为新的base文件，以备将来使用，相关命令为</strong>
+<code>
+vagrant package --output base-ubuntu-rvm.box
+</code>
+<strong>修改Vagrantfile，添加puppet支持，相关内容为</strong>
+```</p>
+
+<h1>Vagrantfile</h1>
+
+<p>config.vm.provision :puppet do |puppet|
+  puppet.manifests_path = "manifests"
+  puppet.manifest_file  = "ubuntu.pp"
+end
+<code>
+**将项目依赖的软件包（例如：libxml2-dev，libmysqlclient-dev之类），通过puppet安装好，相关命令为**
+</code>
+vagrant reload
+<code>
+**重新打包为box文件，这就是可以重复使用的项目环境了**
+</code>
+vagrant package --output apposs-center.box
+```
+说明：<br/>
+1. 对于团队协作而言，如果环境有了变化，重复5、6两步即可 <br/>
+2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[vagrant环境]]></title>
+    <link href="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/"/>
+    <updated>2012-04-25T11:34:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/04/25/vagranthuan-jing</id>
+    <content type="html"><![CDATA[<p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
+官方网站：http://vagrantup.com/</p>
+
+<p>今天准备了一个干净的运行环境，步骤如下：</p>
+
+<p><strong> 修改locale </strong>
+<code>  
+vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
+sudo locale-gen zh_CN.utf8
+</code></p>
+
+<p><strong> 安装必要的本地库 </strong>
+<code>
+sudo apt-get install mysql-server libmysqlclient-dev git
+sudo apt-get install libxslt-dev libxml2-dev
+</code></p>
+
+<p><strong> 用rvm安装ruby </strong>
+<code>
+curl -L get.rvm.io | bash -s stable
+source .bashrc
+rvm install ruby-1.9.3
+</code></p>
+
+<p><strong>进入 /vagrant 目录，准备rails环境</strong>
+<code>
+rake db:create db:migrate
+rails s
+</code>
+后续结合puppet来进行环境管理</p>
+]]></content>
+  </entry>
+  
+</feed>
