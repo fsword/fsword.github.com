@@ -5,14 +5,23 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>通过drb集成java和ruby环境 - fsword's blog</title>
+  <title>active record错误汇总 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。
-结合这两者主要有几种思路：
-* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路
-* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby &hellip;">
+  <meta name="description" content="这个帖子专门记录一些使用active record时遇到的错误
+1. 错误代码 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+class Directive belongs_to :template, :class_name =&gt; &#39;DirectiveTemplate&#39;
+... &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +30,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +91,7 @@
   
   <header>
     
-      <h1 class="entry-title">通过drb集成java和ruby环境</h1>
+      <h1 class="entry-title">Active Record错误汇总</h1>
     
     
       <p class="meta">
@@ -98,7 +107,7 @@
   
 
 
-<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+<time datetime="2012-05-04T14:25:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -107,42 +116,35 @@
   </header>
 
 
-<div class="entry-content"><p>ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。<br/>
-结合这两者主要有几种思路：<br/>
-* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路<br/>
-* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby on rails<br/>
-* 基于ruby的 drb 技术进行系统整合，我们同样需要借助 jruby 让java系统看起来象 ruby<br/>
-前两个不用举例，最后一个给一个简单的示例</p>
+<div class="entry-content"><p>这个帖子专门记录一些使用active record时遇到的错误<br/>
+1. 错误代码</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># server.rb
-</span><span class='line'>require 'drb'
-</span><span class='line'>
-</span><span class='line'>DRb.start_service('druby://localhost:9000', self)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上的代码如果在 rails console 上执行，就可以使用如下代码进行远程调用了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># client
-</span><span class='line'>require 'drb'
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Directive</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:template</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;DirectiveTemplate&#39;</span>
+</span><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>DRb.start_service
-</span><span class='line'>this = DRbObject.new(nil, 'druby://localhost:9000')
-</span><span class='line'>
-</span><span class='line'>this.class_eval 'Rails.application.config.root'</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">create_table</span> <span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">integer</span>  <span class="s2">&quot;directive_template_id&quot;</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Have fun!</p>
+<p>错误描述：directive找不到自己的template<br/>
+解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
+解决方法：更改数据库字段名，或者在模型代码中指定foreign_key</p>
 </div>
 
 
@@ -165,15 +167,21 @@
   
 
 
-<time datetime="2012-03-08T23:51:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+<time datetime="2012-05-04T14:25:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2012</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/active-record/'>active_record</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/" data-via="" data-counturl="http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/" >Tweet</a>
   
   
   
@@ -182,10 +190,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/03/07/cucumbershi-yong-bei-wang/" title="Previous Post: cucumber使用备忘">&laquo; cucumber使用备忘</a>
+        <a class="basic-alignment left" href="/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/" title="Previous Post: vagrant使用步骤总结">&laquo; vagrant使用步骤总结</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" title="Next Post: 让bash提示符显示彩色的git_branch">让bash提示符显示彩色的git_branch &raquo;</a>
       
     </p>
   </footer>
@@ -300,8 +306,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/03/08/tong-guo-drbji-cheng-javahe-rubyhuan-jing/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/';
         var disqus_script = 'embed.js';
       
     (function () {

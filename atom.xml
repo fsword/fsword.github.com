@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-04-26T01:36:15+08:00</updated>
+  <updated>2012-05-04T17:01:39+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[active record错误汇总]]></title>
+    <link href="http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/"/>
+    <updated>2012-05-04T14:25:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong</id>
+    <content type="html"><![CDATA[<p>这个帖子专门记录一些使用active record时遇到的错误<br/>
+1. 错误代码</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Directive</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:template</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;DirectiveTemplate&#39;</span>
+</span><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">create_table</span> <span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">integer</span>  <span class="s2">&quot;directive_template_id&quot;</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>错误描述：directive找不到自己的template<br/>
+解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
+解决方法：更改数据库字段名，或者在模型代码中指定foreign_key</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[vagrant使用步骤总结]]></title>
