@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-05-09T19:10:03+08:00</updated>
+  <updated>2012-05-30T13:58:12+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -369,6 +369,53 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
 </span><span class='line'>* master
 </span><span class='line'>  remotes/origin/master</span></code></pre></td></tr></table></div></figure>
 
+
+<h2>git push -f origin master</h2>
+
+<p>说明：强制push本地代码，例如在本地进行 amend 模式的commit的时候，实际上是重写了原来的commit，如果直接push会出错，此时需要强制push，让remote端与本地一致<br/>
+使用举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git commit --amend -m 'this is a new comment'
+</span><span class='line'>To /home/john/proj_repo
+</span><span class='line'> ! [rejected]        master -&gt; master (non-fast-forward)
+</span><span class='line'>error: failed to push some refs to '/home/john/proj_repo'
+</span><span class='line'>To prevent you from losing history, non-fast-forward updates were rejected
+</span><span class='line'>Merge the remote changes (e.g. 'git pull') before pushing again.  See the
+</span><span class='line'>'Note about fast-forwards' section of 'git push --help' for details.
+</span><span class='line'>~/personal/temp2(master) $ git push -f origin master 
+</span><span class='line'>$ git push -f origin master 
+</span><span class='line'>Counting objects: 3, done.
+</span><span class='line'>Writing objects: 100% (3/3), 260 bytes, done.
+</span><span class='line'>Total 3 (delta 0), reused 0 (delta 0)
+</span><span class='line'>Unpacking objects: 100% (3/3), done.
+</span><span class='line'>To /home/john/proj_repo
+</span><span class='line'> + a11c377...93ef44d master -&gt; master (forced update)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要说明的是，如果要做这个试验，需要确保remote允许push，如果你像我一样remote和work都是本地目录，那么remote那里要设置一下 .git/config 这个文件，增加这么一段</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[receive]
+</span><span class='line'>    denyCurrentBranch = ignore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>have fun!</p>
 ]]></content>
   </entry>
   
