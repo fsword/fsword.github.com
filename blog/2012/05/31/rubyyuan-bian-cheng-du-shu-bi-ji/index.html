@@ -5,17 +5,18 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>sinatra-contrib没有自动装载 - fsword's blog</title>
+  <title>ruby元编程读书笔记 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="最近写代码是基于sinatra的，遇到了一点小问题
-在Gemfile中添加了sinatra和sinatra-contrib，但是实际使用中，sinatra-contrib没有被装入 1
+  <meta name="description" content="本文记录在《ruby 元编程》这本书中学到的一些知识点。 对象模型 class 关键字 这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 open class 模块的实现 以下面的代码为例 1
 2
 3
-# Gemfile
-gem &#39;sinatra&#39;
-gem &#39;sinatra- &hellip;">
+4
+5
+6
+7
+module X; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +25,7 @@ gem &#39;sinatra- &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -85,7 +86,7 @@ gem &#39;sinatra- &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Sinatra-contrib没有自动装载</h1>
+      <h1 class="entry-title">Ruby元编程读书笔记</h1>
     
     
       <p class="meta">
@@ -101,7 +102,7 @@ gem &#39;sinatra- &hellip;">
   
 
 
-<time datetime="2012-05-09T18:53:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2012</time>
+<time datetime="2012-05-31T21:14:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -110,30 +111,52 @@ gem &#39;sinatra- &hellip;">
   </header>
 
 
-<div class="entry-content"><p>最近写代码是基于sinatra的，遇到了一点小问题<br/>
-在Gemfile中添加了sinatra和sinatra-contrib，但是实际使用中，sinatra-contrib没有被装入</p>
+<div class="entry-content"><p>本文记录在《ruby 元编程》这本书中学到的一些知识点。</p>
+
+<h1>对象模型</h1>
+
+<h2>class 关键字</h2>
+
+<p>这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 <code>open class</code></p>
+
+<h2>模块的实现</h2>
+
+<p>以下面的代码为例</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Gemfile</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra-contrib&#39;</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>解决的办法是在启动脚本里面手工加上一行require</p>
+<p>实际情况下，ruby 将生成一个匿名类来封装模块 X ，在最终的继承链上，这个匿名类将在包含 X 的类 A 之上，这样，类 B 的继承链就是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>B &lt; A &lt; X<span class="o">(</span>shadow<span class="o">)</span> &lt; Object &lt; Kernel<span class="o">(</span>shadow<span class="o">)</span> &lt; BasicObject
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>* 以上细节在 superclass 这个 api 上反映不出来，不过每个类可以调用自己的 ancestors 方法看到细节</h6>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler&quot;</span>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:default</span><span class="p">)</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra/contrib&#39;</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'>  <span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="p">,</span> <span class="no">Comparable</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>但是这个方式有点土，其实如果换用新版的bundle就可以自动处理了</p>
+<h6>* 多个 include 的情况</h6>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -145,21 +168,22 @@ gem &#39;sinatra- &hellip;">
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">gem</span> <span class="n">update</span> <span class="n">bundle</span>
-</span><span class='line'><span class="no">Updating</span> <span class="n">installed</span> <span class="n">gems</span>
-</span><span class='line'><span class="no">Updating</span> <span class="n">bundler</span>
-</span><span class='line'><span class="no">Fetching</span><span class="p">:</span> <span class="n">bundler</span><span class="o">-</span><span class="mi">1</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">3</span><span class="o">.</span><span class="n">gem</span> <span class="p">(</span><span class="mi">100</span><span class="sx">%)</span>
-</span><span class='line'><span class="sx">    Successfully installed bundler-1.1.3</span>
-</span><span class='line'><span class="sx">    Updating rubygems-bundler</span>
-</span><span class='line'><span class="sx">    Fetching: rubygems-bundler-0.9.2.gem (100%)</span>
-</span><span class='line'>    <span class="no">Building</span> <span class="n">native</span> <span class="n">extensions</span><span class="o">.</span>  <span class="no">This</span> <span class="n">could</span> <span class="n">take</span> <span class="n">a</span> <span class="k">while</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'>    <span class="no">Successfully</span> <span class="n">installed</span> <span class="n">rubygems</span><span class="o">-</span><span class="n">bundler</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">2</span>
-</span><span class='line'>    <span class="no">Gems</span> <span class="n">updated</span><span class="p">:</span> <span class="n">bundler</span><span class="p">,</span> <span class="n">rubygems</span><span class="o">-</span><span class="n">bundler</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Y</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">Y</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">B</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>需要说明的是，bundler1.1目前在网站上写的还是 coming soon，不过新功能还是值得尝试的<br/>
-顺便附上 <a href="https://github.com/carlhuda/bundler/blob/master/CHANGELOG.md">bundler 的 changlog</a></p>
 </div>
 
 
@@ -182,21 +206,15 @@ gem &#39;sinatra- &hellip;">
   
 
 
-<time datetime="2012-05-09T18:53:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2012</time>
+<time datetime="2012-05-31T21:14:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2012</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/bundle/'>bundle</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai/" data-via="" data-counturl="http://fsword.github.com/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/" data-via="" data-counturl="http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/" >Tweet</a>
   
   
   
@@ -205,10 +223,10 @@ gem &#39;sinatra- &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/05/04/active-recordcuo-wu-hui-zong/" title="Previous Post: active record错误汇总">&laquo; active record错误汇总</a>
+        <a class="basic-alignment left" href="/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai/" title="Previous Post: sinatra-contrib没有自动装载">&laquo; sinatra-contrib没有自动装载</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/" title="Next Post: ruby元编程读书笔记">ruby元编程读书笔记 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun/" title="Next Post: 关于Class/Module的讨论">关于Class/Module的讨论 &raquo;</a>
       
     </p>
   </footer>
@@ -323,8 +341,8 @@ gem &#39;sinatra- &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/05/09/sinatra-contribmei-you-zi-dong-zhuang-zai/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/';
         var disqus_script = 'embed.js';
       
     (function () {

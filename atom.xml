@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-05-30T13:58:12+08:00</updated>
+  <updated>2012-06-02T12:02:00+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,163 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[关于Class/Module的讨论]]></title>
+    <link href="http://fsword.github.com/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun/"/>
+    <updated>2012-06-02T11:46:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun</id>
+    <content type="html"><![CDATA[<p>Ruby China 上有人提了一个问题：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Test &lt; Module; end
+</span><span class='line'>test = Test.new
+</span><span class='line'>
+</span><span class='line'>test到底是个神马玩意？</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个问题的回答首先要看看Ruby的对象/类层次设计，如下图（ &lt;= 表示泛化，&lt;- 表示继承）：</p>
+
+<pre><code>user_instance &lt;= UserClass &lt; Class &lt; Module &lt; Object &lt; BasicObject
+                             |  |      |         |
+                             |   &lt;=====          |
+                              &lt;==================
+</code></pre>
+
+<p>显然，Class是Module的子类，所以一般由用户创建的class都是Class的实例，也就是Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">002</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Class</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">003</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但如果一个类继承了 Class或者Module，那么它理论上应该是Class/Module的子类，其实例才是Class/Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">002</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">X</span> <span class="o">&lt;</span> <span class="no">Module</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">003</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">false</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">004</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有个不太好理解的地方，X本身是继承了Module，所以是Module的子类，但是它又是用class关键字创建的，所以它还是Class的实例，换句话说，X和X.new都是Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">005</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，合理的推论是，如果用户定义一个类是继承自Class，也会出现上述的情况，不过这一点从语法上已经被排除了——ruby禁止直接继承Class，可是并不反对继承Class的父类Module，这就是导致这个问题复杂的原因</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ruby元编程读书笔记]]></title>
+    <link href="http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/"/>
+    <updated>2012-05-31T21:14:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji</id>
+    <content type="html"><![CDATA[<p>本文记录在《ruby 元编程》这本书中学到的一些知识点。</p>
+
+<h1>对象模型</h1>
+
+<h2>class 关键字</h2>
+
+<p>这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 <code>open class</code></p>
+
+<h2>模块的实现</h2>
+
+<p>以下面的代码为例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实际情况下，ruby 将生成一个匿名类来封装模块 X ，在最终的继承链上，这个匿名类将在包含 X 的类 A 之上，这样，类 B 的继承链就是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>B &lt; A &lt; X<span class="o">(</span>shadow<span class="o">)</span> &lt; Object &lt; Kernel<span class="o">(</span>shadow<span class="o">)</span> &lt; BasicObject
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>* 以上细节在 superclass 这个 api 上反映不出来，不过每个类可以调用自己的 ancestors 方法看到细节</h6>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'>  <span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="p">,</span> <span class="no">Comparable</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>* 多个 include 的情况</h6>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Y</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">Y</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">B</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[sinatra-contrib没有自动装载]]></title>
