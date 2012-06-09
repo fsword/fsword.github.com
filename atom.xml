@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-06-02T12:02:00+08:00</updated>
+  <updated>2012-06-09T12:39:40+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何求素数]]></title>
+    <link href="http://fsword.github.com/blog/2012/06/09/ru-he-qiu-su-shu/"/>
+    <updated>2012-06-09T11:08:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/06/09/ru-he-qiu-su-shu</id>
+    <content type="html"><![CDATA[<p>学习语言的过程是比较枯燥的，不过我们可以拿来做一些有趣的事情，在解决具体问题的过程中熟悉语言。<br/>
+例如我们可以来练习一下这个问题</p>
+
+<h3>找出小于N所有素数</h3>
+
+<p>首先复习一下学校里的知识——</p>
+
+<ul>
+<li>素数（也称质数），指的是一类大于1的自然数，这些自然数有个特点，除了1和它自身，它们不能被其它的任何自然数整除。</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>举例：  
+</span><span class='line'>    4不是素数，因为它可以被2整除；  
+</span><span class='line'>    11是素数，因为除了1和它自身，它不能被其它自然数整除；</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>判断一个数是否是素数，最直接的方法就是检查所有大于2小于它的自然数能否被它整除，更进一步，最大除数只要达到N的平方根就行了</li>
+</ul>
+
+
+<p>根据上述知识，我们可以找到问题的解决思路。方法如下：</p>
+
+<pre><code>1. 将N以内的所有整数列出来
+2. 标出序列中的第一个素数（比如：2），然后将后续中能够被这个素数整除的成员删除
+3. 对新的序列重复执行上述步骤，循环进行，循环次数不大于N的平方根
+</code></pre>
+
+<blockquote><p>上述解法其实是这个问题最古老（可能也是最高效）的方法——“<a href="http://zh.wikipedia.org/wiki/%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95">筛法</a>(<a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve of Eratosthenes</a>)”，是由古希腊数学家埃拉托斯特尼发明的</p></blockquote>
+
+<p>根据这些知识，我们可以写出ruby版的实现</p>
+
+<div><script src='https://gist.github.com/2896832.js?file='></script>
+<noscript><pre><code>def prime n
+  list = (2..n).to_a
+  (2...(n ** (0.5)).floor).each do |i|  list.delete_if{|e| e &gt; i &amp;&amp; e % i == 0} end
+  list
+end</code></pre></noscript></div>
+
+
+<p>执行一下试试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="n">prime</span> <span class="mi">100</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">97</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>成功!<br/>
+是不是很简单？但是且慢，算出来需要多久呢？要是几百万以内的素数，又需要多长时间呢？<br/>
+写一段代码验证一下（我们计算结束后不输出，这是为了避免大量数据输出对IO的压力）</p>
+
+<div><script src='https://gist.github.com/2899473.js?file='></script>
+<noscript><pre><code>require './prime.rb' # user defined function
+require 'benchmark'
+
+Benchmark.bm do |x| 
+  (4..6).each do |i|
+     x.report(10**i){ prime(10**i).last }
+  end
+end</code></pre></noscript></div>
+
+
+<p>执行结果（修改了一下格式）——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby prime_benchmark.rb
+</span><span class='line'>       user      system       total        real
+</span><span class='line'>       10000     0.020000     0.000000   0.020000   <span class="o">(</span>  0.024682<span class="o">)</span>
+</span><span class='line'>       100000    1.410000     0.010000   1.420000   <span class="o">(</span>  1.419806<span class="o">)</span>
+</span><span class='line'>       1000000   245.320000   0.060000   245.380000 <span class="o">(</span>246.231597<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从10万到100万，耗时剧增!!! 怎么办？我们下次再说</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[关于Class/Module的讨论]]></title>

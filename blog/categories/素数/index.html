@@ -5,18 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>fixture使用时需要注意的问题 - fsword's blog</title>
+  <title>Category: 素数 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="单测时不太顺利，主要是fixture使用不熟悉，记录两个问题 bug 1：经过定位发现是fixture数据始终不能灌入导致的 1
-2
-3
-4
-5
-6
-machine1: id: 1 app_id: 1
-machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;">
+  <meta name="description" content="Category: 素数">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -25,7 +18,7 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti">
+  <link rel="canonical" href="http://fsword.github.comblog/categories/素数">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,123 +75,36 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Fixture使用时需要注意的问题</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-04T17:47:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
+    <h1 class="entry-title">Category: 素数</h1>
     
   </header>
-
-
-<div class="entry-content"><p>单测时不太顺利，主要是fixture使用不熟悉，记录两个问题</p>
-
-<p>bug 1：经过定位发现是fixture数据始终不能灌入导致的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>machine1:
-</span><span class='line'>  id: 1
-</span><span class='line'>  app_id: 1
-</span><span class='line'>machine1:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1</span></code></pre></td></tr></table></div></figure>
-
-
-<p>期望有两条数据，实际只有一条，原因是在rspec灌数据时装载yml，而这里的数据是个hash，结果key相同（都是“machine1”）的entry被覆盖了，后一条被装入。  <br/>
-解决办法是：<code>检查并修改重名的fixture条目，确保不冲突</code></p>
-
-<p>bug 2：经过定位发现是fixture数据导入时，某个条目出错</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>something:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1
-</span><span class='line'>  name: package
-</span><span class='line'>  expression: 1,2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的 expression 值期望为字符串 <code>1,2</code> ，然而最后总是变成 <code>12</code>，后来才发现是格式问题，对于,这种特殊字符，不能省略字符串的双引号，改为 &#8220;1,2&#8221;  <br/>
-解决办法是：<code>检查并修改fixture条目中的格式特别的字符串，确保使用双引号包含</code></p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2012</h2>
 
-
-<time datetime="2012-03-04T17:47:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
+<article>
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" data-via="" data-counturl="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/" >Tweet</a>
-  
-  
-  
-</div>
+<h1><a href="/blog/2012/06/09/ru-he-qiu-su-shu/">如何求素数</a></h1>
+<time datetime="2012-06-09T11:08:00+08:00" pubdate><span class='month'>Jun</span> <span class='day'>09</span> <span class='year'>2012</span></time>
 
-    
-    <p class="meta">
-      
-      
-        <a class="basic-alignment right" href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/" title="Next Post: 不常用的git命令">不常用的git命令 &raquo;</a>
-      
-    </p>
-  </footer>
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/素数/'>素数</a>, <a class='category' href='/blog/categories/编程练习/'>编程练习</a></span>
+</footer>
+
+
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -302,10 +208,7 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
       var disqus_shortname = 'fswordsblog';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
