@@ -26,6 +26,7 @@ sudo apt-get install libxslt-dev libxml2-dev
 ```
 curl -L get.rvm.io | bash -s stable
 source .bashrc
+rvm pkg install zlib
 rvm install ruby-1.9.3
 ```
 
