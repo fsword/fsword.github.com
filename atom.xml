@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-06-11T00:59:19+08:00</updated>
+  <updated>2012-06-29T09:58:27+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,94 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ruby中的self]]></title>
+    <link href="http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self/"/>
+    <updated>2012-06-29T09:38:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self</id>
+    <content type="html"><![CDATA[<p>ruby-china.org 上有人问<a href="http://ruby-china.org/topics/4026">self的含义</a>，发篇帖子解释一下<br/>
+ruby里面的class关键字和def关键字的作用其实是<strong>改变上下文</strong>，这个<code>self</code>就是被改变的<code>上下文</code>中最重要的一个，按照ruby语法，遇到这样的关键字，self的含义就会变化<br/>
+* 在<code>class内部</code>，self代表的是<code>当前这个类本身</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="nb">self</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">A</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>而通过<code>def</code>进入方法以后，（在方法内部写的）self指的是<code>这个方法的当前调用者</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">x</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">x</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="c1">#&lt;A:0x00000002705fb0&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上所示，这次打印出来的self是类A的一个实例而不是类A本身</p>
+
+<p>这两个原则非常重要，现在我们看看方法前加self是什么意思</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">x</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">x</span>
+</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">x</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">A</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">rb</span><span class="p">:</span><span class="mi">7</span><span class="ss">:in</span> <span class="sb">`&lt;main&gt;&#39;: undefined method `</span><span class="n">x</span><span class="err">&#39;</span> <span class="k">for</span> <span class="c1">#&lt;A:0x00000001a83f58&gt; (NoMethodError)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，这个方法看起来像是我们常说的“类方法”而不是实例方法（这个例子中，实例方法x不存在，于是抛出了异常），我们通常这么理解——</p>
+
+<blockquote><p>方法前的self在class内部，所以它表示类A，这样，x方法的调用者是<strong>类A自身</strong>（而不是它的实例），根据之前的原则，在def关键字内部，self表示的是这个方法的调用者，在这里就是类A自己</p></blockquote>
+
+<p>最后补充一下——<br/>
+* ruby中的类本身也是对象，所以所谓“类方法”是个不太准确的描述，所有的方法都是属于某个对象的，这里的self.x其实是类A（<strong>再次强调：是A自己而不是A的实例</strong>）的“专有方法”，更进一步的理解要结合对eigenclass这个概念的理解</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何求素数(2)]]></title>
@@ -397,7 +485,8 @@ end</code></pre></noscript></div>
     <updated>2012-05-04T14:25:00+08:00</updated>
     <id>http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong</id>
     <content type="html"><![CDATA[<p>这个帖子专门记录一些使用active record时遇到的错误<br/>
-1. 错误代码</p>
+1. 错误描述：directive找不到自己的template<br/>
+错误代码</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -422,9 +511,14 @@ end</code></pre></noscript></div>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>错误描述：directive找不到自己的template<br/>
-解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
+<p>解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
 解决方法：更改数据库字段名，或者在模型代码中指定foreign_key</p>
+
+<ol>
+<li>错误描述：db:seed_fu 创建模型遇到表结构错误<br/>
+解释：初步试验发现，如果执行 <code>rake db:create db:migrate db:seed_fu</code> 会遇到这个问题，而将seed_fu单独执行则是正常的，考虑到发生错误的表在migrate阶段有过结构变更，估计是数据库事务导致alter语句没有提交，从而使得seed_fu失败</li>
+</ol>
+
 ]]></content>
   </entry>
   
