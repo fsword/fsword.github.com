@@ -9,10 +9,10 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="ruby在很多方面都很不错，但是java也有它的优势，至少我们有很多基于java的遗留系统。
-结合这两者主要有几种思路：
-* 使用消息系统链接java应用和ruby应用，这是我们通常整合异构系统的思路
-* 基于java的分布式设施进行系统整合，这要将ruby放在jvm上工作，我们可以用jruby &hellip;">
+  <meta name="description" content="vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
+官方网站：http://vagrantup.com/ 今天准备了一个干净的运行环境，步骤如下： 修改locale 1
+2
+vi /etc/default/locale #将 LANG 改为 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,143 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/25/vagranthuan-jing/">Vagrant环境</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/25/vagranthuan-jing/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
+官方网站：http://vagrantup.com/</p>
+
+<p>今天准备了一个干净的运行环境，步骤如下：</p>
+
+<p><strong> 修改locale </strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
+</span><span class='line'>sudo locale-gen zh_CN.utf8</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong> 安装必要的本地库 </strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server libmysqlclient-dev git
+</span><span class='line'>sudo apt-get install libxslt-dev libxml2-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong> 用rvm安装ruby </strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -L get.rvm.io | bash -s stable
+</span><span class='line'>source .bashrc
+</span><span class='line'>rvm pkg install zlib
+</span><span class='line'>rvm pkg install readline
+</span><span class='line'>rvm pkg install openssl
+</span><span class='line'>rvm install ruby-1.9.3</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>进入 /vagrant 目录，准备rails环境</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:create db:migrate
+</span><span class='line'>rails s</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后续结合puppet来进行环境管理</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/">让bash提示符显示彩色的git_branch</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-17T16:06:00+08:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之前一直很羡慕zsh用户，今天终于让bash也能显示彩色branch了
+具体做法：修改你的 .bashrc，添加下面几句就可以了</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>parse_git_branch() {
+</span><span class='line'>  git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
+</span><span class='line'>}                    
+</span><span class='line'>_PS1=$PS1                                                 
+</span><span class='line'>PS1="\[\e[36m\]\u:\[\e[32m\]\w\[\e[33m\]\$(parse_git_branch)\[\e[0m\]\$ "</span></code></pre></td></tr></table></div></figure>
+
+
+<p>                                                     <br/>
+很简单，不过之前遇到了点麻烦：添加了彩色支持以后发现对较长的命令行会显示错误，后来发现是把<code>\[\e[36m\]</code>写成了 <code>\[\e[36m</code>（丢了后面的部分），汗</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -422,6 +559,14 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/">OAuth 2.0 and the Road to Hell 中文版</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/06/29/rubyzhong-de-self/">ruby中的self</a>
       </li>
     
@@ -431,14 +576,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     
       <li class="post">
         <a href="/blog/2012/06/09/ru-he-qiu-su-shu/">如何求素数(1)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun/">关于Class/Module的讨论</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/">ruby元编程读书笔记</a>
       </li>
     
   </ul>

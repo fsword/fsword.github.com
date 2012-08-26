@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>链式调用的代码怎么写 - fsword's blog</title>
+  <meta name="author" content="fsword">
+
+  
+  <meta name="description" content="使用ruby，一个很有价值的地方就是发明了各种DSL，比如这样： 1
+tags.delete_if{|x| x.nil?}.map{|v| v.sub /^!/,&#39;&#39;}.delete_if{|x| x.empty?} 这种风格通常被称为链式调用，优点是代码比较连贯， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29872638-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">fsword's blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:fsword.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">链式调用的代码怎么写</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-26T13:55:00+08:00" pubdate data-updated="true">Aug 26<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>使用ruby，一个很有价值的地方就是发明了各种DSL，比如这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span><span class="o">.</span><span class="n">delete_if</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">nil?</span><span class="p">}</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">delete_if</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种风格通常被称为链式调用，优点是代码比较连贯，去掉了多余的局部变量和赋值语句，符合人类的思维习惯。</p>
+
+<p>但是也有隐含的问题——代码可读性有时候会受影响，例如这里的例子中，对数组的变换包括三个步骤，如果看的不仔细，就可能会遗漏。</p>
+
+<p>按照我自己的经验，一般会改成这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:nil?</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:empty?</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，每行都是一个独立单一的逻辑部分，可读性就有了保障。
+问题并没有结束，链式调用的另外一个常见问题是对于故障的处理，使用者有时会搞不清楚到底在哪里出了错。</p>
+
+<p>由于这种api一般会使用延迟计算的方式（延迟计算是个大的话题，请google），之前的环节仅仅是收集计算所需要的逻辑，真正出问题总是在最后，而那时的错误可以输出完整的计算条件，所以大部分情况下故障处理还不是很复杂。</p>
+
+<p>但是如果有的api设计的不好或者出现了意料以外的问题，我们怎么办呢？</p>
+
+<p>处理故障最常用的工具是日志，而链式调用不太好做的也就是日志，好在ruby的标准库提供了一个很好用的api——tap（很多人一开始看到这个函数，发现什么都不做，觉得很奇怪），我们看下面的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span>                       <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;origin size: </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:nil?</span><span class="p">)</span>     <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;del nil    : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;sub        : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:empty?</span><span class="p">)</span>   <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;del empty  : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样的代码，既方便了连贯的表达业务逻辑，又能在必要的时候输出需要的日志，基本上就比较靠谱了，顺便在说一句，我专门调整了代码的对齐并不是简单的为了好看，如果有一天你确定这段代码不再需要日志输出，那么使用很多编辑器都支持的列编辑功能就可以一次性删除掉日志了</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-26T13:55:00+08:00" pubdate data-updated="true">Aug 26<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/代码技巧/'>代码技巧</a>, <a class='category' href='/blog/categories/链式调用/'>链式调用</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/" data-via="" data-counturl="http://fsword.github.com/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/" title="Previous Post: OAuth 2.0 and the Road to Hell 中文版">&laquo; OAuth 2.0 and the Road to Hell 中文版</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/">OAuth 2.0 and the Road to Hell 中文版</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/29/rubyzhong-de-self/">ruby中的self</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/10/ru-he-qiu-su-shu-2/">如何求素数(2)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/09/ru-he-qiu-su-shu/">如何求素数(1)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fsword">@fsword</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fsword',
+            count: 2,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+<h1>My slides</h1>
+<ul id="my_slide">
+	<li class="post">
+		<a href="/slide/ruby/index.html" target="_blank">Magic Ruby</a>
+	</li>
+	<li class="post">
+		<a href="/slide/yan-fa-ce-shi/index.html" target="_blank">AppOSS中的研发测试</a>
+	</li>
+</ul>
+</section>
+<section>
+<h1>Recommended resource</h1>
+<ul id="my_slide">
+	<li class="post">
+		<a href="/recommend/Scale2.swf" target="_blank">宇宙的刻度（flash动画）</a>
+	</li>
+</ul>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - fsword -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'fswordsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

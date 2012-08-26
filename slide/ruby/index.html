@@ -151,9 +151,19 @@ Object.superclass.superclass  # <strong> nil </strong></pre>
 
   <section class="slide">
 	  <h2>Ruby: 一切都是对象</h2>
-	  <pre>讨论一下<strong>多态</strong></pre>
-	  <pre>ruby支持override，但是不支持overload
-...</pre>
+	  <pre>关于<strong>多态</strong></pre>
+    <pre class="slide">ruby支持override，但是不支持overload</pre>
+    <pre class="slide"><strong>//overload - java代码示例</strong>
+public void doSth(Tom obj){...}
+public void doSth(Jerry obj){...}</pre>
+    <pre class="slide"><strong>// ruby代码</strong>
+def doSth(cartoon_figure) do cartoon_figure.doSth end
+class Tom
+  def doSth ... end
+end
+class Jerry
+  def doSth ... end
+end</pre>
   </section>
 
   <section class="slide" id="open_class">
@@ -162,17 +172,15 @@ Object.superclass.superclass  # <strong> nil </strong></pre>
 
   <section class="slide">
 	  <h2>开放类</h2>
+	  <pre class="slide"><strong>需求：list.join(",")</strong></pre>
 	  <div class="slide">
-	    <h3>需求：list.join(",")</h3>
-	  </div>
-	  <div class="slide">
-	    <h4>java的做法（示意）</h4>
+	    <h4>java的做法</h4>
 	    <pre>class ExtList implements List{ 
     ExtList(List innerList){...}
     public String join(String seperate){...}
-}
-<strong>//现有代码全部需要重写，而且会导致ExtList有不同版本</strong></pre>
+}</pre>
 	  </div>
+<pre class="slide"><strong>现有代码全部需要重写，而且会导致ExtList有不同版本</strong></pre>
 	  <div class="slide">
 	    <h4>open class的方式</h4>
 <pre>class List
@@ -183,18 +191,18 @@ end</pre>
 
   <section class="slide">
 	  <h2>开放类</h2>
-	  <div class="slide"><h3>需求：time.yesterday</h3> </div>
-	  <div class="slide"><pre><strong>class Time
+	  <pre class="slide"><strong>需求：time.yesterday</strong> </pre>
+	  <div class="slide"><pre>class Time
   def yesterday
     self - 86400
   end
-end</strong></pre></div>
-	  <div class="slide"><h4>需求：{:name => 'john', :age => 31}.only :name</h4> </div>
-	  <div class="slide"><pre><strong>class Hash
+end</pre></div>
+	  <pre class="slide"><strong>需求：{:name => 'john', :age => 31}.only :name</strong> </pre>
+	  <div class="slide"><pre>class Hash
   def only(*allowed)
     reject { |k,v| !allowed.include?(k) }
   end
-end</strong></pre></div>
+end</pre></div>
   </section>
 
   <section class="slide" id="module">
@@ -247,6 +255,45 @@ end
 p = Chinese.new
 p.say # hello
 p.eat # eat</pre>
+  </section>
+
+  <section class="slide">
+  	<h1>singleton class</h1>
+  </section>
+
+  <section class="slide">
+    <h2>一个小例子</h2>
+    <pre>$ irb
+1.9.3p194 :001 &gt; class A;end
+ =&gt; nil 
+1.9.3p194 :002 &gt; A.ancestors
+ =&gt; [A, Object, Kernel, BasicObject] </pre>
+    <pre>对象关系和继承图</pre>
+    <img src="obj_class01.png" />
+  </section>
+
+  <section class="slide">
+  	<h2>可继承的"类方法"</h2>
+    <pre># sample.rb
+class Parent
+  def self.make_call
+    p "called from parent class"
+  end
+end
+
+class Child &lt; Parent
+  def self.make_call
+    super
+    p "called from child Class"
+  end
+end
+  
+Parent.make_call
+Child.make_call</pre>
+    <pre class="slide">$ ruby sample.rb 
+"called from parent class"
+<strong>"called from parent class"
+"called from child Class"</strong></pre>
   </section>
 
   <section class="slide" id="program_style">
