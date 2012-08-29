@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-08-26T14:58:42+08:00</updated>
+  <updated>2012-08-29T14:31:50+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -996,6 +996,14 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>[receive]
 </span><span class='line'>    denyCurrentBranch = ignore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外，对于pull的一方，操作也要稍微调整一下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin
+</span><span class='line'>git reset --hard origin/master</span></code></pre></td></tr></table></div></figure>
 
 
 <p>have fun!</p>
