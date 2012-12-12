@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-12-05T22:38:38+08:00</updated>
+  <updated>2012-12-12T17:32:37+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,90 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[持续集成中的缺环(1.问题)]]></title>
+    <link href="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/"/>
+    <updated>2012-12-12T17:11:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan</id>
+    <content type="html"><![CDATA[<p>我们通常说的持续集成，是指通过彻底的自动化手段，让软件在需求、设计、编码、测试这几个环节上自然流动，形成连续的迭代过程，这里的关键词是“持续”，基本技术手段就是“自动化”了</p>
+
+<p>不过说起来容易做起来难，目前为止，很多公司和团队都在一定程度上做了一些努力，我们也是如此，不过在审视自己的工作时，发现有个环节似乎缺失了，这就是联调或者说系统集成。</p>
+
+<p>从某种角度上看，软件开发的过程是将大功能拆成小任务，然后自底向上逐步累积的，如图</p>
+
+<p><img src="http://fsword.github.com/images/software_layer.png" alt="software_layer" /></p>
+
+<p>我们的测试实际上也是循着这个基本前提进行的。众所周知，越是底层的软件单元，越容易进行覆盖性测试，但代价是需要在边界上进行模拟，也许是mock，也许是simulator，而高层的测试可以避免在边界上的这种模拟成本，代价是不能完备的覆盖所有可能的逻辑分支。</p>
+
+<p>通常的做法是结合，我们区分了单元测试、模块测试、集成测试几个层次。在单元测试中，我们使用mock技术尽可能覆盖逻辑分支；而在集成测试环节，更多的是关键路径和用户视角。</p>
+
+<p>但是在我们这样的软件系统中，很少有独立工作的应用系统，大部分系统都是基于某种分布式架构进行协同的，常见的情况是这样的</p>
+
+<p><img src="http://fsword.github.com/images/old_way.png" alt="old way" /></p>
+
+<p>这样的结构对我们的质量工作提出了挑战，因为我们没有对应系统间协同测试的基础设施（至少我目前没有找到），这迫使我们尝试一条以前没有走过的路。</p>
+
+<p>如前所述，基本的思路还是自动化，只不过现在我们要处理多个系统的自动部署和测试，相对而言，这种场景中的测试更接近验收测试，相对不是很复杂，所以关键就在部署上，我们希望实现这样的一张图</p>
+
+<p><img src="http://fsword.github.com/images/new_way.png" alt="new way" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[erlang环境安装FAQ]]></title>
+    <link href="http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/"/>
+    <updated>2012-12-09T15:46:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq</id>
+    <content type="html"><![CDATA[<h3>如何添加 wx 支持</h3>
+
+<p>erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1&gt; reltool:start().
+</span><span class='line'>
+</span><span class='line'>=ERROR REPORT==== 9-Dec-2012::15:28:51 ===
+</span><span class='line'>ERROR: Could not find 'wxe_driver.so' in: /home/john/software/otp/lib/erlang/lib/wx-0.99.1/priv
+</span><span class='line'>** exception exit: {load_driver,"No driver found"}
+</span><span class='line'>     in function  wxe_server:start/0 (wxe_server.erl, line 64)
+</span><span class='line'>         in call from wx:new/1 (wx.erl, line 99)
+</span><span class='line'>         in call from reltool_sys_win:do_init/1 (reltool_sys_win.erl, line 140)
+</span><span class='line'>         in call from reltool_sys_win:init/1 (reltool_sys_win.erl, line 130)
+</span><span class='line'>         in call from proc_lib:init_p_do_apply/3 (proc_lib.erl, line 227)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有经验的人一般会尝试自己编译erlang环境，但可能会发现编译时找不到wx库。实际上，ubuntu环境一般确实会安装 libwxgtk2.8-dev 这个包，但是需要添加一个 link （参考<a href="http://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu">官方说明</a>）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/include
+</span><span class='line'>sudo ln -sv wx-2.8/wx wx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外，提醒一下，你可以在 configure 阶段验证是否支持 wx ，方法是看是否有下面的输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>checking for debug build of wxWidgets... checking for wx-config... /usr/bin/wx-config
+</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=yes)... no
+</span><span class='line'>checking for standard build of wxWidgets... checking for wx-config... (cached) /usr/bin/wx-config
+</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=no)... yes (version 2.8.12)</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[模块的使用]]></title>

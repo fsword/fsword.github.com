@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>如何求素数(2) - fsword's blog</title>
+  <title>持续集成中的缺环(1.问题) - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。 &hellip;">
+  <meta name="description" content="我们通常说的持续集成，是指通过彻底的自动化手段，让软件在需求、设计、编码、测试这几个环节上自然流动，形成连续的迭代过程，这里的关键词是“持续”，基本技术手段就是“自动化”了 不过说起来容易做起来难，目前为止，很多公司和团队都在一定程度上做了一些努力，我们也是如此，不过在审视自己的工作时， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">如何求素数(2)</h1>
+      <h1 class="entry-title">持续集成中的缺环(1.问题)</h1>
     
     
       <p class="meta">
@@ -96,7 +95,7 @@
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2012-12-12T17:11:00+08:00" pubdate data-updated="true">Dec 12<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -105,69 +104,27 @@
   </header>
 
 
-<div class="entry-content"><p>前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。<br/>
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。回头看筛法的计算过程，主要工作包括两个：选择除数和用除数过滤数列。选择除数是从小到大顺序进行，不能并行，而用除数过滤数列则是各自独立，所以能够并行。<br/>
-我们并行的方式来变换原来的算法。大致思路如下——</p>
+<div class="entry-content"><p>我们通常说的持续集成，是指通过彻底的自动化手段，让软件在需求、设计、编码、测试这几个环节上自然流动，形成连续的迭代过程，这里的关键词是“持续”，基本技术手段就是“自动化”了</p>
 
-<pre><code>1. 生成待过滤的数列
-2. 根据并行数目将数列均匀切分，得到若干子数列
-3. 从小到大循环除数，对每一个除数
-    3.1. 并行同时过滤上述多个子数列
-    3.2. 过滤N的平方根后停止循环
-4. 连接所有子数列，输出最后的结果
-</code></pre>
+<p>不过说起来容易做起来难，目前为止，很多公司和团队都在一定程度上做了一些努力，我们也是如此，不过在审视自己的工作时，发现有个环节似乎缺失了，这就是联调或者说系统集成。</p>
 
-<p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
-最后的代码应该是这样</p>
+<p>从某种角度上看，软件开发的过程是将大功能拆成小任务，然后自底向上逐步累积的，如图</p>
 
-<div><script src='https://gist.github.com/2905122.js?file='></script>
-<noscript><pre><code>def prime n
+<p><img src="/images/software_layer.png" alt="software_layer" /></p>
 
-  full_list = (2..n).to_a
-  prime_list = []
-  stop_index = (n ** 0.5).floor
-  last_prime = 2
-  
-  while(last_prime &lt; stop_index)
-    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
+<p>我们的测试实际上也是循着这个基本前提进行的。众所周知，越是底层的软件单元，越容易进行覆盖性测试，但代价是需要在边界上进行模拟，也许是mock，也许是simulator，而高层的测试可以避免在边界上的这种模拟成本，代价是不能完备的覆盖所有可能的逻辑分支。</p>
 
-    last_prime = sublists.first.reduce() do |sum, i|
-      break i if i &gt; stop_index
-      workers.each{|cell| worker.filter_by(i)}
-      i
-    end
-    prime_list = prime_list.concat(workers.first.value)
-    full_list = workers[1..-1].map(&amp;:value).flatten
-  end
-  prime_list.concat(full_list.flatten)
-end
+<p>通常的做法是结合，我们区分了单元测试、模块测试、集成测试几个层次。在单元测试中，我们使用mock技术尽可能覆盖逻辑分支；而在集成测试环节，更多的是关键路径和用户视角。</p>
 
-def split_range total_num, concurrent_num
-  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
-end
+<p>但是在我们这样的软件系统中，很少有独立工作的应用系统，大部分系统都是基于某种分布式架构进行协同的，常见的情况是这样的</p>
 
-class Worker
-  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
-end</code></pre></noscript></div>
+<p><img src="/images/old_way.png" alt="old way" /></p>
 
+<p>这样的结构对我们的质量工作提出了挑战，因为我们没有对应系统间协同测试的基础设施（至少我目前没有找到），这迫使我们尝试一条以前没有走过的路。</p>
 
-<p>执行结果：</p>
+<p>如前所述，基本的思路还是自动化，只不过现在我们要处理多个系统的自动部署和测试，相对而言，这种场景中的测试更接近验收测试，相对不是很复杂，所以关键就在部署上，我们希望实现这样的一张图</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby prime_benchmark.rb 
-</span><span class='line'>    user     system      total        real
-</span><span class='line'>    10000   0.050000    0.000000   0.050000 (  0.048889)
-</span><span class='line'>    100000  0.650000    0.000000   0.650000 (  0.649779)
-</span><span class='line'>    1000000 39.810000   0.050000  39.860000 ( 39.961506</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在我的4核机器上改进很明显。</p>
-
-<p><code>注意：之前的代码还有一个遗留问题，被过滤掉的数字其实不用再来做除数，而现在这个版本因为要重新切分数列，所以有机会减少这个浪费，这也是速度明显提升的原因</code></p>
+<p><img src="/images/new_way.png" alt="new way" /></p>
 </div>
 
 
@@ -190,21 +147,15 @@ end</code></pre></noscript></div>
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2012-12-12T17:11:00+08:00" pubdate data-updated="true">Dec 12<span>th</span>, 2012</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/素数/'>素数</a>, <a class='category' href='/blog/categories/编程练习/'>编程练习</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" data-via="" data-counturl="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/" data-via="" data-counturl="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/" >Tweet</a>
   
   
   
@@ -213,10 +164,8 @@ end</code></pre></noscript></div>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/09/ru-he-qiu-su-shu/" title="Previous Post: 如何求素数(1)">&laquo; 如何求素数(1)</a>
+        <a class="basic-alignment left" href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/" title="Previous Post: erlang环境安装FAQ">&laquo; erlang环境安装FAQ</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/06/29/rubyzhong-de-self/" title="Next Post: ruby中的self">ruby中的self &raquo;</a>
       
     </p>
   </footer>
@@ -331,8 +280,8 @@ end</code></pre></noscript></div>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/';
         var disqus_script = 'embed.js';
       
     (function () {
