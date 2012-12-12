@@ -47,5 +47,10 @@ To /home/john/proj_repo
 [receive]
     denyCurrentBranch = ignore
 ```
+另外，对于pull的一方，操作也要稍微调整一下：  
+```
+git fetch origin
+git reset --hard origin/master
+```
 
 have fun!
