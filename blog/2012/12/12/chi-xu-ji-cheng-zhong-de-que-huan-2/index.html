@@ -5,14 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>vagrant环境 - fsword's blog</title>
+  <title>持续集成中的缺环-2 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
-官方网站：http://vagrantup.com/ 今天准备了一个干净的运行环境，步骤如下： 修改locale 1
-2
-vi /etc/default/locale #将 LANG 改为 &hellip;">
+  <meta name="description" content="「接上篇」比较新旧两个图，可以发现，除了要做好多应用的部署自动化以外，还有一个问题需要我们考虑，那就是资源的自动分配。 常见的是数据库资源，由于我们过去一直依赖DBA分配数据库帐号，每次测试都是使用的同样的一个数据库，这样一来，开发人员想要测试就要申请自己的数据库资源，有新来的同学如果不知道， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +18,7 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing">
+  <link rel="canonical" href="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +79,7 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Vagrant环境</h1>
+      <h1 class="entry-title">持续集成中的缺环-2</h1>
     
     
       <p class="meta">
@@ -98,7 +95,7 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
   
 
 
-<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+<time datetime="2012-12-12T17:39:00+08:00" pubdate data-updated="true">Dec 12<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -107,52 +104,21 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
   </header>
 
 
-<div class="entry-content"><p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
-官方网站：http://vagrantup.com/</p>
+<div class="entry-content"><p>「接上篇」比较新旧两个图，可以发现，除了要做好多应用的部署自动化以外，还有一个问题需要我们考虑，那就是资源的自动分配。</p>
 
-<p>今天准备了一个干净的运行环境，步骤如下：</p>
+<p>常见的是数据库资源，由于我们过去一直依赖DBA分配数据库帐号，每次测试都是使用的同样的一个数据库，这样一来，开发人员想要测试就要申请自己的数据库资源，有新来的同学如果不知道，就会用源码中配好的那个数据库链接，如果这时有人在测试，那就悲剧了。而如果偶尔需要多个分支一起开发，情况就更加可怕。</p>
 
-<p><strong> 修改locale </strong></p>
+<p>解决这个问题的办法是资源隔离和动态分配。而且，这个做法不只限于数据库，几乎所有的基础设施都要这么做，你会发现这个环境似乎有些象“云”，好吧，虽然我不喜欢这个buzz word，但是沿着这个思路走下去，确实可以用到一些“云xx”的技术，我们只要拿来主义就可以了。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
-</span><span class='line'>sudo locale-gen zh_CN.utf8</span></code></pre></td></tr></table></div></figure>
+<p>循着这个思路，我们搭建了一些支持动态分配资源的服务，这是后续工作的基础。为了能够方便的操控部署工作，我又把自己一直负责的easy commander（以前叫 AppOSS）也嫁接了过来，这样我们就得到了这些</p>
 
+<p><img src="/images/ci_deploy.png" alt="部署图" /></p>
 
-<p><strong> 安装必要的本地库 </strong></p>
+<p>对单个应用而言，本来就有一些shell脚本（例如执行 maven 打包和启动停止服务器之类），所以我只要简单写一些ruby脚本负责协作，就让这个原型跑了起来，经过验证，可行。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server libmysqlclient-dev git
-</span><span class='line'>sudo apt-get install libxslt-dev libxml2-dev</span></code></pre></td></tr></table></div></figure>
+<p>接下来要做什么？我们现在仅仅用脚本驱动了起来，而ruby语言在我们这个团队中并不是公共知识，所以最好能够开发一些 DSL ，让大家简单的写一些“配置文件”，就能让自己关心的几个系统部署好。</p>
 
-
-<p><strong> 用rvm安装ruby </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -L get.rvm.io | bash -s stable
-</span><span class='line'>source .bashrc
-</span><span class='line'>rvm pkg install zlib
-</span><span class='line'>rvm pkg install readline
-</span><span class='line'>rvm pkg install openssl
-</span><span class='line'>rvm install ruby-1.9.3</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>进入 /vagrant 目录，准备rails环境</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:create db:migrate
-</span><span class='line'>rails s</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后续结合puppet来进行环境管理</p>
+<p>如何实现这些DSL呢？我要去吃晚饭了，明天接着说</p>
 </div>
 
 
@@ -175,21 +141,15 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
   
 
 
-<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+<time datetime="2012-12-12T17:39:00+08:00" pubdate data-updated="true">Dec 12<span>th</span>, 2012</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/vagrant/'>vagrant</a>, <a class='category' href='/blog/categories/virtualization/'>virtualization</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/" data-via="" data-counturl="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/" data-via="" data-counturl="http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/" >Tweet</a>
   
   
   
@@ -198,10 +158,8 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/" title="Previous Post: 让bash提示符显示彩色的git_branch">&laquo; 让bash提示符显示彩色的git_branch</a>
+        <a class="basic-alignment left" href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/" title="Previous Post: 持续集成中的缺环(1.问题)">&laquo; 持续集成中的缺环(1.问题)</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/" title="Next Post: vagrant使用步骤总结">vagrant使用步骤总结 &raquo;</a>
       
     </p>
   </footer>
@@ -316,8 +274,8 @@ vi /etc/default/locale #将 LANG 改为 &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/';
+        var disqus_url = 'http://fsword.github.com/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/';
         var disqus_script = 'embed.js';
       
     (function () {

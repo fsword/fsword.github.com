@@ -9,7 +9,7 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="我们通常说的持续集成，是指通过彻底的自动化手段，让软件在需求、设计、编码、测试这几个环节上自然流动，形成连续的迭代过程，这里的关键词是“持续”，基本技术手段就是“自动化”了 不过说起来容易做起来难，目前为止，很多公司和团队都在一定程度上做了一些努力，我们也是如此，不过在审视自己的工作时， &hellip;">
+  <meta name="description" content="「接上篇」比较新旧两个图，可以发现，除了要做好多应用的部署自动化以外，还有一个问题需要我们考虑，那就是资源的自动分配。 常见的是数据库资源，由于我们过去一直依赖DBA分配数据库帐号，每次测试都是使用的同样的一个数据库，这样一来，开发人员想要测试就要申请自己的数据库资源，有新来的同学如果不知道， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,58 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/">持续集成中的缺环-2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-12T17:39:00+08:00" pubdate data-updated="true">Dec 12<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>「接上篇」比较新旧两个图，可以发现，除了要做好多应用的部署自动化以外，还有一个问题需要我们考虑，那就是资源的自动分配。</p>
+
+<p>常见的是数据库资源，由于我们过去一直依赖DBA分配数据库帐号，每次测试都是使用的同样的一个数据库，这样一来，开发人员想要测试就要申请自己的数据库资源，有新来的同学如果不知道，就会用源码中配好的那个数据库链接，如果这时有人在测试，那就悲剧了。而如果偶尔需要多个分支一起开发，情况就更加可怕。</p>
+
+<p>解决这个问题的办法是资源隔离和动态分配。而且，这个做法不只限于数据库，几乎所有的基础设施都要这么做，你会发现这个环境似乎有些象“云”，好吧，虽然我不喜欢这个buzz word，但是沿着这个思路走下去，确实可以用到一些“云xx”的技术，我们只要拿来主义就可以了。</p>
+
+<p>循着这个思路，我们搭建了一些支持动态分配资源的服务，这是后续工作的基础。为了能够方便的操控部署工作，我又把自己一直负责的easy commander（以前叫 AppOSS）也嫁接了过来，这样我们就得到了这些</p>
+
+<p><img src="/images/ci_deploy.png" alt="部署图" /></p>
+
+<p>对单个应用而言，本来就有一些shell脚本（例如执行 maven 打包和启动停止服务器之类），所以我只要简单写一些ruby脚本负责协作，就让这个原型跑了起来，经过验证，可行。</p>
+
+<p>接下来要做什么？我们现在仅仅用脚本驱动了起来，而ruby语言在我们这个团队中并不是公共知识，所以最好能够开发一些 DSL ，让大家简单的写一些“配置文件”，就能让自己关心的几个系统部署好。</p>
+
+<p>如何实现这些DSL呢？我要去吃晚饭了，明天接着说</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1050,116 +1102,6 @@ end</code></pre></noscript></div>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/">Ruby元编程读书笔记</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-31T21:14:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2012</time>
-        
-         | <a href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文记录在《ruby 元编程》这本书中学到的一些知识点。</p>
-
-<h1>对象模型</h1>
-
-<h2>class 关键字</h2>
-
-<p>这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 <code>open class</code></p>
-
-<h2>模块的实现</h2>
-
-<p>以下面的代码为例</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
-</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>实际情况下，ruby 将生成一个匿名类来封装模块 X ，在最终的继承链上，这个匿名类将在包含 X 的类 A 之上，这样，类 B 的继承链就是</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>B &lt; A &lt; X<span class="o">(</span>shadow<span class="o">)</span> &lt; Object &lt; Kernel<span class="o">(</span>shadow<span class="o">)</span> &lt; BasicObject
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h6>* 以上细节在 superclass 这个 api 上反映不出来，不过每个类可以调用自己的 ancestors 方法看到细节</h6>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">ancestors</span>
-</span><span class='line'>  <span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="p">,</span> <span class="no">Comparable</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h6>* 多个 include 的情况</h6>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
-</span><span class='line'><span class="k">module</span> <span class="nn">Y</span><span class="p">;</span><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
-</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'>    <span class="kp">include</span> <span class="n">Y</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">B</span><span class="o">.</span><span class="n">ancestors</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1175,6 +1117,10 @@ end</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/">持续集成中的缺环-2</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/">持续集成中的缺环(1.问题)</a>
       </li>
     
@@ -1188,10 +1134,6 @@ end</code></pre></noscript></div>
     
       <li class="post">
         <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/">OAuth 2.0 and the Road to Hell 中文版</a>
       </li>
     
   </ul>

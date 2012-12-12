@@ -9,13 +9,14 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="最近写代码是基于sinatra的，遇到了一点小问题
-在Gemfile中添加了sinatra和sinatra-contrib，但是实际使用中，sinatra-contrib没有被装入 1
+  <meta name="description" content="本文记录在《ruby 元编程》这本书中学到的一些知识点。 对象模型 class 关键字 这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 open class 模块的实现 以下面的代码为例 1
 2
 3
-# Gemfile
-gem &#39;sinatra&#39;
-gem &#39;sinatra- &hellip;">
+4
+5
+6
+7
+module X; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +83,116 @@ gem &#39;sinatra- &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/">Ruby元编程读书笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-31T21:14:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2012</time>
+        
+         | <a href="/blog/2012/05/31/rubyyuan-bian-cheng-du-shu-bi-ji/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文记录在《ruby 元编程》这本书中学到的一些知识点。</p>
+
+<h1>对象模型</h1>
+
+<h2>class 关键字</h2>
+
+<p>这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 <code>open class</code></p>
+
+<h2>模块的实现</h2>
+
+<p>以下面的代码为例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实际情况下，ruby 将生成一个匿名类来封装模块 X ，在最终的继承链上，这个匿名类将在包含 X 的类 A 之上，这样，类 B 的继承链就是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>B &lt; A &lt; X<span class="o">(</span>shadow<span class="o">)</span> &lt; Object &lt; Kernel<span class="o">(</span>shadow<span class="o">)</span> &lt; BasicObject
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>* 以上细节在 superclass 这个 api 上反映不出来，不过每个类可以调用自己的 ancestors 方法看到细节</h6>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'>  <span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="p">,</span> <span class="no">Comparable</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>* 多个 include 的情况</h6>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Y</span><span class="p">;</span><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>   <span class="nc">A</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="n">Y</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span>  <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">B</span><span class="o">.</span><span class="n">ancestors</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="no">Object</span><span class="p">,</span> <span class="no">Kernel</span><span class="p">,</span> <span class="no">BasicObject</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -830,6 +941,10 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/">持续集成中的缺环-2</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/">持续集成中的缺环(1.问题)</a>
       </li>
     
@@ -843,10 +958,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     
       <li class="post">
         <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/">OAuth 2.0 and the Road to Hell 中文版</a>
       </li>
     
   </ul>
