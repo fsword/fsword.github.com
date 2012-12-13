@@ -165,7 +165,7 @@
 <span class='line-number'>33</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : UTF-8 -*-</span>
 </span><span class='line'>
-</span><span class='line'><span class="c1"># 定义web server类型，可选值: apache, tengine</span>
+</span><span class='line'><span class="c1"># 定义web server类型，可选值: apache, nginx, tengine</span>
 </span><span class='line'><span class="c1"># web_server :apache</span>
 </span><span class='line'><span class="n">web_server</span> <span class="ss">:apache</span>
 </span><span class='line'>
@@ -201,7 +201,7 @@
 
 <p>真正的 DSL 应该比这个更强大一些，不过从这样开始应该不错。</p>
 
-<p>这个文件比较简单，唯一需要说明的是tengine，这是淘宝基于nginx扩展的一个开源项目，好事者可以看<a href="https://github.com/taobao/tengine">这里</a>。</p>
+<blockquote><p>硬广告：这个文件比较简单，唯一需要说明的是tengine，这是淘宝基于nginx扩展的一个开源项目，好事者可以看<a href="https://github.com/taobao/tengine">这里</a>。</p></blockquote>
 
 <p>用户通过这种方式说明自己的应用应该是怎样部署和工作的，其它事情交给工具。</p>
 
@@ -228,11 +228,11 @@
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="no">Dsl</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;web_server :nginx&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="err">设定</span><span class="n">web</span> <span class="n">server</span><span class="err">为</span><span class="n">nginx</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</pre></td><td class='code'><pre><code class='irb'><span class='line'><span class="go">1.9.3p327 :008 &gt; include Dsl</span>
+</span><span class='line'><span class="go"> =&gt; Object </span>
+</span><span class='line'><span class="go">1.9.3p327 :009 &gt; eval(&quot;web_server :nginx&quot;)</span>
+</span><span class='line'><span class="go">设定web server为nginx</span>
+</span><span class='line'><span class="go"> =&gt; nil </span>
 </span></code></pre></td></tr></table></div></figure>
 
 

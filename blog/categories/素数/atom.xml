@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 素数 | fsword's blog]]></title>
   <link href="http://fsword.github.com/blog/categories/素数/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-12-13T23:26:44+08:00</updated>
+  <updated>2012-12-13T23:35:30+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -32,7 +32,36 @@
 
 <p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
 最后的代码应该是这样<br/>
-{% gist 2905122 %}
+<div><script src='https://gist.github.com/2905122.js?file='></script>
+<noscript><pre><code>def prime n
+
+  full_list = (2..n).to_a
+  prime_list = []
+  stop_index = (n ** 0.5).floor
+  last_prime = 2
+  
+  while(last_prime &lt; stop_index)
+    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
+
+    last_prime = sublists.first.reduce() do |sum, i|
+      break i if i &gt; stop_index
+      workers.each{|cell| worker.filter_by(i)}
+      i
+    end
+    prime_list = prime_list.concat(workers.first.value)
+    full_list = workers[1..-1].map(&amp;:value).flatten
+  end
+  prime_list.concat(full_list.flatten)
+end
+
+def split_range total_num, concurrent_num
+  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
+end
+
+class Worker
+  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
+end</code></pre></noscript></div>
+
 执行结果：
 ```
 $ ruby prime_benchmark.rb</p>
@@ -83,7 +112,13 @@ $ ruby prime_benchmark.rb</p>
 <blockquote><p>上述解法其实是这个问题最古老（可能也是最高效）的方法——“<a href="http://zh.wikipedia.org/wiki/%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95">筛法</a>(<a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve of Eratosthenes</a>)”，是由古希腊数学家埃拉托斯特尼发明的</p></blockquote>
 
 <p>根据这些知识，我们可以写出ruby版的实现<br/>
-{% gist 2896832 %}
+<div><script src='https://gist.github.com/2896832.js?file='></script>
+<noscript><pre><code>def prime n
+  list = (2..n).to_a
+  (2...(n ** (0.5)).floor).each do |i|  list.delete_if{|e| e &gt; i &amp;&amp; e % i == 0} end
+  list
+end</code></pre></noscript></div>
+
 执行一下：
 <code>ruby
 1.9.3p194 :008 &gt; prime 100
@@ -92,7 +127,16 @@ $ ruby prime_benchmark.rb</p>
 成功!<br/>
 是不是很简单？但是且慢，算出来需要多久呢？要是几百万以内的素数，又需要多长时间呢？<br/>
 写一段代码验证一下（我们计算结束后不输出，这是为了避免大量数据输出对IO的压力）<br/>
-{% gist 2899473 %}
+<div><script src='https://gist.github.com/2899473.js?file='></script>
+<noscript><pre><code>require './prime.rb' # user defined function
+require 'benchmark'
+
+Benchmark.bm do |x| 
+  (4..6).each do |i|
+     x.report(10**i){ prime(10**i).last }
+  end
+end</code></pre></noscript></div>
+
 执行结果（修改了一下格式）——<br/>
 ```bash
 $ ruby prime_benchmark.rb</p>
