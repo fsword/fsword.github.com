@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2012-12-12T18:25:44+08:00</updated>
+  <updated>2012-12-13T13:58:05+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[持续集成中的缺环-3]]></title>
+    <link href="http://fsword.github.com/blog/2012/12/13/chi-xu-ji-cheng-zhong-de-que-huan-3/"/>
+    <updated>2012-12-13T13:45:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2012/12/13/chi-xu-ji-cheng-zhong-de-que-huan-3</id>
+    <content type="html"><![CDATA[<p>终于要讲到 DSL 了，其实这个话题我更加感兴趣一些 :-)</p>
+
+<p>我们首先应该从用户角度出发，看看用户写出来的 dsl 应该是什么样子，例如像一个配置文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : utf-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 定义web server类型，可选值: apache, tengine</span>
+</span><span class='line'><span class="c1"># web_server :apache</span>
+</span><span class='line'><span class="n">web_server</span> <span class="ss">:apache</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 定义应用服务器类型，可选值: tomcat, jboss</span>
+</span><span class='line'><span class="c1"># app_server :tomcat # option: jboss</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 申请数据库资源</span>
+</span><span class='line'><span class="c1"># from: 有时需要从已有的数据库中复制数据，from参数用于指明来源的数据库名称</span>
+</span><span class='line'><span class="n">db</span> <span class="ss">:from</span> <span class="o">=&gt;</span> <span class="s1">&#39;sample&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 设定源代码获取方式，目前仅支持git和svn两种</span>
+</span><span class='line'><span class="n">source</span> <span class="ss">:svn</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://svn.yourserver.com/branches/some_branch&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 设定安装包的来源，目前仅支持 rpm 包安装</span>
+</span><span class='line'><span class="c1"># 注意：如果设定了安装包，adsci将跳过build环境，此时source设定不会生效</span>
+</span><span class='line'><span class="n">pkg</span>   <span class="ss">:rpm</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yum.yourserver.com/your_package.rpm&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 设定 mock hsf 服务，指定的 hsf 服务将用 mock 支持</span>
+</span><span class='line'><span class="n">mock</span> <span class="ss">:hsf</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;uic.core.1.0.0&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 设定所依赖的其它 profile ，需要在指定 profile 的服务/应用启动后再启动</span>
+</span><span class='line'><span class="n">after</span> <span class="ss">:portal</span>  <span class="k">do</span>
+</span><span class='line'>  <span class="err">在指定的</span> <span class="n">profile</span> <span class="err">（这个例子中是</span> <span class="n">portal</span> <span class="err">应用）中添加</span> <span class="n">url</span> <span class="n">rewrite</span> <span class="err">规则</span>
+</span><span class='line'>  <span class="n">rewrite</span> <span class="ss">:for</span> <span class="o">=&gt;</span> <span class="ss">:me</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 设定依赖的其它 profile ，不考虑启动顺序</span>
+</span><span class='line'><span class="n">after</span> <span class="ss">:portal</span>  <span class="k">do</span>
+</span><span class='line'>  <span class="n">route</span> <span class="ss">:for</span> <span class="o">=&gt;</span> <span class="ss">:me</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>真正的 DSL 应该比这个更强大一些，不过从这样开始应该不错。</p>
+
+<p>这个文件比较简单，唯一需要说明的是tengine，这是淘宝基于nginx扩展的一个开源项目，好事者可以看<a href="https://github.com/taobao/tengine">这里</a>。</p>
+
+<p>用户通过这种方式说明自己的应用应该是怎样部署和工作的，其它事情交给工具。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[持续集成中的缺环-2]]></title>
@@ -32,7 +118,7 @@
 
 <p>接下来要做什么？我们现在仅仅用脚本驱动了起来，而ruby语言在我们这个团队中并不是公共知识，所以最好能够开发一些 DSL ，让大家简单的写一些“配置文件”，就能让自己关心的几个系统部署好。</p>
 
-<p>如何实现这些DSL呢？我要去吃晚饭了，明天接着说</p>
+<p>如何实现这些DSL呢？明天接着说</p>
 ]]></content>
   </entry>
   
@@ -1252,51 +1338,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
 
 
 <p>have fun!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[fixture使用时需要注意的问题]]></title>
-    <link href="http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/"/>
-    <updated>2012-03-04T17:47:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti</id>
-    <content type="html"><![CDATA[<p>单测时不太顺利，主要是fixture使用不熟悉，记录两个问题</p>
-
-<p>bug 1：经过定位发现是fixture数据始终不能灌入导致的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>machine1:
-</span><span class='line'>  id: 1
-</span><span class='line'>  app_id: 1
-</span><span class='line'>machine1:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1</span></code></pre></td></tr></table></div></figure>
-
-
-<p>期望有两条数据，实际只有一条，原因是在rspec灌数据时装载yml，而这里的数据是个hash，结果key相同（都是“machine1”）的entry被覆盖了，后一条被装入。  <br/>
-解决办法是：<code>检查并修改重名的fixture条目，确保不冲突</code></p>
-
-<p>bug 2：经过定位发现是fixture数据导入时，某个条目出错</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>something:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1
-</span><span class='line'>  name: package
-</span><span class='line'>  expression: 1,2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的 expression 值期望为字符串 <code>1,2</code> ，然而最后总是变成 <code>12</code>，后来才发现是格式问题，对于,这种特殊字符，不能省略字符串的双引号，改为 &#8220;1,2&#8221;  <br/>
-解决办法是：<code>检查并修改fixture条目中的格式特别的字符串，确保使用双引号包含</code></p>
 ]]></content>
   </entry>
   

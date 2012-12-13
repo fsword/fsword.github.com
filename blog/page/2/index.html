@@ -9,14 +9,12 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="本文记录在《ruby 元编程》这本书中学到的一些知识点。 对象模型 class 关键字 这个关键字更象是一个作用域操作符而不是类型声明语句，它的核心任务是将代码带到类的上下文中，可以从这个角度理解 open class 模块的实现 以下面的代码为例 1
+  <meta name="description" content="Ruby China 上有人提了一个问题： 1
 2
 3
 4
-5
-6
-7
-module X; &hellip;">
+class Test &lt; Module; end
+test = Test.new test到底是个神马玩意？ 这个问题的回答首先要看看Ruby的对象/类层次设计，如下图（ &lt;= 表示泛化，&lt;- 表示继承）： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +81,111 @@ module X; &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun/">关于Class/Module的讨论</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-02T11:46:00+08:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/02/guan-yu-class-slash-modulede-tao-lun/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ruby China 上有人提了一个问题：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Test &lt; Module; end
+</span><span class='line'>test = Test.new
+</span><span class='line'>
+</span><span class='line'>test到底是个神马玩意？</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个问题的回答首先要看看Ruby的对象/类层次设计，如下图（ &lt;= 表示泛化，&lt;- 表示继承）：</p>
+
+<pre><code>user_instance &lt;= UserClass &lt; Class &lt; Module &lt; Object &lt; BasicObject
+                             |  |      |         |
+                             |   &lt;=====          |
+                              &lt;==================
+</code></pre>
+
+<p>显然，Class是Module的子类，所以一般由用户创建的class都是Class的实例，也就是Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">002</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Class</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">003</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但如果一个类继承了 Class或者Module，那么它理论上应该是Class/Module的子类，其实例才是Class/Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">A</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">002</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">X</span> <span class="o">&lt;</span> <span class="no">Module</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">003</span> <span class="o">&gt;</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">false</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">004</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有个不太好理解的地方，X本身是继承了Module，所以是Module的子类，但是它又是用class关键字创建的，所以它还是Class的实例，换句话说，X和X.new都是Module的实例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">005</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Module</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，合理的推论是，如果用户定义一个类是继承自Class，也会出现上述的情况，不过这一点从语法上已经被排除了——ruby禁止直接继承Class，可是并不反对继承Class的父类Module，这就是导致这个问题复杂的原因</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -852,81 +955,9 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/">Fixture使用时需要注意的问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-04T17:47:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/03/04/fixtureshi-yong-shi-xu-yao-zhu-yi-de-wen-ti/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>单测时不太顺利，主要是fixture使用不熟悉，记录两个问题</p>
-
-<p>bug 1：经过定位发现是fixture数据始终不能灌入导致的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>machine1:
-</span><span class='line'>  id: 1
-</span><span class='line'>  app_id: 1
-</span><span class='line'>machine1:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1</span></code></pre></td></tr></table></div></figure>
-
-
-<p>期望有两条数据，实际只有一条，原因是在rspec灌数据时装载yml，而这里的数据是个hash，结果key相同（都是“machine1”）的entry被覆盖了，后一条被装入。  <br/>
-解决办法是：<code>检查并修改重名的fixture条目，确保不冲突</code></p>
-
-<p>bug 2：经过定位发现是fixture数据导入时，某个条目出错</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>something:
-</span><span class='line'>  id: 2
-</span><span class='line'>  app_id: 1
-</span><span class='line'>  name: package
-</span><span class='line'>  expression: 1,2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的 expression 值期望为字符串 <code>1,2</code> ，然而最后总是变成 <code>12</code>，后来才发现是格式问题，对于,这种特殊字符，不能省略字符串的双引号，改为 &#8220;1,2&#8221;  <br/>
-解决办法是：<code>检查并修改fixture条目中的格式特别的字符串，确保使用双引号包含</code></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -939,6 +970,10 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/chi-xu-ji-cheng-zhong-de-que-huan-3/">持续集成中的缺环-3</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/">持续集成中的缺环-2</a>
@@ -954,10 +989,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     
       <li class="post">
         <a href="/blog/2012/12/05/mo-kuai-de-shi-yong/">模块的使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a>
       </li>
     
   </ul>
