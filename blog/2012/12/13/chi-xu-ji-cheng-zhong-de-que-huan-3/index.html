@@ -9,7 +9,7 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="终于要讲到 DSL 了，其实这个话题我更加感兴趣一些 :-) 我们首先应该从用户角度出发，看看用户写出来的 dsl 应该是什么样子，例如像一个配置文件： 1
+  <meta name="description" content="终于要讲到 DSL 了，其实这个话题我更加感兴趣一些，这也是ruby的强项 :-) 我们首先应该从用户角度出发，看看用户写出来的 dsl 应该是什么样子，例如像一个配置文件： 1
 2
 3
 4
@@ -31,11 +31,7 @@
 20
 21
 22
-23
-24
-25
-26
-27 &hellip;">
+23 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -130,7 +126,7 @@
   </header>
 
 
-<div class="entry-content"><p>终于要讲到 DSL 了，其实这个话题我更加感兴趣一些 :-)</p>
+<div class="entry-content"><p>终于要讲到 DSL 了，其实这个话题我更加感兴趣一些，这也是ruby的强项 :-)</p>
 
 <p>我们首先应该从用户角度出发，看看用户写出来的 dsl 应该是什么样子，例如像一个配置文件：</p>
 
@@ -167,7 +163,7 @@
 <span class='line-number'>31</span>
 <span class='line-number'>32</span>
 <span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : utf-8 -*-</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : UTF-8 -*-</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1"># 定义web server类型，可选值: apache, tengine</span>
 </span><span class='line'><span class="c1"># web_server :apache</span>
@@ -188,11 +184,11 @@
 </span><span class='line'><span class="n">pkg</span>   <span class="ss">:rpm</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://yum.yourserver.com/your_package.rpm&#39;</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1"># 设定 mock hsf 服务，指定的 hsf 服务将用 mock 支持</span>
-</span><span class='line'><span class="n">mock</span> <span class="ss">:hsf</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;uic.core.1.0.0&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="n">mock</span> <span class="ss">:service</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;myservice.core.1.0.0&#39;</span><span class="o">]</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1"># 设定所依赖的其它 profile ，需要在指定 profile 的服务/应用启动后再启动</span>
 </span><span class='line'><span class="n">after</span> <span class="ss">:portal</span>  <span class="k">do</span>
-</span><span class='line'>  <span class="err">在指定的</span> <span class="n">profile</span> <span class="err">（这个例子中是</span> <span class="n">portal</span> <span class="err">应用）中添加</span> <span class="n">url</span> <span class="n">rewrite</span> <span class="err">规则</span>
+</span><span class='line'>  <span class="c1"># 在指定的 profile （这个例子中是 portal 应用）中为当前节点添加 url rewrite 规则</span>
 </span><span class='line'>  <span class="n">rewrite</span> <span class="ss">:for</span> <span class="o">=&gt;</span> <span class="ss">:me</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
@@ -208,6 +204,119 @@
 <p>这个文件比较简单，唯一需要说明的是tengine，这是淘宝基于nginx扩展的一个开源项目，好事者可以看<a href="https://github.com/taobao/tengine">这里</a>。</p>
 
 <p>用户通过这种方式说明自己的应用应该是怎样部署和工作的，其它事情交给工具。</p>
+
+<p>实现DSL最常见的做法就是把DSL语句变成一个函数，然后在定义函数的上下文中eval用户的脚本，比如一个最简单的语法<code>web_server :apache</code>，
+可以这么写——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Dsl</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">web_server</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;设定web server为</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行结果——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="no">Dsl</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;web_server :nginx&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="err">设定</span><span class="n">web</span> <span class="n">server</span><span class="err">为</span><span class="n">nginx</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这就是最简单的配置项。<br/>
+但是这样做有什么意义呢？我们可以这样修改一下 Dsl 的代码——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : UTF-8 -*-</span>
+</span><span class='line'><span class="c1"># 文件名 dsl.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Dsl</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">web_server</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">name</span> <span class="o">==</span> <span class="ss">:apache</span>
+</span><span class='line'>      <span class="sb">`sudo /etc/init.d/httpd start`</span>
+</span><span class='line'>    <span class="k">elsif</span> <span class="nb">name</span> <span class="o">==</span> <span class="ss">:nginx</span>
+</span><span class='line'>      <span class="sb">`sudo /etc/init.d/nginx start`</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s1">&#39;抱歉，目前不支持这种 web server&#39;</span>
+</span><span class='line'>      <span class="k">return</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;启动 </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样也把eval的内容存为文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : UTF-8 -*-</span>
+</span><span class='line'><span class="c1"># 文件名 myapp</span>
+</span><span class='line'><span class="n">web_server</span> <span class="ss">:nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后编写一个装载脚本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : UTF-8 -*-</span>
+</span><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'><span class="c1"># 文件名 run.rb</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./nx</span>
+</span><span class='line'><span class="s1">dsl&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kp">include</span> <span class="no">Dsl</span>
+</span><span class='line'><span class="nb">eval</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+执行一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">run</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="o">[</span><span class="n">sudo</span><span class="o">]</span> <span class="n">password</span> <span class="k">for</span> <span class="n">john</span><span class="p">:</span>
+</span><span class='line'><span class="err">启动</span> <span class="n">nginx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就完成了一个最简单的 dsl 样例，在这个样例中，我们通过一个关键词 <code>web_server</code> 驱动了逻辑</p>
 </div>
 
 
