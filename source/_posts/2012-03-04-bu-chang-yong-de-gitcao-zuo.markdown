@@ -53,4 +53,7 @@ git fetch origin
 git reset --hard origin/master
 ```
 
+## git checkout acfc7ea462fa6f4425be251c2076d10a5fbde0ba images/old\_way\_new\_way.\*
+说明：部分恢复。当我们修改很多次之后，可能想恢复之前某个commit时的某个或者某些文件，本命令就提供了这个支持
+
 have fun!
