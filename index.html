@@ -23,10 +23,11 @@
   <link rel="canonical" href="http://fsword.github.com">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -1119,7 +1120,7 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
 <p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
 最后的代码应该是这样</p>
 
-<div><script src='https://gist.github.com/2905122.js?file='></script>
+<div><script src='https://gist.github.com/2905122.js'></script>
 <noscript><pre><code>def prime n
 
   full_list = (2..n).to_a
@@ -1217,10 +1218,8 @@ end</code></pre></noscript></div>
     <li class="loading">Status updating&#8230;</li>
   </ul>
   
-  <a href="https://github.com/fsword">@fsword</a> on GitHub
-  
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -1231,8 +1230,8 @@ end</code></pre></noscript></div>
 
         github.showRepos({
             user: 'fsword',
-            count: 2,
-            skip_forks: true,
+            count: 4,
+            skip_forks: false,
             target: '#gh_repos'
         });
     });
@@ -1270,7 +1269,7 @@ end</code></pre></noscript></div>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - fsword -
+  Copyright &copy; 2013 - fsword -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -27,10 +27,11 @@ parse_git_branch() { git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's &helli
   <link rel="canonical" href="http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -224,10 +225,8 @@ parse_git_branch() { git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's &helli
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fsword">@fsword</a> on GitHub
-  
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -238,8 +237,8 @@ parse_git_branch() { git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's &helli
 
         github.showRepos({
             user: 'fsword',
-            count: 2,
-            skip_forks: true,
+            count: 4,
+            skip_forks: false,
             target: '#gh_repos'
         });
     });
@@ -278,7 +277,7 @@ parse_git_branch() { git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's &helli
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - fsword -
+  Copyright &copy; 2013 - fsword -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

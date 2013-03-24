@@ -33,10 +33,11 @@ $ git branch -a
   <link rel="canonical" href="http://fsword.github.com/blog/page/3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -201,6 +202,15 @@ $ git branch -a
 </span><span class='line'>git reset --hard origin/master</span></code></pre></td></tr></table></div></figure>
 
 
+<h2>git checkout [COMMIT_ID] [FILE_PATH]</h2>
+
+<p>说明：部分恢复。当我们修改很多次之后，可能想恢复之前某个commit时的某个或者某些文件，本命令就提供了这个支持。
+使用举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git checkout acfc7ea462fa6f4425be251c2076d10a5fbde0ba images/old_way_new_way.*</span></code></pre></td></tr></table></div></figure>
+
+
 <p>have fun!</p>
 </div>
   
@@ -326,10 +336,8 @@ $ git branch -a
     <li class="loading">Status updating&#8230;</li>
   </ul>
   
-  <a href="https://github.com/fsword">@fsword</a> on GitHub
-  
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -340,8 +348,8 @@ $ git branch -a
 
         github.showRepos({
             user: 'fsword',
-            count: 2,
-            skip_forks: true,
+            count: 4,
+            skip_forks: false,
             target: '#gh_repos'
         });
     });
@@ -379,7 +387,7 @@ $ git branch -a
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - fsword -
+  Copyright &copy; 2013 - fsword -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
