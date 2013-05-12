@@ -5,21 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>erlang环境安装FAQ - fsword's blog</title>
+  <title>Category: ruby语言 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="如何添加 wx 支持 erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-1&gt; reltool:start(). =ERROR REPORT==== &hellip;">
+  <meta name="description" content="Category: ruby语言">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -28,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq">
+  <link rel="canonical" href="http://fsword.github.comblog/categories/rubyyu-yan">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -86,135 +76,36 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">erlang环境安装FAQ</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-09T15:46:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
+    <h1 class="entry-title">Category: Ruby语言</h1>
     
   </header>
-
-
-<div class="entry-content"><h3>如何添加 wx 支持</h3>
-
-<p>erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1&gt; reltool:start().
-</span><span class='line'>
-</span><span class='line'>=ERROR REPORT==== 9-Dec-2012::15:28:51 ===
-</span><span class='line'>ERROR: Could not find 'wxe_driver.so' in: /home/john/software/otp/lib/erlang/lib/wx-0.99.1/priv
-</span><span class='line'>** exception exit: {load_driver,"No driver found"}
-</span><span class='line'>     in function  wxe_server:start/0 (wxe_server.erl, line 64)
-</span><span class='line'>         in call from wx:new/1 (wx.erl, line 99)
-</span><span class='line'>         in call from reltool_sys_win:do_init/1 (reltool_sys_win.erl, line 140)
-</span><span class='line'>         in call from reltool_sys_win:init/1 (reltool_sys_win.erl, line 130)
-</span><span class='line'>         in call from proc_lib:init_p_do_apply/3 (proc_lib.erl, line 227)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有经验的人一般会尝试自己编译erlang环境，但可能会发现编译时找不到wx库。实际上，ubuntu环境一般确实会安装 libwxgtk2.8-dev 这个包，但是需要添加一个 link （参考<a href="http://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu">官方说明</a>）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/include
-</span><span class='line'>sudo ln -sv wx-2.8/wx wx</span></code></pre></td></tr></table></div></figure>
-
-
-<p>另外，提醒一下，你可以在 configure 阶段验证是否支持 wx ，方法是看是否有下面的输出：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>checking for debug build of wxWidgets... checking for wx-config... /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=yes)... no
-</span><span class='line'>checking for standard build of wxWidgets... checking for wx-config... (cached) /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=no)... yes (version 2.8.12)</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2013</h2>
 
-
-<time datetime="2012-12-09T15:46:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
+<article>
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/" data-via="" data-counturl="http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/" >Tweet</a>
-  
-  
-  
-</div>
+<h1><a href="/blog/2013/04/02/rubywei-shi-yao-hui-you-eigenclass/">ruby为什么会有eigenclass</a></h1>
+<time datetime="2013-04-02T21:00:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>02</span> <span class='year'>2013</span></time>
 
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2012/12/05/mo-kuai-de-shi-yong/" title="Previous Post: 模块的使用">&laquo; 模块的使用</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/" title="Next Post: 持续集成中的缺环-1">持续集成中的缺环-1 &raquo;</a>
-      
-    </p>
-  </footer>
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/rubyyu-yan/'>ruby语言</a></span>
+</footer>
+
+
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -316,10 +207,7 @@
       var disqus_shortname = 'fswordsblog';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
