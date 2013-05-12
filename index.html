@@ -9,7 +9,9 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="论坛上有人问了一个问题——在ruby语言中，为什么会有eigenclass这种设计？后面有各种回答，有的还相当不错，比如这个。我也想写一篇凑数，也是帮自己理清思路。 要回答好这个问题很不容易，我们也许可以从零开始，重新发明一遍ruby的对象模型看看？ ruby是面向对象语言， &hellip;">
+  <meta name="description" content="昨天我用了很罗嗦的语言解释了一个简单的 DSL 例子，这是为了方便讲述后面的内容，那个例子是典型的“麻雀虽小，五脏俱全”，回想起来，它至少包含了这么几样—— * 一个 DSL 解释脚本(dsl.rb)
+* 一个装载脚本(run.rb)
+* 使用 DSL 编写的文件(myapp) 这么继续演化下去， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,106 +79,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/02/rubywei-shi-yao-hui-you-eigenclass/">Ruby为什么会有eigenclass</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-02T21:00:00+08:00" pubdate data-updated="true">Apr 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/02/rubywei-shi-yao-hui-you-eigenclass/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>论坛上有人问了一个问题——<a href="http://ruby-china.org/topics/9586">在ruby语言中，为什么会有eigenclass这种设计？</a>后面有各种回答，有的还相当不错，比如<a href="http://ruby-china.org/topics/9586#reply10">这个</a>。我也想写一篇凑数，也是帮自己理清思路。</p>
-
-<p>要回答好这个问题很不容易，我们也许可以从零开始，重新发明一遍ruby的对象模型看看？</p>
-
-<p>ruby是面向对象语言，所谓对象和类一般会是这样——<br/>
-<img src="./images/my_thing.png" alt="" /><br/>
-很简单，是不是？别急，我们要给对象（object）和类（class）加上一些要求——<br/>
-1. 所有的对象都有自己所属的类<br/>
-2. 所有的类都有父类，除了顶级父类（BasicObject）<br/>
-3. 类本身也是对象<br/>
-4. 最后——麻烦来了，根据(3)，所有的类都是对象，再根据(1)，这些<strong>类</strong>(作为对象)<strong>都要有自己所属的类</strong></p>
-
-<p>文字很枯燥，我们用代码来演示</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">irb</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">001</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Fixnum</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">002</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="nb">Integer</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">003</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Numeric</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">004</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">005</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">BasicObject</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Object</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="no">Fixnum</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Class</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="no">Object</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Class</span>
-</span><span class='line'><span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="n">dev</span> <span class="p">:</span><span class="mo">010</span> <span class="o">&gt;</span> <span class="no">Class</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Object</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="kp">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们把module也加上，画成一张图就是这样——<br/>
-<img src="./images/object_class.png" alt="" /></p>
-
-<p>现在让我们考虑一下，这样的对象和类的模型应该如何实现&#8230;&#8230;</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -1173,6 +1075,106 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/10/ru-he-qiu-su-shu-2/">如何求素数(2)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/10/ru-he-qiu-su-shu-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。<br/>
+要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。回头看筛法的计算过程，主要工作包括两个：选择除数和用除数过滤数列。选择除数是从小到大顺序进行，不能并行，而用除数过滤数列则是各自独立，所以能够并行。<br/>
+我们并行的方式来变换原来的算法。大致思路如下——</p>
+
+<pre><code>1. 生成待过滤的数列
+2. 根据并行数目将数列均匀切分，得到若干子数列
+3. 从小到大循环除数，对每一个除数
+    3.1. 并行同时过滤上述多个子数列
+    3.2. 过滤N的平方根后停止循环
+4. 连接所有子数列，输出最后的结果
+</code></pre>
+
+<p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
+最后的代码应该是这样</p>
+
+<div><script src='https://gist.github.com/2905122.js'></script>
+<noscript><pre><code>def prime n
+
+  full_list = (2..n).to_a
+  prime_list = []
+  stop_index = (n ** 0.5).floor
+  last_prime = 2
+  
+  while(last_prime &lt; stop_index)
+    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
+
+    last_prime = sublists.first.reduce() do |sum, i|
+      break i if i &gt; stop_index
+      workers.each{|cell| worker.filter_by(i)}
+      i
+    end
+    prime_list = prime_list.concat(workers.first.value)
+    full_list = workers[1..-1].map(&amp;:value).flatten
+  end
+  prime_list.concat(full_list.flatten)
+end
+
+def split_range total_num, concurrent_num
+  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
+end
+
+class Worker
+  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
+end</code></pre></noscript></div>
+
+
+<p>执行结果：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby prime_benchmark.rb 
+</span><span class='line'>    user     system      total        real
+</span><span class='line'>    10000   0.050000    0.000000   0.050000 (  0.048889)
+</span><span class='line'>    100000  0.650000    0.000000   0.650000 (  0.649779)
+</span><span class='line'>    1000000 39.810000   0.050000  39.860000 ( 39.961506</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在我的4核机器上改进很明显。</p>
+
+<p><code>注意：之前的代码还有一个遗留问题，被过滤掉的数字其实不用再来做除数，而现在这个版本因为要重新切分数列，所以有机会减少这个浪费，这也是速度明显提升的原因</code></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1188,10 +1190,6 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/04/02/rubywei-shi-yao-hui-you-eigenclass/">ruby为什么会有eigenclass</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2012/12/14/chi-xu-ji-cheng-zhong-de-que-huan-4/">持续集成中的缺环-4</a>
       </li>
     
@@ -1205,6 +1203,10 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
     
       <li class="post">
         <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan/">持续集成中的缺环-1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/">erlang环境安装FAQ</a>
       </li>
     
   </ul>
