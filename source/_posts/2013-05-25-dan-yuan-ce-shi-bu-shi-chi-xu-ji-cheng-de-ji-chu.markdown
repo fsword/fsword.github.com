@@ -11,106 +11,44 @@ categories:
 为避免误解，首先明确一下名词(虽然没有照抄书本，但是应该不会差太远吧)：
 
 * 单元测试：以验证某个代码单元的正确性为目标进行的自动化测试活动，“代码单元”通常是函数、方法或者是类，测试过程中，目标单元对外部的编译或者功能依赖由stub或者mock技术进行隔离。
-* 持续集成：一种敏捷实践，重点是尽早进行系统的集成测试，“持续”一般被理解为不断的对研发变更进行整体验证，“集成”通常包括对分支的集成（因此一般推荐单分支开发）和在一定条件下对不同子系统或者模块进行的集成。
+* 持续集成：一种敏捷实践，重点是尽早进行系统的集成测试，它在狭义上包括部署自动化和测试自动化。“持续”一般被理解为不断的对研发变更进行整体验证，“集成”通常包括对分支的集成（因此一般推荐单分支开发）和在一定条件下对不同子系统或者模块进行的集成。
 
 可以看出，单元测试针对的目标是局部而非整体，而持续集成面对的是整体。按照“饭要一口一口吃”的老话，似乎应该先做单元测试。
 
-然而单元测试并不是免费的，任何自动化测试都是基于测试目标的功能而实现的，此时测试目标的稳定性就是影响自动化测试价值的一个重要因素，而作为粒度较小的类、方法和函数，业务上的变化对它的影响可能是天翻地覆的。
+然而单元测试并不是免费的。任何自动化测试都是基于测试目标的功能而实现，因此，测试目标的稳定性就变成了测试价值的一个重要因素——时常发生变化的代码，对其做自动化测试是不划算的。那么，单元测试所针对那些小粒度的类、方法和函数，它们变化剧烈吗？
 
-举个例子：
-```java
-@Controller
-public class UserProfileAdminController {
-    ...
-    @RequestMapping(method = { RequestMethod.POST, RequestMethod.GET }, value = "/admin/profiledata")
-    public ModelAndView getProfileData(HttpServletRequest request) {
-        ...
-        mv.addObject("memCacheValue", gUserProfileManager.getProfileValue(uKey));
-        ...
-    }
-    ...
-}
+这可能和软件系统的类型有关。例如，如果我们是在开发一个短信发送客户端，由于所遵循的SMGP协议本身是相对稳定的，网络相关的功能单元就是稳定的；然而，如果我们开发一个应用系统（比如各种大大小小的互联网应用），业务上的变化可能对下层的模型代码产生天翻覆地的影响。考虑到大部分的软件研发团队和研发工程师们所处理的都是基于数据库+web的应用系统，我们所遇到的场景很可能是后一种情况。
 
-public abstract class AbstractUserProfileManager implements UserProfileManager {
-    ...
-    @Override
-    public String getProfileValue(String key) {
-        return getProfileValue(key, persistent);
-    }
-    private String getProfileValue(String key, boolean persistent) {
-        return userProfileDal.getItem(keyTransfer(key, false), persistent);
-    }
-    ...
-}
+去年我所在的团队推进质量改进时我们就发现了这个规律，当时我们首先推进的就是单元测试，虽然我强调“自动化测试”而非单元测试，但是开发同事们都很自然把精力放到了单元测试上。在一段时间的热心实施以后，一些人开始出现不同的声音——“有些测试刚写好，业务就发生了变化，不得不完全抛弃，瞎耽误时间”。问题显然不是同事们不尽责，我们分析发现，因为单元测试用例过于关注细节，业务变化的情况下很难进行积累，再继续下去会出现“边际效益递减”的情况，而如果开始做持续集成方面的工作，则可以补充自动化的集成用例——它相对稳定。
 
-public class UserProfileDalImpl implements UserProfileDal {
-    ...
-    @ReadThroughSingleCache(namespace = NS, expiration = EXPIRATION)
-    public String getItem(@ParameterValueKeyProvider String key, boolean persistent) {
-        if (persistent) {
-            MemObj memObj = memObjDao.getMemObj(key);
-            return (memObj == null) ? null : memObj.getObj();
-        } else {
-            return null;
-        }
-    }
-    ...
-}
-```
+除此之外，单元测试还有一个常见的问题：mock的代价。
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="dao.mybatis.common.MemObjDao">
-    <select id="getMemObj" resultMap="MEM_OBJ" parameterType="String">
-        select
-        ID,
-        OBJ,
-        GMT_CREATE,
-        GMT_MODIFIED
-        FROM AO_MEM_OBJ
-        WHERE id = #{value}
-    </select>
-```
-出于对SQL精细控制的要求，这个项目使用了ibatis来处理数据库访问，而这样的代码，基本上都是在各个层次上传递请求，对DAO层的测试和对Controller的测试几乎是完全重叠的。实际项目中，我们也曾遇到
+几年前ThoughtWorks的李晓有过一篇[不要把Mock当作你的设计利器](http://blog.sina.com.cn/s/blog_700820800100n2oh.html)，[这里](http://www.iteye.com/topic/21630)还有gigix转述郭晓的观点——
 
-而且，这方面的测试一般要验证查询的各返回字段的，而需求上的变动一般会直接从controller影响到数据库表结构，也就是说，之前的测试代码，从controller到DAO全都要改动，这样剧烈变化的测试代码，其自动化的收益就大打折扣了。
+    I did have some doubts about using Mocks when i was programming, similar 
+    reasons - too hard to refactory, too brittle. And i total agree with the 
+    three places to use it - external resources (I/O), UI, third party API.
 
-的一个典型的成本就是mock/stub。
+也许有人觉得这里的观点有些“极端”（好像中国人对“极端”是比较敏感的 :-D ），然而我们在实际工作中很容易感受到上述文章和引论所说的痛点。这里存在两个方面的问题——
 
-几年前有过一篇[不要把Mock当作你的设计利器]()，我查了一下，作者是ThoughtWorks的李晓，这里还有gigix转述的当时ThoughtWorks中国公司总经理郭晓的观点——
+* 对变化不友好：一旦我们进行了mock，就在事实上建立了对外部变化的“屏障”——每次发生变化时都有可能忘记了被mock掉的“结合点”，即使记得，也增加了重构的成本，时间一长，维护mock代码就变成了一件苦差事
+* 推迟集成：有了mock以后，我们可以很容易就建立起自动化验证机制。但是错误往往在于疏忽——mock掉的那个东西，未来需要使用“真实的东西“再测一遍，这不止增加了测试成本，而且还会在前期给人以“系统没问题”的错觉
 
-```
-I did have some doubts about using Mocks when i was programming, similar reasons - too hard to refactory, too brittle. And i total agree with the three places to use it - external resources (I/O), UI, third party API.
-```
+顺便说一句，这些问题在stub中也是类似的，mock和stub还有一些差异，但是这里就不涉及了。
 
-我们在实际工作中很容易感受到上述文章和引论所说的痛点。无论是mock还是stub，都存在两个方面的问题——
+对于这些分析，[路宁同学](http://weibo.com/luning12) 的一个简单易用的观点是：“不对自己开发的模块写mock”，这个很好理解，因为自己开发的模块可以直接用“真家伙”，那么“假李鬼”也就用不着了。
 
-* 对变化不友好：一旦我们进行了mock/stub，就在事实上建立了对外部变化的“屏障”，
-* 推迟集成：
-* 重复：
+我们是否可以沿着这个思路继续推进呢？实际上，之所以要区分“自己的模块”，是因为“自己的模块”好合作（自己和自己当然好合作），那么在我们推进持续集成以后呢？
 
-从Martin Fowler的那篇 [mock aren't stubs](http://martinfowler.com/articles/mocksArentStubs.html) 开始，很多人都讨论过这些机制，这里就不废话了，我们关注的是——它们的成本。
+持续集成，表面上看是在做部署自动化和测试自动化。然而这个实践的一个重要价值是“弥合缺口”——通过持续的将版本控制系统的多个分支合并到一个分支上，避免了分之间的鸿沟越来越大；通过持续的将系统的各个部分完整的部署在一起进行自动化联调和系统测试，避免了子系统与子系统、模块与模块之间的衔接隔阂。
 
-简单来说，mock实现简单，关注外部对象的行为将连贯的软件功能分割成了不同的部分
+    前者好理解，后者一般容易被忽视，我们知道，某些语言特性和框架也试图解决这种系统和模块边界
+    的衔接问题，例如java的interface，它就是设计来建立系统间协作接口的。然而真实的世界很难用
+    interface这类技术进行约束，即使实现了同样的interface，我们也不确定边界两边都遵守共同的约
+    束，能让我们放心的只有联调和系统测试。
 
-通常，软件开发是一个不断切分的过程——面对一个领域，首先识别目标用户粗略的需求，然后开始切分，通过需求分析和各个层面的设计，我们明确了系统、模块、类和函数，所以一般是这样的结构——
+显然，在我们推进持续集成的工作并通过这个工作不断的“弥合缺口”以后，那些之前不得不mock掉的所谓“别人的模块”甚至“外部的子系统”也就不再变得遥不可及而难以合作了。于是，我们惊喜的发现——mock变得可以省略了，随着持续集成的推进，一些原来不得不编写的mock可以直接用“真家伙”代替，而原来所倚仗的单元测试用例也随之变成了集成用例、联调用例......
 
-![](./images/software_layer2.png)
+所以，单元测试并不是集成测试的基础。实际上，往往是持续集成扩展了质量保障的手段和方式，并因此减弱了单元测试的压力，从此我们可以专注在必要的单元测试用例上了。
 
-有些语言或者框架没有`类`、`方法`的机制，但是无论如何，“整体功能由各部分组合实现”的特点都是一样的，这个图可以去掉文字说明。
-
-从这个角度看，所谓测试，就是对这些软件单元进行确认和验证。然而，不同层次下，验证（或者说测试）的成本和收益是不同的：
-
-![](./images/software_layer.png)
-
-去年我所在的团队推进质量改进时我们就发现了这个规律，当时我们首先推进的就是单元测试，虽然我强调“自动化测试”而非单元测试，但是开发同事们都很自然把精力放到了单元测试上，于是，在一段时间的热心实施以后，一些人开始出现不同的声音——“有些测试没用，发现不了问题，瞎耽误时间”
-
-比如下面的例子：  
-
-实践中工程师很容易发现这个问题，于是我们很快形成了一个原则——DAO层不测试，直接用Service的测试用例来覆盖DAO层的逻辑分支。
-
-
-
-讨论持续集成对旧的单元测试思路的冲击和影响
-包括在java、ruby、erlang等不同技术团队中的实践总结
+如果你的团队做单元测试不是很给力，可以先找找原因，如果不是大家的主观意愿问题，不妨和持续集成的工作一起推进吧
