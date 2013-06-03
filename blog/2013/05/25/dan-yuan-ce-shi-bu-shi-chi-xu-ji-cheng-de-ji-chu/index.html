@@ -132,7 +132,7 @@ reasons - too hard to refactory, too brittle. And i total agree with the
 three places to use it - external resources (I/O), UI, third party API.
 </code></pre>
 
-<p>也许有人觉得这里的观点有些“极端”（好像中国人对“极端”是比较敏感的 :-D ），然而我们在实际工作中很容易感受到上述文章和引论所说的痛点。无论是mock还是stub，都存在两个方面的问题——</p>
+<p>也许有人觉得这里的观点有些“极端”（好像中国人对“极端”是比较敏感的 :-D ），然而我们在实际工作中很容易感受到上述文章和引论所说的痛点。这里存在两个方面的问题——</p>
 
 <ul>
 <li>对变化不友好：一旦我们进行了mock，就在事实上建立了对外部变化的“屏障”——每次发生变化时都有可能忘记了被mock掉的“结合点”，即使记得，也增加了重构的成本，时间一长，维护mock代码就变成了一件苦差事</li>
