@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-03T00:20:06+08:00</updated>
+  <updated>2013-06-03T09:38:37+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[单元测试不是持续集成的基础(1)]]></title>
+    <title type="html"><![CDATA[单元测试不是持续集成的基础]]></title>
     <link href="http://fsword.github.com/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu/"/>
     <updated>2013-05-25T22:25:00+08:00</updated>
     <id>http://fsword.github.com/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu</id>
