@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby基础 | fsword's blog]]></title>
   <link href="http://fsword.github.com/blog/categories/rubyji-chu/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-18T17:14:46+08:00</updated>
+  <updated>2013-06-18T17:16:33+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -21,7 +21,7 @@
     <content type="html"><![CDATA[<p>常常有人搞不清楚ruby脚本怎么装载，其实ruby有一个$LOAD_PATH全局变量，相当于java的classpath，require就是从这里的目录中进行查找的</p>
 
 <p>```
- $ ls
+$ ls
 boot.rb
 $ irb
 irb(main):001:0> require 'boot'

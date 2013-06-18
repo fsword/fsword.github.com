@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-18T17:14:46+08:00</updated>
+  <updated>2013-06-18T17:16:33+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -43,7 +43,7 @@
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> $ ls
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls
 </span><span class='line'>boot.rb
 </span><span class='line'>$ irb
 </span><span class='line'>irb(main):001:0&gt; require 'boot'
