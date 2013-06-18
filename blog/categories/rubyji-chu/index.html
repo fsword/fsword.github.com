@@ -5,33 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>require使用例子 - fsword's blog</title>
+  <title>Category: ruby基础 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="常常有人搞不清楚ruby脚本怎么装载，其实ruby有一个$LOAD_PATH全局变量，相当于java的classpath，require就是从这里的目录中进行查找的 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23 $ ls &hellip;">
+  <meta name="description" content="Category: ruby基础">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -40,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2013/06/18/requireshi-yong-li-zi">
+  <link rel="canonical" href="http://fsword.github.comblog/categories/rubyji-chu">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -98,141 +76,36 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Require使用例子</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-18T17:08:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
+    <h1 class="entry-title">Category: Ruby基础</h1>
     
   </header>
-
-
-<div class="entry-content"><p>常常有人搞不清楚ruby脚本怎么装载，其实ruby有一个$LOAD_PATH全局变量，相当于java的classpath，require就是从这里的目录中进行查找的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> $ ls
-</span><span class='line'>boot.rb
-</span><span class='line'>$ irb
-</span><span class='line'>irb(main):001:0&gt; require 'boot'
-</span><span class='line'>LoadError: cannot load such file -- boot
-</span><span class='line'>    from /home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1/rubygems/custom_require.rb:36:in `require'
-</span><span class='line'>    from /home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1/rubygems/custom_require.rb:36:in `require'
-</span><span class='line'>    from (irb):1
-</span><span class='line'>    from /home/john/.rvm/rubies/ruby-1.9.3-p392/bin/irb:13:in `&lt;main&gt;'
-</span><span class='line'>irb(main):002:0&gt; puts $LOAD_PATH
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1/x86_64-linux
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby/1.9.1
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby/1.9.1/x86_64-linux
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/1.9.1
-</span><span class='line'>/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/1.9.1/x86_64-linux
-</span><span class='line'>=&gt; nil
-</span><span class='line'>irb(main):003:0&gt; $LOAD_PATH &lt;&lt; '.'
-</span><span class='line'>=&gt; ["/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby/1.9.1/x86_64-linux", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/site_ruby", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby/1.9.1", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby/1.9.1/x86_64-linux", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/vendor_ruby", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/1.9.1", "/home/john/.rvm/rubies/ruby-1.9.3-p392/lib/ruby/1.9.1/x86_64-linux", "."]
-</span><span class='line'>irb(main):004:0&gt; require 'boot'
-</span><span class='line'>=&gt; true</span></code></pre></td></tr></table></div></figure>
-
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2013</h2>
+
+<article>
+  
+<h1><a href="/blog/2013/06/18/requireshi-yong-li-zi/">require使用例子</a></h1>
+<time datetime="2013-06-18T17:08:00+08:00" pubdate><span class='month'>Jun</span> <span class='day'>18</span> <span class='year'>2013</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/rubyji-chu/'>ruby基础</a></span>
+</footer>
 
 
-<time datetime="2013-06-18T17:08:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/rubyji-chu/'>ruby基础</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2013/06/18/requireshi-yong-li-zi/" data-via="" data-counturl="http://fsword.github.com/blog/2013/06/18/requireshi-yong-li-zi/" >Tweet</a>
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu/" title="Previous Post: 单元测试不是持续集成的基础">&laquo; 单元测试不是持续集成的基础</a>
-      
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -337,10 +210,7 @@
       var disqus_shortname = 'fswordsblog';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2013/06/18/requireshi-yong-li-zi/';
-        var disqus_url = 'http://fsword.github.com/blog/2013/06/18/requireshi-yong-li-zi/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
