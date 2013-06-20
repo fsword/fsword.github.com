@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-20T19:11:23+08:00</updated>
+  <updated>2013-06-20T19:12:35+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -77,7 +77,7 @@
     <id>http://fsword.github.com/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi</id>
     <content type="html"><![CDATA[<p>(原来的标题太长，改短一些 :-) )</p>
 
-<p>前一篇博客写完以后觉得有些空，这篇里面想说说现实中的例子。</p>
+<p>前一篇博客写完以后觉得有些空，这篇说说现实中的例子。</p>
 
 <p>淘宝是java集散地，我们以java项目为例，下面是一个项目中的测试代码——</p>
 
