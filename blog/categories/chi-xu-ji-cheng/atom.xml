@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 持续集成 | fsword's blog]]></title>
   <link href="http://fsword.github.com/blog/categories/chi-xu-ji-cheng/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-20T18:52:32+08:00</updated>
+  <updated>2013-06-20T19:09:07+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -76,7 +76,11 @@ public ResultDTO&lt;Long&gt; addCreative(CreativeDTO creativeDTO) {
 
 <p>前一个原因还好办，很多java团队都意识到DAO和相邻的软件层之间存在某些重复性，因而可以用类似代码模板的方式一次性生成DAO、Service。这时，service和DAO是一起出现的，这样，我们就可以直接关心service了。</p>
 
-<p>而后一个原因则是困难所在，因为在没有持续集成意识并建立持续集成机制的团队中，“部署应用”这件事是所有工作中相对靠后的一步，通常是开发时间过半以后才有第一次部署，而这时团队成员们已经重复的写了很多测试用例了......</p>
+<p>而后一个原因则是困难所在，因为在没有持续集成意识并建立持续集成机制的团队中，“部署应用”这件事是所有工作中相对靠后的一步，通常是开发时间过半以后才有第一次部署，而这时团队成员们已经重复的写了很多测试用例。</p>
+
+<p>解决这个问题，只有引入持续集成，在系统一开始，我们就“一杆子捅到底”，从“白板应用”开始进行持续构建、部署，新代码和功能不断地交付，功能验证可以在适合的层次上进行，对上面的例子而言，我们直接写service测试，那么对DAO部分的验证就可以直接省略了。</p>
+
+<p>这一篇说的是java的场景，但其实道理有共同性，下次我们讨论一下erlang项目中的测试</p>
 ]]></content>
   </entry>
   
