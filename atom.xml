@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-18T17:16:33+08:00</updated>
+  <updated>2013-06-20T18:52:32+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -67,6 +67,96 @@
 </span><span class='line'>irb(main):004:0&gt; require 'boot'
 </span><span class='line'>=&gt; true</span></code></pre></td></tr></table></div></figure>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[单测与持续集成2-项目中的例子]]></title>
+    <link href="http://fsword.github.com/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/"/>
+    <updated>2013-06-07T19:27:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi</id>
+    <content type="html"><![CDATA[<p>(原来的标题太长，改短一些 :-) )</p>
+
+<p>前一篇博客写完以后觉得有些空，这篇里面想说说现实中的例子。</p>
+
+<p>淘宝是java集散地，我们以java项目为例，下面是一个项目中的测试代码——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCreative</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">CreativeDO</span> <span class="n">creative</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CreativeDO</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">...</span><span class="err">此处省略</span><span class="mi">11</span><span class="err">行</span><span class="n">set</span><span class="err">语句</span><span class="o">...</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">creativeId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">creativeDAO</span><span class="o">.</span><span class="na">addCreative</span><span class="o">(</span><span class="n">creative</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">creativeId</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个test方法只是用了最基本的验证方式，显然这是用于确保基本功能——能够正确的添加记录，充其量只是用来验证和数据库相关的配置文件是否正确</p>
+
+<p>我们继续看上层代码——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreativeServiceImpl</span> <span class="kd">implements</span> <span class="n">CreativeService</span><span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">ResultDTO</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="nf">addCreative</span><span class="o">(</span><span class="n">CreativeDTO</span> <span class="n">creativeDTO</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>        <span class="n">creativeDAO</span><span class="o">.</span><span class="na">addCreative</span><span class="o">(</span><span class="k">do</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个类有自己的测试保护，不过这次我们就不要看那些代码了，先用vim看看outline吧——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">|-</span>   <span class="kd">class</span>
+</span><span class='line'><span class="err">||     </span><span class="nc">CreativeServiceTest</span>
+</span><span class='line'><span class="o">|-</span>   <span class="n">field</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">creativeService</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">creativeDAO</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="o">...</span>
+</span><span class='line'><span class="o">|-</span>   <span class="n">method</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">before</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="o">...</span><span class="err">此处省略</span><span class="mi">10</span><span class="err">个用于测试</span><span class="n">addCreative</span><span class="err">的用例</span><span class="o">...</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">addCreative</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，服务层方法有非常充分的测试保护，通过服务层调用，creativeDTO也间接得到了验证，其功能覆盖要远大于之前单独针对DAO的测试用例。</p>
+
+<p>那么，我们为什么要写那个DTO的测试呢？不但费力（11行set，每一行都需要精心填入合理的数据），还用处不大。</p>
+
+<p>出现这个现象一般有两个原因——<br/>
+* 实践中，工程师有时是先写DAO再写上层模块，这样，写完DAO以后service还不存在，要验证是正确性就必须写DAO的test case。
+* service的运行一般是依赖某些服务容器的，为它编写的test case相当于服务器外部的一个客户端，而这需要将service部署起来。</p>
+
+<p>前一个原因还好办，很多java团队都意识到DAO和相邻的软件层之间存在某些重复性，因而可以用类似代码模板的方式一次性生成DAO、Service。这时，service和DAO是一起出现的，这样，我们就可以直接关心service了。</p>
+
+<p>而后一个原因则是困难所在，因为在没有持续集成意识并建立持续集成机制的团队中，“部署应用”这件事是所有工作中相对靠后的一步，通常是开发时间过半以后才有第一次部署，而这时团队成员们已经重复的写了很多测试用例了&#8230;&#8230;</p>
 ]]></content>
   </entry>
   
@@ -1410,31 +1500,6 @@ end</code></pre></noscript></div>
 
 
 <p>后续结合puppet来进行环境管理</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[让bash提示符显示彩色的git_branch]]></title>
-    <link href="http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch/"/>
-    <updated>2012-04-17T16:06:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/04/17/rang-bashti-shi-fu-xian-shi-cai-se-de-git-branch</id>
-    <content type="html"><![CDATA[<p>之前一直很羡慕zsh用户，今天终于让bash也能显示彩色branch了
-具体做法：修改你的 .bashrc，添加下面几句就可以了</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>parse_git_branch() {
-</span><span class='line'>  git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
-</span><span class='line'>}                    
-</span><span class='line'>_PS1=$PS1                                                 
-</span><span class='line'>PS1="\[\e[36m\]\u:\[\e[32m\]\w\[\e[33m\]\$(parse_git_branch)\[\e[0m\]\$ "</span></code></pre></td></tr></table></div></figure>
-
-
-<p>                                                     <br/>
-很简单，不过之前遇到了点麻烦：添加了彩色支持以后发现对较长的命令行会显示错误，后来发现是把<code>\[\e[36m\]</code>写成了 <code>\[\e[36m</code>（丢了后面的部分），汗</p>
 ]]></content>
   </entry>
   

@@ -192,6 +192,125 @@ $ ls &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/">单测与持续集成2-项目中的例子</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-07T19:27:00+08:00" pubdate data-updated="true">Jun 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(原来的标题太长，改短一些 :-) )</p>
+
+<p>前一篇博客写完以后觉得有些空，这篇里面想说说现实中的例子。</p>
+
+<p>淘宝是java集散地，我们以java项目为例，下面是一个项目中的测试代码——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCreative</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">CreativeDO</span> <span class="n">creative</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CreativeDO</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">...</span><span class="err">此处省略</span><span class="mi">11</span><span class="err">行</span><span class="n">set</span><span class="err">语句</span><span class="o">...</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">creativeId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">creativeDAO</span><span class="o">.</span><span class="na">addCreative</span><span class="o">(</span><span class="n">creative</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">creativeId</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个test方法只是用了最基本的验证方式，显然这是用于确保基本功能——能够正确的添加记录，充其量只是用来验证和数据库相关的配置文件是否正确</p>
+
+<p>我们继续看上层代码——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreativeServiceImpl</span> <span class="kd">implements</span> <span class="n">CreativeService</span><span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">ResultDTO</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="nf">addCreative</span><span class="o">(</span><span class="n">CreativeDTO</span> <span class="n">creativeDTO</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>        <span class="n">creativeDAO</span><span class="o">.</span><span class="na">addCreative</span><span class="o">(</span><span class="k">do</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个类有自己的测试保护，不过这次我们就不要看那些代码了，先用vim看看outline吧——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">|-</span>   <span class="kd">class</span>
+</span><span class='line'><span class="err">||     </span><span class="nc">CreativeServiceTest</span>
+</span><span class='line'><span class="o">|-</span>   <span class="n">field</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">creativeService</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">creativeDAO</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="o">...</span>
+</span><span class='line'><span class="o">|-</span>   <span class="n">method</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">before</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span><span class='line'><span class="o">||</span>     <span class="o">...</span><span class="err">此处省略</span><span class="mi">10</span><span class="err">个用于测试</span><span class="n">addCreative</span><span class="err">的用例</span><span class="o">...</span>
+</span><span class='line'><span class="o">||</span>     <span class="n">addCreative</span> <span class="o">[</span><span class="n">CreativeServiceTest</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，服务层方法有非常充分的测试保护，通过服务层调用，creativeDTO也间接得到了验证，其功能覆盖要远大于之前单独针对DAO的测试用例。</p>
+
+<p>那么，我们为什么要写那个DTO的测试呢？不但费力（11行set，每一行都需要精心填入合理的数据），还用处不大。</p>
+
+<p>出现这个现象一般有两个原因——<br/>
+* 实践中，工程师有时是先写DAO再写上层模块，这样，写完DAO以后service还不存在，要验证是正确性就必须写DAO的test case。
+* service的运行一般是依赖某些服务容器的，为它编写的test case相当于服务器外部的一个客户端，而这需要将service部署起来。</p>
+
+<p>前一个原因还好办，很多java团队都意识到DAO和相邻的软件层之间存在某些重复性，因而可以用类似代码模板的方式一次性生成DAO、Service。这时，service和DAO是一起出现的，这样，我们就可以直接关心service了。</p>
+
+<p>而后一个原因则是困难所在，因为在没有持续集成意识并建立持续集成机制的团队中，“部署应用”这件事是所有工作中相对靠后的一步，通常是开发时间过半以后才有第一次部署，而这时团队成员们已经重复的写了很多测试用例了&#8230;&#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu/">单元测试不是持续集成的基础</a></h1>
     
     
@@ -1017,145 +1136,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/">OAuth 2.0 and the Road to Hell 中文版</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-01T10:45:00+08:00" pubdate data-updated="true">Aug 1<span>st</span>, 2012</time>
-        
-         | <a href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>They say the road to hell is paved with good intentions. Well, that’s OAuth 2.0.
-人们常说，通往地狱的路往往都是处于好心铺设的。我想 OAuth 2.0 就是这样。</p>
-
-<p>Last month I reached the painful conclusion that I can no longer be associated with the OAuth 2.0 standard. I resigned my role as lead author and editor, withdraw my name from the specification, and left the working group. Removing my name from a document I have painstakingly labored over for three years and over two dozen drafts was not easy. Deciding to move on from an effort I have led for over five years was agonizing.</p>
-
-<p>上个月我做了一个痛苦的决定，彻底和 OAuth 2.0 标准断绝关系。我辞去了首席作者和编辑，从文档中删除了我的名字，并且离开了工作组。从一份你辛勤工作了三年，拥有几十份草稿的文档上删除自己的名字并不容易，决定离开一个我领导了五年的项目十分的痛苦。</p>
-
-<p>There wasn’t a single problem or incident I can point to in order to explain such an extreme move. This is a case of death by a thousand cuts, and as the work was winding down, I’ve found myself reflecting more and more on what we actually accomplished. At the end, I reached the conclusion that OAuth 2.0 is a bad protocol. WS-* bad. It is bad enough that I no longer want to be associated with it. It is the biggest professional disappointment of my career.</p>
-
-<p>促成我做这个极端决定的并不是某一件事情，这是一次由无数次的伤害导致的死亡。随着工作接近尾声，我越来越意识到 OAuth 2.0 是非常糟糕的协议，就像 WS-* 那些协议一样的烂，烂到我不愿意跟它有任何牵扯。这是我职业生涯中的最大遗憾。</p>
-
-<p>All the hard fought compromises on the mailing list, in meetings, in special design committees, and in back channels resulted in a specification that fails to deliver its two main goals – security and interoperability. In fact, one of the compromises was to rename it from a protocol to a framework, and another to add a disclaimer that warns that the specification is unlike to produce interoperable implementations.</p>
-
-<p>在邮件列表、会议、还是专家委员内部，无数次争论的结果却是，这份标准并没有达到两个最重要的目标 - 安全和互操作性。实际上，有一个（各方达成的）妥协就是将这份规范从协议变成一个框架，而另外一个妥协则是在规范上添加了一个申明——声称这份规范不用于建立交互式的实现。</p>
-
-<p>When compared with OAuth 1.0, the 2.0 specification is more complex, less interoperable, less useful, more incomplete, and most importantly, less secure.</p>
-
-<p>和 OAuth 1.0 相比，2.0的标准更加的复杂，缺乏互操作性，不实用，不完整，最重要的是，不安全。</p>
-
-<p>To be clear, OAuth 2.0 at the hand of a developer with deep understanding of web security will likely result is a secure implementation. However, at the hands of most developers – as has been the experience from the past two years – 2.0 is likely to produce insecure implementations.</p>
-
-<p>更明确的说，OAuth 2.0 在一个对安全有深入理解的开发者手里会是不错的。但是在大部分开发者手中，2.0的标准将会导致明显不安全的结果。</p>
-
-<h2>How did we get here? 我们是如何变成这样的？</h2>
-
-<p>At the core of the problem is the strong and unbridgeable conflict between the web and the enterprise worlds. The OAuth working group at the IETF started with strong web presence. But as the work dragged on (and on) past its first year, those web folks left along with every member of the original 1.0 community. The group that was left was largely all enterprise… and me.</p>
-
-<p>问题的核心来源于“web”和“企业级”这两个不同世界的强大而不可逾越的冲突。IETF的OAuth工作组开始时有很强的web感，然而随着第一年的工作一再拖延，来自OAuth 1.0社区的web力量一个接一个的离开，这个工作组逐渐变得只剩下了喜欢“企业级”的成员和&#8230;&#8230;我。</p>
-
-<p>[翻译未完成，待续] <br/>
-The web community was looking for a protocol very much in-line with 1.0, with small improvement in areas that proved lacking: simplifying signature, adding a light identity layer, addressing native applications, adding more flows to accommodate new client types, and improving security. The enterprise community was looking for a framework they can use with minimal changes to their existing systems, and for some, a new source of revenues through customization. To understand the depth of the divide – in an early meeting the web folks wanted a flow optimized for in-browser clients while the enterprise folks wanted a flow using SAML assertions.</p>
-
-<p>The resulting specification is a designed-by-committee patchwork of compromises that serves mostly the enterprise. To be accurate, it doesn’t actually give the enterprise all of what they asked for directly, but it does provide for practically unlimited extensibility. It is this extensibility and required flexibility that destroyed the protocol. With very little effort, pretty much anything can be called OAuth 2.0 compliant.</p>
-
-<h2>Under the Hood</h2>
-
-<p>To understand the issues in 2.0, you need to understand the core architectural changes from 1.0:
-* Unbounded tokens - In 1.0, the client has to present two sets of credentials on each protected resource request, the token credentials and the client credentials. In 2.0, the client credentials are no longer used. This means that tokens are no longer bound to any particular client type or instance. This has introduced limits on the usefulness of access tokens as a form of authentication and increased the likelihood of security issues.
-* Bearer tokens  - 2.0 got rid of all signatures and cryptography at the protocol level. Instead it relies solely on TLS. This means that 2.0 tokens are inherently less secure as specified. Any improvement in token security requires additional specifications and as the current proposals demonstrate, the group is solely focused on enterprise use cases.
-* Expiring tokens - 2.0 tokens can expire and must be refreshed. This is the most significant change for client developers from 1.0 as they now need to implement token state management. The reason for token expiration is to accommodate self-encoded tokens – encrypted tokens which can be authenticated by the server without a database look-up. Because such tokens are self-encoded, they cannot be revoked and therefore must be short-lived to reduce their exposure. Whatever is gained from the removal of the signature is lost twice in the introduction of the token state management requirement.
-* Grant types - In 2.0, authorization grants are exchanged for access tokens. Grant is an abstract concept representing the end-user approval. It can be a code received after the user clicks ‘Approve’ on an access request, or the user’s actual username and password. The original idea behind grants was to enable multiple flows. 1.0 provides a single flow which aims to accommodate multiple client types. 2.0 adds significant amount of specialization for different client type.</p>
-
-<h2>Indecision Making</h2>
-
-<p>These changes are all manageable if put together in a well-defined protocol. But as has been the nature of this working group, no issue is too small to get stuck on or leave open for each implementation to decide. Here is a very short sample of the working group’s inability to agree:</p>
-
-<ul>
-<li>No required token type</li>
-<li>No agreement on the goals of an HMAC-enabled token type</li>
-<li>No requirement to implement token expiration</li>
-<li>No guidance on token string size, or any value for that matter</li>
-<li>No strict requirement for registration</li>
-<li>Loose client type definition</li>
-<li>Lack of clear client security properties</li>
-<li>No required grant types</li>
-<li>No guidance on the suitability or applicability of grant types</li>
-<li>No useful support for native applications (but lots of lip service)</li>
-<li>No required client authentication method</li>
-<li>No limits on extensions</li>
-</ul>
-
-
-<p>On the other hand, 2.0 defines 4 new registries for extensions, along with additional extension points via URIs. The result is a flood of proposed extensions. But the real issues is that the working group could not define the real security properties of the protocol. This is clearly reflected in the security consideration section which is largely an exercise of hand waving. It is barely useful to security experts as a bullet point of things to pay attention to.</p>
-
-<p>In fact, the working group has also produced a 70 pages document describing the 2.0 threat model which does attempt to provide additional information but suffers from the same fundamental problem: there isn’t an actual protocol to analyze.</p>
-
-<h2>Reality</h2>
-
-<p>In the real world, Facebook is still running on draft 12 from a year and a half ago, with absolutely no reason to update their implementation. After all, an updated 2.0 client written to work with Facebook’s implementation is unlikely to be useful with any other provider and vice-versa. OAuth 2.0 offers little to none code re-usability.</p>
-
-<p>What 2.0 offers is a blueprint for an authorization protocol. As defined, it is largely useless and must be profiles into a working solution – and that is the enterprise way. The WS-* way. 2.0 provides a whole new frontier to sell consulting services and integration solutions.</p>
-
-<p>The web does not need yet another security framework. It needs simple, well-defined, and narrowly suited protocols that will lead to improved security and increased interoperability. OAuth 2.0 fails to accomplish anything meaningful over the protocol it seeks to replace.</p>
-
-<h2>To Upgrade or Not to Upgrade</h2>
-
-<p>Over the past few months, many asked me if they should upgrade to 2.0 or which version of the protocol I recommend they implement. I don’t have a simple answer.</p>
-
-<p>If you are currently using 1.0 successfully, ignore 2.0. It offers no real value over 1.0 (I’m guessing your client developers have already figured out 1.0 signatures by now).</p>
-
-<p>If you are new to this space, and consider yourself a security expert, use 2.0 after careful examination of its features. If you are not an expert, either use 1.0 or copy the 2.0 implementation of a provider you trust to get it right (Facebook’s API documents are a good place to start). 2.0 is better for large scale, but if you are running a major operation, you probably have some security experts on site to figure it all out for you.</p>
-
-<h2>Now What?</h2>
-
-<p>I’m hoping someone will take 2.0 and produce a 10 page profile that’s useful for the vast majority of web providers, ignoring the enterprise. A 2.1 that’s really 1.5. But that’s not going to happen at the IETF. That community is all about enterprise use cases and if you look at their other efforts like OpenID Connect (which too was a super simple proposal turned into almost a dozen complex specifications), they are not capable of simple.</p>
-
-<p>I think the OAuth brand is in decline. This framework will live for a while, and given the lack of alternatives, it will gain widespread adoption. But we are also likely to see major security failures in the next couple of years and the slow but steady devaluation of the brand. It will be another hated protocol you are stuck with.</p>
-
-<p>At the same time, I am expecting multiple new communities to come up with something else that is more in the spirit of 1.0 than 2.0, and where one use case is covered extremely well. OAuth 1.0 was all about small web startups looking to solve a well-defined problem they needed to solve fast. I honestly don’t know what use cases OAuth 2.0 is trying to solve any more.</p>
-
-<h2>Final Note</h2>
-
-<p>This is a sad conclusion to a once promising community. OAuth was the poster child of small, quick, and useful standards, produced outside standards bodies without all the process and legal overhead.</p>
-
-<p>Our standards making process is broken beyond repair. This outcome is the direct result of the nature of the IETF, and the particular personalities overseeing this work. To be clear, these are not bad or incompetent individuals. On the contrary – they are all very capable, bright, and otherwise pleasant. But most of them show up to serve their corporate overlords, and it’s practically impossible for the rest of us to compete.</p>
-
-<p>Bringing OAuth to the IETF was a huge mistake. Not that the alternative (WRAP) would have been a better outcome, but at least it would have taken three less years to figure that out. I stuck around as long as I could stand it, to fight for what I thought was best for the web. I had nothing personally to gain from the decisions being made. At the end, one voice in opposition can slow things down, but can’t make a difference.</p>
-
-<p>I failed.</p>
-
-<p>We failed.<br/>
-<a href="http://hueniverse.com/2012/07/oauth-2-0-and-the-road-to-hell/">link</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1175,6 +1155,10 @@ The web community was looking for a protocol very much in-line with 1.0, with sm
       </li>
     
       <li class="post">
+        <a href="/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/">单测与持续集成2-项目中的例子</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu/">单元测试不是持续集成的基础</a>
       </li>
     
@@ -1184,10 +1168,6 @@ The web community was looking for a protocol very much in-line with 1.0, with sm
     
       <li class="post">
         <a href="/blog/2012/12/13/chi-xu-ji-cheng-zhong-de-que-huan-3/">持续集成中的缺环-3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/12/chi-xu-ji-cheng-zhong-de-que-huan-2/">持续集成中的缺环-2</a>
       </li>
     
   </ul>
