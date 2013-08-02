@@ -33,7 +33,7 @@ end
       order.count_items.each do |key, value|
         result[key] = (result[key]||0) + value
       end
-      result
+      result #添加这一行
     end
     result[type] = (result[type]||0) + 1
     result
