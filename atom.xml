@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-06-21T10:00:23+08:00</updated>
+  <updated>2013-08-02T15:52:22+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,37 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[分享笔记-服务设计]]></title>
+    <link href="http://fsword.github.com/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/"/>
+    <updated>2013-08-02T15:49:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji</id>
+    <content type="html"><![CDATA[<p>这是公司UI团队的分享，做一个简单的摘要</p>
+
+<p>服务体验的相关要素
+* 空间
+* 人
+* (周边)物体
+* 界面（包括交互方式）
+* 传播
+* 衡量</p>
+
+<p>服务体验分析
+* 分解服务环节
+* 对每一个服务环节进行分析</p>
+
+<pre><code>* 分析思路:参与体验者 -&gt; 提供的服务 -&gt; 体验感走势 -&gt; 用户的担忧 -&gt; 增加的服务
+</code></pre>
+
+<p>举例
+* 拔牙的手势
+* 51job -> linkedin</p>
+
+<p>其它
+和客户沟通的时候需要有一定的方法，避免开放式的讨论</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[require使用例子]]></title>
@@ -1450,60 +1481,6 @@ end</code></pre></noscript></div>
 
 
 <p>这个做法是来自saberma同学，原文在此： http://saberma.me/linux/2011/03/03/vagrant-virtual-develop-enviroment.html</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[vagrant环境]]></title>
-    <link href="http://fsword.github.com/blog/2012/04/25/vagranthuan-jing/"/>
-    <updated>2012-04-25T11:34:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/04/25/vagranthuan-jing</id>
-    <content type="html"><![CDATA[<p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
-官方网站：http://vagrantup.com/</p>
-
-<p>今天准备了一个干净的运行环境，步骤如下：</p>
-
-<p><strong> 修改locale </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
-</span><span class='line'>sudo locale-gen zh_CN.utf8</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong> 安装必要的本地库 </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server libmysqlclient-dev git
-</span><span class='line'>sudo apt-get install libxslt-dev libxml2-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong> 用rvm安装ruby </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -L get.rvm.io | bash -s stable
-</span><span class='line'>source .bashrc
-</span><span class='line'>rvm pkg install zlib
-</span><span class='line'>rvm pkg install readline
-</span><span class='line'>rvm pkg install openssl
-</span><span class='line'>rvm install ruby-1.9.3</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>进入 /vagrant 目录，准备rails环境</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:create db:migrate
-</span><span class='line'>rails s</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后续结合puppet来进行环境管理</p>
 ]]></content>
   </entry>
   
