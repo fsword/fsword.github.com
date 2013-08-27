@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 代码片段 | fsword's blog]]></title>
+  <link href="http://fsword.github.com/blog/categories/dai-ma-pian-duan/atom.xml" rel="self"/>
+  <link href="http://fsword.github.com/"/>
+  <updated>2013-08-27T21:37:03+08:00</updated>
+  <id>http://fsword.github.com/</id>
+  <author>
+    <name><![CDATA[fsword]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[一个bug的修改]]></title>
+    <link href="http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/"/>
+    <updated>2013-08-27T16:28:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai</id>
+    <content type="html"><![CDATA[<p>下面是一段工作中编写的代码，为便于理解修改如下——</p>
+
+<p>```ruby
+class Order
+  attr_accessor :type, :sub_orders</p>
+
+<p>  # 统计订单及其包含子订单的数量，按照订单类型归类
+  def count_items</p>
+
+<pre><code>result = sub_orders.reduce({}) do |result, order|
+  order.count_items.each do |key, value|
+    result[key] = (result[key]||0) + value
+  end
+end
+result[type] = (result[type]||0) + 1
+result
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>乍一看没问题，但是计算出来的数字始终不对，细看才发现问题，修改一下：</p>
+
+<p>```ruby
+  def count_items</p>
+
+<pre><code>result = sub_orders.reduce({}) do |result, order|
+  order.count_items.each do |key, value|
+    result[key] = (result[key]||0) + value
+  end
+  result
+end
+result[type] = (result[type]||0) + 1
+result
+</code></pre>
+
+<p>  end
+```</p>
+
+<p>分析原因，是对reduce的使用不够细致：each和map容易和以前写java代码时的思维方式一致，所以不容易犯错；而reduce的返回值用于进一步迭代，这种做法以前用的较少，潜意识里还是将result和s看作是一个服务于循环的变量。</p>
+
+<p>想明白以后再带着新的角度看这个代码，于是发现还可以简化，reduce操作的最大特点就是将初始值和结果纳入到计算框架中，这样可以减少很多重复劳动，最后改成这样</p>
+
+<p>```ruby
+  def count_items</p>
+
+<pre><code>sub_orders.reduce({ type =&gt; 1 }) do |result, order|
+  order.count_items.reduce(result) do |s, (key, value)|
+    s.update key =&gt; (s[key]||0) + value
+  end
+end
+</code></pre>
+
+<p>  end
+```</p>
+
+<p>其实就两点：1. block参数的模式匹配；2. update的返回值就是当前对象</p>
+
+<p>试验代码在 <a href="https://gist.github.com/fsword/6353526">这里</a> ，Be fun!</p>
+]]></content>
+  </entry>
+  
+</feed>
