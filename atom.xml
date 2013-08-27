@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-08-27T22:40:57+08:00</updated>
+  <updated>2013-08-27T23:06:35+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -68,7 +68,7 @@
 </span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
 </span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
 </span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>      <span class="n">result</span> <span class="c1">#添加这一行</span>
 </span><span class='line'>    <span class="k">end</span>
 </span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 </span><span class='line'>    <span class="n">result</span>
