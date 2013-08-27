@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-08-27T21:37:03+08:00</updated>
+  <updated>2013-08-27T22:40:57+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -153,6 +153,132 @@
 <h3>其它</h3>
 
 <p>和客户沟通的时候需要有一定的方法，避免开放式的讨论</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[单测与持续集成3-erlang例子]]></title>
+    <link href="http://fsword.github.com/blog/2013/07/22/dan-ce-yu-chi-xu-ji-cheng-3-erlangli-zi/"/>
+    <updated>2013-07-22T10:22:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2013/07/22/dan-ce-yu-chi-xu-ji-cheng-3-erlangli-zi</id>
+    <content type="html"><![CDATA[<p>本篇是<a href="http://fsword.github.io/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/">这篇</a>的后续，很早就放进了草稿箱，但是我一直懒得修改好，真是典型的拖延症患者。</p>
+
+<p>我自己在项目中使用erlang时间并不长，而且断断续续，充其量是个初学者。之所以用erlang举例子，是因为它比较有代表性。</p>
+
+<p>学习erlang，OTP是个转折点，接触了gen_server等一系列模式以后，很自然就会感觉到其实一个erlang进程更像是一个对象——有标识符，内部保存状态、对外提供服务接口、可用的交互通过消息传递进行等等。</p>
+
+<p>相应的，进行测试时的问题也很类似。人们在宣传erlang时常常说它由于状态不可变，所以可测性很好，然而如果以一个进程为测试对象来看，我们会遇到进程间协作的问题——这相当于java程序里面的对象间协作。</p>
+
+<p>在apposs_agent项目中我就遇到了这类问题，例如，有三个模块之间的依赖关系如下：</p>
+
+<pre><code>client -&gt; responder
+       -&gt; ssh_executor
+</code></pre>
+
+<p>那么，这时模块client中怎么使用其它模块呢？下意识的，我们让这种依赖变得“可插入”，于是就有了类似这样的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="c">%% client.erl</span>
+</span><span class='line'><span class="c">%% .....</span>
+</span><span class='line'><span class="nf">init</span><span class="p">([</span><span class="nv">Responder_mod</span><span class="p">,</span> <span class="nv">Host</span><span class="p">,</span> <span class="nv">GetHostInfoFun</span><span class="p">])</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="c">%% ...</span>
+</span><span class='line'>  <span class="nv">State</span> <span class="o">=</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span> <span class="o">=</span> <span class="nv">Host</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">get_host_info_fun</span><span class="o">=</span><span class="nv">GetHostInfoFun</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">responder_mod</span> <span class="o">=</span> <span class="nv">Responder_mod</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">cmds</span> <span class="o">=</span> <span class="nv">Cmds</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>  <span class="nn">gen_fsm</span><span class="p">:</span><span class="nf">send_all_state_event</span><span class="p">(</span><span class="o">?</span><span class="nv">SERVER</span><span class="p">(</span><span class="nv">Host</span><span class="p">),</span> <span class="n">reconnect</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="n">disconnected</span><span class="p">,</span> <span class="nv">State</span><span class="p">}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">%% ......</span>
+</span><span class='line'><span class="nf">normal</span><span class="p">(</span><span class="n">do_cmd</span><span class="p">,</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span><span class="o">=</span><span class="nv">Host</span><span class="p">,</span> <span class="n">cm</span><span class="o">=</span><span class="nv">Cm</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="p">[</span><span class="nv">Cmd</span><span class="p">|</span><span class="nv">T_cmds</span><span class="p">],</span> <span class="n">exec_mod</span><span class="o">=</span><span class="nv">ExecMod</span><span class="p">,</span> <span class="n">responder_mod</span><span class="o">=</span><span class="nv">RespMod</span><span class="p">}</span><span class="o">=</span><span class="nv">State</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nv">RespMod</span><span class="p">:</span><span class="nf">run_caller</span><span class="p">(</span><span class="n">client</span><span class="p">))(</span><span class="nv">Host</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Handler</span> <span class="o">=</span> <span class="nv">ExecMod</span><span class="p">:</span><span class="nf">exec</span><span class="p">(</span><span class="nv">Cm</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">next_state</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="nv">State</span><span class="nl">#state</span><span class="p">{</span><span class="n">current_cmd</span><span class="o">=</span><span class="nv">Cmd</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="nv">T_cmds</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="nv">Handler</span><span class="p">}};</span>
+</span><span class='line'><span class="c">%% ......</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在state中放入复杂的数据结构，其实就是为了让ExecMod和RespMod变得可以“配置”，还单独测试client而不用依赖其它模块。</p>
+
+<p>然而这种设计的成本实在太高了，实际中，exec_mod和responder_mod并不会改变，这个目标属于over design。</p>
+
+<p>那么为了可测性是否有必要这么做呢？有一段时间我也不是很确定。</p>
+
+<p>从结构上来看，ssh_executor和responder属于下层模块，client是它们的用户，隔离下层模块运行上层模块意义不大。从某种角度看，软件开发很像搭积木，我们做好下层模块以后就不用“隔离”它们了，要测试，带上大家一起跑是很方便的做法。</p>
+
+<p>想通了这一点，上述的代码就很简单了——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nf">init</span><span class="p">([</span><span class="nv">Host</span><span class="p">])</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="c">%% ...</span>
+</span><span class='line'>  <span class="nv">State</span> <span class="o">=</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span> <span class="o">=</span> <span class="nv">Host</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">cmds</span> <span class="o">=</span> <span class="nv">Cmds</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>  <span class="nn">gen_fsm</span><span class="p">:</span><span class="nf">send_all_state_event</span><span class="p">(</span><span class="o">?</span><span class="nv">SERVER</span><span class="p">(</span><span class="nv">Host</span><span class="p">),</span> <span class="n">reconnect</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="n">disconnected</span><span class="p">,</span> <span class="nv">State</span><span class="p">}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">%% ......</span>
+</span><span class='line'><span class="nf">normal</span><span class="p">(</span><span class="n">do_cmd</span><span class="p">,</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span><span class="o">=</span><span class="nv">Host</span><span class="p">,</span> <span class="n">cm</span><span class="o">=</span><span class="nv">Cm</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="p">[</span><span class="nv">Cmd</span><span class="p">|</span><span class="nv">T_cmds</span><span class="p">]}</span><span class="o">=</span><span class="nv">State</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nn">responder</span><span class="p">:</span><span class="nf">run_caller</span><span class="p">(</span><span class="n">client</span><span class="p">))(</span><span class="nv">Host</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Handler</span> <span class="o">=</span> <span class="nn">ssh_executor</span><span class="p">:</span><span class="nf">exec</span><span class="p">(</span><span class="nv">Cm</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">next_state</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="nv">State</span><span class="nl">#state</span><span class="p">{</span><span class="n">current_cmd</span><span class="o">=</span><span class="nv">Cmd</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="nv">T_cmds</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="nv">Handler</span><span class="p">}};</span>
+</span><span class='line'><span class="c">%% ......</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，这样修改以后，不但代码量减少了，而且代码专注于表达业务逻辑，因而也更容易理解了，好的代码应该专注，而不是眉毛胡子一把抓，您说是不是？</p>
+
+<p>有人会说，那我们难道就不要单元测试了么？不错，这正是我想说的，<code>单元测试的关注点应该是具有很高算法复杂度的逻辑单元，而不是复杂性都委托出去的业务模块</code>，对于后者，不做单元测试并不是罪过。</p>
+
+<p>上述的想法也只是逻辑推演，为了更加确认，我和淘宝内部的一个erlang项目的同事做了一些了解——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">“</span><span class="n">hi</span><span class="err">，你们的代码写很多</span><span class="n">mock</span><span class="err">吗？“</span>
+</span><span class='line'><span class="err">”写的不多“</span>
+</span><span class='line'><span class="err">”那单元测试的时候怎么隔离呢？要在进程内部的状态里面保存关联模块么？”</span>
+</span><span class='line'><span class="err">“不用，我们主要写集成测试”</span>
+</span><span class='line'><span class="err">“集成测试会不会覆盖不到位？”</span>
+</span><span class='line'><span class="err">“目前的功能以业务为主，逻辑不是很复杂，用集成测试就够了”</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同事的回答和我想的一样，不过这毕竟只是少数项目，我希望能有更多的案例，大家一起交流、讨论</p>
 ]]></content>
   </entry>
   
@@ -1478,49 +1604,6 @@ end</code></pre></noscript></div>
 
 <p>需要说明的是，bundler1.1目前在网站上写的还是 coming soon，不过新功能还是值得尝试的<br/>
 顺便附上 <a href="https://github.com/carlhuda/bundler/blob/master/CHANGELOG.md">bundler 的 changlog</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[active record错误汇总]]></title>
-    <link href="http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong/"/>
-    <updated>2012-05-04T14:25:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/05/04/active-recordcuo-wu-hui-zong</id>
-    <content type="html"><![CDATA[<p>这个帖子专门记录一些使用active record时遇到的错误<br/>
-1. 错误描述：directive找不到自己的template<br/>
-错误代码</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Directive</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:template</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;DirectiveTemplate&#39;</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">create_table</span> <span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">integer</span>  <span class="s2">&quot;directive_template_id&quot;</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
-解决方法：更改数据库字段名，或者在模型代码中指定foreign_key</p>
-
-<ol>
-<li>错误描述：db:seed_fu 创建模型遇到表结构错误<br/>
-解释：初步试验发现，如果执行 <code>rake db:create db:migrate db:seed_fu</code> 会遇到这个问题，而将seed_fu单独执行则是正常的，考虑到发生错误的表在migrate阶段有过结构变更，估计是数据库事务导致alter语句没有提交，从而使得seed_fu失败</li>
-</ol>
-
 ]]></content>
   </entry>
   

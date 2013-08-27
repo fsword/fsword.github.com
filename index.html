@@ -298,6 +298,161 @@ class Order attr_accessor :type, :sub_orders # 统计订单及其包含子订单
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/07/22/dan-ce-yu-chi-xu-ji-cheng-3-erlangli-zi/">单测与持续集成3-erlang例子</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-22T10:22:00+08:00" pubdate data-updated="true">Jul 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/22/dan-ce-yu-chi-xu-ji-cheng-3-erlangli-zi/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本篇是<a href="http://fsword.github.io/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/">这篇</a>的后续，很早就放进了草稿箱，但是我一直懒得修改好，真是典型的拖延症患者。</p>
+
+<p>我自己在项目中使用erlang时间并不长，而且断断续续，充其量是个初学者。之所以用erlang举例子，是因为它比较有代表性。</p>
+
+<p>学习erlang，OTP是个转折点，接触了gen_server等一系列模式以后，很自然就会感觉到其实一个erlang进程更像是一个对象——有标识符，内部保存状态、对外提供服务接口、可用的交互通过消息传递进行等等。</p>
+
+<p>相应的，进行测试时的问题也很类似。人们在宣传erlang时常常说它由于状态不可变，所以可测性很好，然而如果以一个进程为测试对象来看，我们会遇到进程间协作的问题——这相当于java程序里面的对象间协作。</p>
+
+<p>在apposs_agent项目中我就遇到了这类问题，例如，有三个模块之间的依赖关系如下：</p>
+
+<pre><code>client -&gt; responder
+       -&gt; ssh_executor
+</code></pre>
+
+<p>那么，这时模块client中怎么使用其它模块呢？下意识的，我们让这种依赖变得“可插入”，于是就有了类似这样的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="c">%% client.erl</span>
+</span><span class='line'><span class="c">%% .....</span>
+</span><span class='line'><span class="nf">init</span><span class="p">([</span><span class="nv">Responder_mod</span><span class="p">,</span> <span class="nv">Host</span><span class="p">,</span> <span class="nv">GetHostInfoFun</span><span class="p">])</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="c">%% ...</span>
+</span><span class='line'>  <span class="nv">State</span> <span class="o">=</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span> <span class="o">=</span> <span class="nv">Host</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">get_host_info_fun</span><span class="o">=</span><span class="nv">GetHostInfoFun</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">responder_mod</span> <span class="o">=</span> <span class="nv">Responder_mod</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">cmds</span> <span class="o">=</span> <span class="nv">Cmds</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>  <span class="nn">gen_fsm</span><span class="p">:</span><span class="nf">send_all_state_event</span><span class="p">(</span><span class="o">?</span><span class="nv">SERVER</span><span class="p">(</span><span class="nv">Host</span><span class="p">),</span> <span class="n">reconnect</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="n">disconnected</span><span class="p">,</span> <span class="nv">State</span><span class="p">}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">%% ......</span>
+</span><span class='line'><span class="nf">normal</span><span class="p">(</span><span class="n">do_cmd</span><span class="p">,</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span><span class="o">=</span><span class="nv">Host</span><span class="p">,</span> <span class="n">cm</span><span class="o">=</span><span class="nv">Cm</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="p">[</span><span class="nv">Cmd</span><span class="p">|</span><span class="nv">T_cmds</span><span class="p">],</span> <span class="n">exec_mod</span><span class="o">=</span><span class="nv">ExecMod</span><span class="p">,</span> <span class="n">responder_mod</span><span class="o">=</span><span class="nv">RespMod</span><span class="p">}</span><span class="o">=</span><span class="nv">State</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nv">RespMod</span><span class="p">:</span><span class="nf">run_caller</span><span class="p">(</span><span class="n">client</span><span class="p">))(</span><span class="nv">Host</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Handler</span> <span class="o">=</span> <span class="nv">ExecMod</span><span class="p">:</span><span class="nf">exec</span><span class="p">(</span><span class="nv">Cm</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">next_state</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="nv">State</span><span class="nl">#state</span><span class="p">{</span><span class="n">current_cmd</span><span class="o">=</span><span class="nv">Cmd</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="nv">T_cmds</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="nv">Handler</span><span class="p">}};</span>
+</span><span class='line'><span class="c">%% ......</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在state中放入复杂的数据结构，其实就是为了让ExecMod和RespMod变得可以“配置”，还单独测试client而不用依赖其它模块。</p>
+
+<p>然而这种设计的成本实在太高了，实际中，exec_mod和responder_mod并不会改变，这个目标属于over design。</p>
+
+<p>那么为了可测性是否有必要这么做呢？有一段时间我也不是很确定。</p>
+
+<p>从结构上来看，ssh_executor和responder属于下层模块，client是它们的用户，隔离下层模块运行上层模块意义不大。从某种角度看，软件开发很像搭积木，我们做好下层模块以后就不用“隔离”它们了，要测试，带上大家一起跑是很方便的做法。</p>
+
+<p>想通了这一点，上述的代码就很简单了——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nf">init</span><span class="p">([</span><span class="nv">Host</span><span class="p">])</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="c">%% ...</span>
+</span><span class='line'>  <span class="nv">State</span> <span class="o">=</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span> <span class="o">=</span> <span class="nv">Host</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">cmds</span> <span class="o">=</span> <span class="nv">Cmds</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>  <span class="nn">gen_fsm</span><span class="p">:</span><span class="nf">send_all_state_event</span><span class="p">(</span><span class="o">?</span><span class="nv">SERVER</span><span class="p">(</span><span class="nv">Host</span><span class="p">),</span> <span class="n">reconnect</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="n">disconnected</span><span class="p">,</span> <span class="nv">State</span><span class="p">}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">%% ......</span>
+</span><span class='line'><span class="nf">normal</span><span class="p">(</span><span class="n">do_cmd</span><span class="p">,</span> <span class="nl">#state</span><span class="p">{</span><span class="n">host</span><span class="o">=</span><span class="nv">Host</span><span class="p">,</span> <span class="n">cm</span><span class="o">=</span><span class="nv">Cm</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="p">[</span><span class="nv">Cmd</span><span class="p">|</span><span class="nv">T_cmds</span><span class="p">]}</span><span class="o">=</span><span class="nv">State</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nn">responder</span><span class="p">:</span><span class="nf">run_caller</span><span class="p">(</span><span class="n">client</span><span class="p">))(</span><span class="nv">Host</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Handler</span> <span class="o">=</span> <span class="nn">ssh_executor</span><span class="p">:</span><span class="nf">exec</span><span class="p">(</span><span class="nv">Cm</span><span class="p">,</span> <span class="nv">Cmd</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">{</span><span class="n">next_state</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="nv">State</span><span class="nl">#state</span><span class="p">{</span><span class="n">current_cmd</span><span class="o">=</span><span class="nv">Cmd</span><span class="p">,</span> <span class="n">cmds</span><span class="o">=</span><span class="nv">T_cmds</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="nv">Handler</span><span class="p">}};</span>
+</span><span class='line'><span class="c">%% ......</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，这样修改以后，不但代码量减少了，而且代码专注于表达业务逻辑，因而也更容易理解了，好的代码应该专注，而不是眉毛胡子一把抓，您说是不是？</p>
+
+<p>有人会说，那我们难道就不要单元测试了么？不错，这正是我想说的，<code>单元测试的关注点应该是具有很高算法复杂度的逻辑单元，而不是复杂性都委托出去的业务模块</code>，对于后者，不做单元测试并不是罪过。</p>
+
+<p>上述的想法也只是逻辑推演，为了更加确认，我和淘宝内部的一个erlang项目的同事做了一些了解——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">“</span><span class="n">hi</span><span class="err">，你们的代码写很多</span><span class="n">mock</span><span class="err">吗？“</span>
+</span><span class='line'><span class="err">”写的不多“</span>
+</span><span class='line'><span class="err">”那单元测试的时候怎么隔离呢？要在进程内部的状态里面保存关联模块么？”</span>
+</span><span class='line'><span class="err">“不用，我们主要写集成测试”</span>
+</span><span class='line'><span class="err">“集成测试会不会覆盖不到位？”</span>
+</span><span class='line'><span class="err">“目前的功能以业务为主，逻辑不是很复杂，用集成测试就够了”</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同事的回答和我想的一样，不过这毕竟只是少数项目，我希望能有更多的案例，大家一起交流、讨论</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/06/18/requireshi-yong-li-zi/">Require使用例子</a></h1>
     
     
@@ -999,90 +1154,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/">erlang环境安装FAQ</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-09T15:46:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>如何添加 wx 支持</h3>
-
-<p>erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1&gt; reltool:start().
-</span><span class='line'>
-</span><span class='line'>=ERROR REPORT==== 9-Dec-2012::15:28:51 ===
-</span><span class='line'>ERROR: Could not find 'wxe_driver.so' in: /home/john/software/otp/lib/erlang/lib/wx-0.99.1/priv
-</span><span class='line'>** exception exit: {load_driver,"No driver found"}
-</span><span class='line'>     in function  wxe_server:start/0 (wxe_server.erl, line 64)
-</span><span class='line'>         in call from wx:new/1 (wx.erl, line 99)
-</span><span class='line'>         in call from reltool_sys_win:do_init/1 (reltool_sys_win.erl, line 140)
-</span><span class='line'>         in call from reltool_sys_win:init/1 (reltool_sys_win.erl, line 130)
-</span><span class='line'>         in call from proc_lib:init_p_do_apply/3 (proc_lib.erl, line 227)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有经验的人一般会尝试自己编译erlang环境，但可能会发现编译时找不到wx库。实际上，ubuntu环境一般确实会安装 libwxgtk2.8-dev 这个包，但是需要添加一个 link （参考<a href="http://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu">官方说明</a>）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/include
-</span><span class='line'>sudo ln -sv wx-2.8/wx wx</span></code></pre></td></tr></table></div></figure>
-
-
-<p>另外，提醒一下，你可以在 configure 阶段验证是否支持 wx ，方法是看是否有下面的输出：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>checking for debug build of wxWidgets... checking for wx-config... /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=yes)... no
-</span><span class='line'>checking for standard build of wxWidgets... checking for wx-config... (cached) /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=no)... yes (version 2.8.12)</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1106,15 +1177,15 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
       </li>
     
       <li class="post">
+        <a href="/blog/2013/07/22/dan-ce-yu-chi-xu-ji-cheng-3-erlangli-zi/">单测与持续集成3-erlang例子</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/18/requireshi-yong-li-zi/">require使用例子</a>
       </li>
     
       <li class="post">
         <a href="/blog/2013/06/07/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu-2-xiang-mu-zhong-de-li-zi/">单测与持续集成2-项目中的例子</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/05/25/dan-yuan-ce-shi-bu-shi-chi-xu-ji-cheng-de-ji-chu/">单元测试不是持续集成的基础</a>
       </li>
     
   </ul>
