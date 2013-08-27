@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2013-08-02T16:08:30+08:00</updated>
+  <updated>2013-08-27T21:35:35+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,96 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一个bug的修改]]></title>
+    <link href="http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/"/>
+    <updated>2013-08-27T16:28:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai</id>
+    <content type="html"><![CDATA[<p>下面是一段工作中编写的代码，为便于理解修改如下——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:sub_orders</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># 统计订单及其包含子订单的数量，按照订单类型归类</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">result</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>乍一看没问题，但是计算出来的数字始终不对，细看才发现问题，修改一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">result</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分析原因，是对reduce的使用不够细致：each和map容易和以前写java代码时的思维方式一致，所以不容易犯错；而reduce的返回值用于进一步迭代，这种做法以前用的较少，潜意识里还是将result和s看作是一个服务于循环的变量。</p>
+
+<p>想明白以后再带着新的角度看这个代码，于是发现还可以简化，reduce操作的最大特点就是将初始值和结果纳入到计算框架中，这样可以减少很多重复劳动，最后改成这样</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({</span> <span class="n">type</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="p">})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">s</span><span class="o">.</span><span class="n">update</span> <span class="n">key</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">s</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实就两点：1. block参数的模式匹配；2. update的返回值就是当前对象</p>
+
+<p>试验代码在 <a href="https://gist.github.com/fsword/6353526">这里</a> ，Be fun!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[分享笔记-服务设计]]></title>
@@ -1431,78 +1521,6 @@ end</code></pre></noscript></div>
 解释：初步试验发现，如果执行 <code>rake db:create db:migrate db:seed_fu</code> 会遇到这个问题，而将seed_fu单独执行则是正常的，考虑到发生错误的表在migrate阶段有过结构变更，估计是数据库事务导致alter语句没有提交，从而使得seed_fu失败</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[vagrant使用步骤总结]]></title>
-    <link href="http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/"/>
-    <updated>2012-04-26T01:04:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie</id>
-    <content type="html"><![CDATA[<p>使用vagrant把AppOSS的项目环境打了一个包，这个东西确实很适合统一开发环境，总结一下过程吧。</p>
-
-<p><strong>基于base.box或者某个os的iso文件建立基础系统环境，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant add base &lt;base box url&gt;
-</span><span class='line'>cd &lt;your rails project&gt;
-</span><span class='line'>vagrnat init base
-</span><span class='line'>vagrant up</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>调整系统环境，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant ssh
-</span><span class='line'>curl -L get.rvm.io | bash -s stable</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>将调整过的环境打包为新的base文件，以备将来使用，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output base-ubuntu-rvm.box</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>修改Vagrantfile，添加puppet支持，相关内容为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># Vagrantfile
-</span><span class='line'>config.vm.provision :puppet do |puppet|
-</span><span class='line'>  puppet.manifests_path = "manifests"
-</span><span class='line'>  puppet.manifest_file  = "ubuntu.pp"
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>将项目依赖的软件包（例如：libxml2-dev，libmysqlclient-dev之类），通过puppet安装好，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant reload</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>重新打包为box文件，这就是可以重复使用的项目环境了</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output apposs-center.box</span></code></pre></td></tr></table></div></figure>
-
-
-<p>说明：<br/>
-1. 对于团队协作而言，如果环境有了变化，重复5、6两步即可 <br/>
-2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决<br/>
-3. ruby项目通过bundle管理的gem包，可以采用下面的命令进行安装，这样可以减少内外系统的重复文件</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install --path ./vendor/bundle</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个做法是来自saberma同学，原文在此： http://saberma.me/linux/2011/03/03/vagrant-virtual-develop-enviroment.html</p>
 ]]></content>
   </entry>
   

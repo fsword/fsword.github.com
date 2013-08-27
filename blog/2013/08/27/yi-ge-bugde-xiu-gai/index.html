@@ -5,13 +5,25 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ruby中的self - fsword's blog</title>
+  <title>一个bug的修改 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="ruby-china.org 上有人问self的含义，发篇帖子解释一下
-ruby里面的class关键字和def关键字的作用其实是改变上下文，这个self就是被改变的上下文中最重要的一个，按照ruby语法，遇到这样的关键字，self的含义就会变化
-* 在class内部，self代表的是当前这个类本身 &hellip;">
+  <meta name="description" content="下面是一段工作中编写的代码，为便于理解修改如下—— 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+class Order attr_accessor :type, :sub_orders # 统计订单及其包含子订单的数量，按照订单类型归类 def count_items &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +32,7 @@ ruby里面的class关键字和def关键字的作用其实是改变上下文，�
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self">
+  <link rel="canonical" href="http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -82,7 +94,7 @@ ruby里面的class关键字和def关键字的作用其实是改变上下文，�
   
   <header>
     
-      <h1 class="entry-title">Ruby中的self</h1>
+      <h1 class="entry-title">一个bug的修改</h1>
     
     
       <p class="meta">
@@ -98,7 +110,7 @@ ruby里面的class关键字和def关键字的作用其实是改变上下文，�
   
 
 
-<time datetime="2012-06-29T09:38:00+08:00" pubdate data-updated="true">Jun 29<span>th</span>, 2012</time>
+<time datetime="2013-08-27T16:28:00+08:00" pubdate data-updated="true">Aug 27<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -107,54 +119,7 @@ ruby里面的class关键字和def关键字的作用其实是改变上下文，�
   </header>
 
 
-<div class="entry-content"><p>ruby-china.org 上有人问<a href="http://ruby-china.org/topics/4026">self的含义</a>，发篇帖子解释一下<br/>
-ruby里面的class关键字和def关键字的作用其实是<strong>改变上下文</strong>，这个<code>self</code>就是被改变的<code>上下文</code>中最重要的一个，按照ruby语法，遇到这样的关键字，self的含义就会变化<br/>
-* 在<code>class内部</code>，self代表的是<code>当前这个类本身</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="nb">self</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">A</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>而通过<code>def</code>进入方法以后，（在方法内部写的）self指的是<code>这个方法的当前调用者</code></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">x</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="nb">self</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">x</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="c1">#&lt;A:0x00000002705fb0&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如上所示，这次打印出来的self是类A的一个实例而不是类A本身</p>
-
-<p>这两个原则非常重要，现在我们看看方法前加self是什么意思</p>
+<div class="entry-content"><p>下面是一段工作中编写的代码，为便于理解修改如下——</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -167,26 +132,75 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">x</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="nb">self</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:sub_orders</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># 统计订单及其包含子订单的数量，按照订单类型归类</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">result</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">x</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">x</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">a</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">A</span>
-</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">rb</span><span class="p">:</span><span class="mi">7</span><span class="ss">:in</span> <span class="sb">`&lt;main&gt;&#39;: undefined method `</span><span class="n">x</span><span class="err">&#39;</span> <span class="k">for</span> <span class="c1">#&lt;A:0x00000001a83f58&gt; (NoMethodError)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>显然，这个方法看起来像是我们常说的“类方法”而不是实例方法（这个例子中，实例方法x不存在，于是抛出了异常），我们通常这么理解——</p>
+<p>乍一看没问题，但是计算出来的数字始终不对，细看才发现问题，修改一下：</p>
 
-<blockquote><p>方法前的self在class内部，所以它表示类A，这样，x方法的调用者是<strong>类A自身</strong>（而不是它的实例），根据之前的原则，在def关键字内部，self表示的是这个方法的调用者，在这里就是类A自己</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">result</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>最后补充一下——<br/>
-* ruby中的类本身也是对象，所以所谓“类方法”是个不太准确的描述，所有的方法都是属于某个对象的，这里的self.x其实是类A（<strong>再次强调：是A自己而不是A的实例</strong>）的“专有方法”，更进一步的理解要结合对eigenclass这个概念的理解</p>
+
+<p>分析原因，是对reduce的使用不够细致：each和map容易和以前写java代码时的思维方式一致，所以不容易犯错；而reduce的返回值用于进一步迭代，这种做法以前用的较少，潜意识里还是将result和s看作是一个服务于循环的变量。</p>
+
+<p>想明白以后再带着新的角度看这个代码，于是发现还可以简化，reduce操作的最大特点就是将初始值和结果纳入到计算框架中，这样可以减少很多重复劳动，最后改成这样</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
+</span><span class='line'>    <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({</span> <span class="n">type</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="p">})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">s</span><span class="o">.</span><span class="n">update</span> <span class="n">key</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">s</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实就两点：1. block参数的模式匹配；2. update的返回值就是当前对象</p>
+
+<p>试验代码在 <a href="https://gist.github.com/fsword/6353526">这里</a> ，Be fun!</p>
 </div>
 
 
@@ -209,21 +223,15 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
   
 
 
-<time datetime="2012-06-29T09:38:00+08:00" pubdate data-updated="true">Jun 29<span>th</span>, 2012</time>
+<time datetime="2013-08-27T16:28:00+08:00" pubdate data-updated="true">Aug 27<span>th</span>, 2013</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/ji-ben-gai-nian/'>基本概念</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self/" data-via="" data-counturl="http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/" data-via="" data-counturl="http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/" >Tweet</a>
   
   
   
@@ -232,10 +240,8 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/10/ru-he-qiu-su-shu-2/" title="Previous Post: 如何求素数(2)">&laquo; 如何求素数(2)</a>
+        <a class="basic-alignment left" href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/" title="Previous Post: 分享笔记-服务设计">&laquo; 分享笔记-服务设计</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/08/01/oauth-2-dot-0-and-the-road-to-hell-zhong-wen-ban/" title="Next Post: OAuth 2.0 and the Road to Hell 中文版">OAuth 2.0 and the Road to Hell 中文版 &raquo;</a>
       
     </p>
   </footer>
@@ -351,8 +357,8 @@ ruby里面的class关键字和def关键字的作用其实是<strong>改变上下
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/06/29/rubyzhong-de-self/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/';
+        var disqus_url = 'http://fsword.github.com/blog/2013/08/27/yi-ge-bugde-xiu-gai/';
         var disqus_script = 'embed.js';
       
     (function () {
