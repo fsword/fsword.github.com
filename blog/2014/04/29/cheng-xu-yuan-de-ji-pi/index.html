@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>如何求素数(2) - fsword's blog</title>
+  <title>程序员的洁癖 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。 &hellip;">
+  <meta name="description" content="程序员这个群体里有一些人有代码洁癖，他们遇到一个烂东西往往不能忍受，一般认为，这对工作的推进是很不利的，因为有时候过于追求 do things right 会导致不能及时的 do right things 。 但是我却有些不同的想法，我们常常看到的情形其实不是洁癖太多而是太少， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2">
+  <link rel="canonical" href="http://fsword.github.com/blog/2014/04/29/cheng-xu-yuan-de-ji-pi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -81,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">如何求素数(2)</h1>
+      <h1 class="entry-title">程序员的洁癖</h1>
     
     
       <p class="meta">
@@ -97,7 +96,7 @@
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2014-04-29T12:47:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -106,69 +105,29 @@
   </header>
 
 
-<div class="entry-content"><p>前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。<br/>
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。回头看筛法的计算过程，主要工作包括两个：选择除数和用除数过滤数列。选择除数是从小到大顺序进行，不能并行，而用除数过滤数列则是各自独立，所以能够并行。<br/>
-我们并行的方式来变换原来的算法。大致思路如下——</p>
+<div class="entry-content"><p>程序员这个群体里有一些人有代码洁癖，他们遇到一个烂东西往往不能忍受，一般认为，这对工作的推进是很不利的，因为有时候过于追求 do things right 会导致不能及时的 do right things 。</p>
 
-<pre><code>1. 生成待过滤的数列
-2. 根据并行数目将数列均匀切分，得到若干子数列
-3. 从小到大循环除数，对每一个除数
-    3.1. 并行同时过滤上述多个子数列
-    3.2. 过滤N的平方根后停止循环
-4. 连接所有子数列，输出最后的结果
-</code></pre>
+<p>但是我却有些不同的想法，我们常常看到的情形其实不是洁癖太多而是太少，甚至对代码没有什么责任感，一些“很有执行力”的同事，其实是“大干快上”的路子，这样会让工作变成历史包袱。</p>
 
-<p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
-最后的代码应该是这样</p>
+<p>当然，有洁癖的人确实会显得“执行力”不够，但是问题可能并不出在“因为洁癖要追求完美”，而是——能力确实就不够。</p>
 
-<div><script src='https://gist.github.com/2905122.js'></script>
-<noscript><pre><code>def prime n
+<p>这么说有些残忍，不过以我自己的经历看，可能这才是真实情况。</p>
 
-  full_list = (2..n).to_a
-  prime_list = []
-  stop_index = (n ** 0.5).floor
-  last_prime = 2
-  
-  while(last_prime &lt; stop_index)
-    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
+<p>我也是个有洁癖的人，干活一直不是很快。刚工作的时候别人的建议往往”别想太完美，做了再说“。现在工作很多年了，有些方面我开始熟悉甚至精通，由于经验积累，我在这些方面做事会比较快，这时遇到之前的朋友，他们会觉得我开始务实，不那么有洁癖了。</p>
 
-    last_prime = sublists.first.reduce() do |sum, i|
-      break i if i &gt; stop_index
-      workers.each{|cell| worker.filter_by(i)}
-      i
-    end
-    prime_list = prime_list.concat(workers.first.value)
-    full_list = workers[1..-1].map(&amp;:value).flatten
-  end
-  prime_list.concat(full_list.flatten)
-end
+<p>然而我的洁癖其实一直没变，变化的是工作能力。即使现在，如果遇到我不熟悉的领域，工作还是不够快。当然，这时其他人会觉得“你又太注意完美了”。</p>
 
-def split_range total_num, concurrent_num
-  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
-end
+<p>追求完美当然很好，这些人只是觉得过于注意完美会影响效率。逻辑确实没错，不过我们怎么判断这个度呢？有些我们一开始没有想好的东西会影响后续的很多工作，而有些东西计较太多却并没什么区别。是“吹毛求疵”还是“远见卓识”？如何判断？</p>
 
-class Worker
-  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
-end</code></pre></noscript></div>
+<p>说实话，我也没什么好办法，可能有点帮助的就是过往的经验了。编程是一个创造性的工作（如果只是重复劳动，那么复制即可，也就不需要coding了），不过通过抽象、类比这样的思维活动，我们能找到一些和过去的经验类似的模式，回想过去的经历，我们会认识到某些事情看来不重要，而某些则对后续工作影响深远，在这些经验的支持下，我们会选择把力气用在什么地方。</p>
 
+<p>从这个角度看，你会发现一个现象，其实没有真正意义上“求全责备”的人，即使那些公认有洁癖的人，也不会在所有地方都吹毛求疵，他们只是在“什么东西更重要”这个问题上作出了与你不同的回答而已。</p>
 
-<p>执行结果：</p>
+<p>每个人的经历都不尽相同，因此基于经验产生的判断也不会完全一样，而团队需要交流的，正是这种不同的经验。由于每个人的思维都可能存在盲点和误区，大家沟通各自的旧有经验，发现值得重视的地方，就可以不断改进工作；另一方面，由于每个人都会有一些思维定势，因此交流和沟通都会带来冲突，解决冲突需要冷静细致的工作，甚至还要搭上时间成本。因此，民主的氛围有时会比较有助于团队成功，但有时又会带来很多的代价。在这方面没有标准答案，只能尽量的寻求平衡。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby prime_benchmark.rb 
-</span><span class='line'>    user     system      total        real
-</span><span class='line'>    10000   0.050000    0.000000   0.050000 (  0.048889)
-</span><span class='line'>    100000  0.650000    0.000000   0.650000 (  0.649779)
-</span><span class='line'>    1000000 39.810000   0.050000  39.860000 ( 39.961506</span></code></pre></td></tr></table></div></figure>
+<p>甚至经历也不是万能的，有过几年工作经历以后，很多人都会遇到被自己的旧知识“坑一下”的情况，似乎以前的教训现在也可以忽视，而以前的成功方法放到现在反倒是一剂毒药。这是“创造性”工作的本质决定的，抽象也好类比也罢，它一定需要丢弃一些不同，我们常说“旧观念需要更新，情况变了”，这里的情况就是那些被抛弃掉的、本以为不重要的东西。</p>
 
-
-<p>在我的4核机器上改进很明显。</p>
-
-<p><code>注意：之前的代码还有一个遗留问题，被过滤掉的数字其实不用再来做除数，而现在这个版本因为要重新切分数列，所以有机会减少这个浪费，这也是速度明显提升的原因</code></p>
+<p>上述话题要说完整可能需要很多篇幅，这里只想说明的软件开发是一件很难的事情。而正是因为软件开发如此之难，因此需要每个人都有一些“洁癖”，工作时需要更多的思考，而不只是完成任务。如果你因此而进展缓慢，无论是不是因为“洁癖”太多，努力提高能力和经验都是解决之道，慢慢的，你的工作会更熟练，效率得以提升，同时也更有经验去判断什么才是真正重要的问题。</p>
 </div>
 
 
@@ -191,12 +150,12 @@ end</code></pre></noscript></div>
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2014-04-29T12:47:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/su-shu/'>素数</a>, <a class='category' href='/blog/categories/bian-cheng-lian-xi/'>编程练习</a>
+    <a class='category' href='/blog/categories/ji-pi/'>洁癖</a>, <a class='category' href='/blog/categories/cheng-xu-za-gan/'>程序杂感</a>
   
 </span>
 
@@ -205,7 +164,7 @@ end</code></pre></noscript></div>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" data-via="" data-counturl="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/" data-via="" data-counturl="http://fsword.github.com/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/" >Tweet</a>
   
   
   
@@ -214,10 +173,8 @@ end</code></pre></noscript></div>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/09/ru-he-qiu-su-shu/" title="Previous Post: 如何求素数(1)">&laquo; 如何求素数(1)</a>
+        <a class="basic-alignment left" href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/" title="Previous Post: 一个bug的修改">&laquo; 一个bug的修改</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/06/29/rubyzhong-de-self/" title="Next Post: ruby中的self">ruby中的self &raquo;</a>
       
     </p>
   </footer>
@@ -333,8 +290,8 @@ end</code></pre></noscript></div>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/';
+        var disqus_url = 'http://fsword.github.com/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/';
         var disqus_script = 'embed.js';
       
     (function () {
