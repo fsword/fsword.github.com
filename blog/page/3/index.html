@@ -9,12 +9,9 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="Ruby China 上有人提了一个问题： 1
-2
-3
-4
-class Test &lt; Module; end
-test = Test.new test到底是个神马玩意？ 这个问题的回答首先要看看Ruby的对象/类层次设计，如下图（ &lt;= 表示泛化，&lt;- 表示继承）： &hellip;">
+  <meta name="description" content="学习语言的过程是比较枯燥的，不过我们可以拿来做一些有趣的事情，在解决具体问题的过程中熟悉语言。
+例如我们可以来练习一下这个问题 找出小于N所有素数 首先复习一下学校里的知识—— 素数（也称质数），指的是一类大于1的自然数，这些自然数有个特点，除了1和它自身，它们不能被其它的任何自然数整除。 1
+2 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +79,127 @@ test = Test.new test到底是个神马玩意？ 这个问题的回答首先要�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/ru-he-qiu-su-shu/">如何求素数(1)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T11:08:00+08:00" pubdate data-updated="true">Jun 9<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/09/ru-he-qiu-su-shu/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>学习语言的过程是比较枯燥的，不过我们可以拿来做一些有趣的事情，在解决具体问题的过程中熟悉语言。<br/>
+例如我们可以来练习一下这个问题</p>
+
+<h3>找出小于N所有素数</h3>
+
+<p>首先复习一下学校里的知识——</p>
+
+<ul>
+<li>素数（也称质数），指的是一类大于1的自然数，这些自然数有个特点，除了1和它自身，它们不能被其它的任何自然数整除。</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>举例：  
+</span><span class='line'>    4不是素数，因为它可以被2整除；  
+</span><span class='line'>    11是素数，因为除了1和它自身，它不能被其它自然数整除；</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>判断一个数是否是素数，最直接的方法就是检查所有大于2小于它的自然数能否被它整除，更进一步，最大除数只要达到N的平方根就行了</li>
+</ul>
+
+
+<p>根据上述知识，我们可以找到问题的解决思路。方法如下：</p>
+
+<pre><code>1. 将N以内的所有整数列出来
+2. 标出序列中的第一个素数（比如：2），然后将后续中能够被这个素数整除的成员删除
+3. 对新的序列重复执行上述步骤，循环进行，循环次数不大于N的平方根
+</code></pre>
+
+<blockquote><p>上述解法其实是这个问题最古老（可能也是最高效）的方法——“<a href="http://zh.wikipedia.org/wiki/%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95">筛法</a>(<a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve of Eratosthenes</a>)”，是由古希腊数学家埃拉托斯特尼发明的</p></blockquote>
+
+<p>根据这些知识，我们可以写出ruby版的实现</p>
+
+<div><script src='https://gist.github.com/2896832.js'></script>
+<noscript><pre><code>def prime n
+  list = (2..n).to_a
+  (2...(n ** (0.5)).floor).each do |i|  list.delete_if{|e| e &gt; i &amp;&amp; e % i == 0} end
+  list
+end</code></pre></noscript></div>
+
+
+<p>执行一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p194</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="n">prime</span> <span class="mi">100</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">97</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>成功!<br/>
+是不是很简单？但是且慢，算出来需要多久呢？要是几百万以内的素数，又需要多长时间呢？<br/>
+写一段代码验证一下（我们计算结束后不输出，这是为了避免大量数据输出对IO的压力）</p>
+
+<div><script src='https://gist.github.com/2899473.js'></script>
+<noscript><pre><code>require &#39;./prime.rb&#39; # user defined function
+require &#39;benchmark&#39;
+
+Benchmark.bm do |x| 
+  (4..6).each do |i|
+     x.report(10**i){ prime(10**i).last }
+  end
+end</code></pre></noscript></div>
+
+
+<p>执行结果（修改了一下格式）——</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby prime_benchmark.rb
+</span><span class='line'>       user      system       total        real
+</span><span class='line'>       10000     0.020000     0.000000   0.020000   <span class="o">(</span>  0.024682<span class="o">)</span>
+</span><span class='line'>       100000    1.410000     0.010000   1.420000   <span class="o">(</span>  1.419806<span class="o">)</span>
+</span><span class='line'>       1000000   245.320000   0.060000   245.380000 <span class="o">(</span>246.231597<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从10万到100万，耗时增加了200倍!!! 检查load和CPU占用率，发现load不高，但是有一个cpu核心占用率100%，这说明cpu的计算能力没有得到平衡使用，这个问题我们下一阶段解决</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -836,135 +954,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/">不常用的git命令</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>git remote prune</h2>
-
-<p>说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
-使用举例：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master
-</span><span class='line'>  remotes/origin/other
-</span><span class='line'>$ git remote prune origin
-</span><span class='line'>Pruning origin
-</span><span class='line'>URL: git@github.com:fsword/my_project.git
-</span><span class='line'> * [pruned] origin/other
-</span><span class='line'>$ git branch -a
-</span><span class='line'>* master
-</span><span class='line'>  remotes/origin/master</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>git push -f origin master</h2>
-
-<p>说明：强制push本地代码，例如在本地进行 amend 模式的commit的时候，实际上是重写了原来的commit，如果直接push会出错，此时需要强制push，让remote端与本地一致<br/>
-使用举例：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git commit --amend -m 'this is a new comment'
-</span><span class='line'>To /home/john/proj_repo
-</span><span class='line'> ! [rejected]        master -&gt; master (non-fast-forward)
-</span><span class='line'>error: failed to push some refs to '/home/john/proj_repo'
-</span><span class='line'>To prevent you from losing history, non-fast-forward updates were rejected
-</span><span class='line'>Merge the remote changes (e.g. 'git pull') before pushing again.  See the
-</span><span class='line'>'Note about fast-forwards' section of 'git push --help' for details.
-</span><span class='line'>~/personal/temp2(master) $ git push -f origin master 
-</span><span class='line'>$ git push -f origin master 
-</span><span class='line'>Counting objects: 3, done.
-</span><span class='line'>Writing objects: 100% (3/3), 260 bytes, done.
-</span><span class='line'>Total 3 (delta 0), reused 0 (delta 0)
-</span><span class='line'>Unpacking objects: 100% (3/3), done.
-</span><span class='line'>To /home/john/proj_repo
-</span><span class='line'> + a11c377...93ef44d master -&gt; master (forced update)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要说明的是，如果要做这个试验，需要确保remote允许push，如果你像我一样remote和work都是本地目录，那么remote那里要设置一下 .git/config 这个文件，增加这么一段</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[receive]
-</span><span class='line'>    denyCurrentBranch = ignore</span></code></pre></td></tr></table></div></figure>
-
-
-<p>另外，对于pull的一方，操作也要稍微调整一下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin
-</span><span class='line'>git reset --hard origin/master</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>git checkout [COMMIT_ID] [FILE_PATH]</h2>
-
-<p>说明：部分恢复。当我们修改很多次之后，可能想恢复之前某个commit时的某个或者某些文件，本命令就提供了这个支持。
-使用举例：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git checkout acfc7ea462fa6f4425be251c2076d10a5fbde0ba images/old_way_new_way.*</span></code></pre></td></tr></table></div></figure>
-
-
-<p>have fun!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -982,6 +971,10 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/">程序员的洁癖</a>
       </li>
     
@@ -995,10 +988,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     
       <li class="post">
         <a href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/">一个bug的修改</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/">分享笔记-服务设计</a>
       </li>
     
   </ul>

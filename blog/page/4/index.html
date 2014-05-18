@@ -9,14 +9,19 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="单测时不太顺利，主要是fixture使用不熟悉，记录两个问题 bug 1：经过定位发现是fixture数据始终不能灌入导致的 1
+  <meta name="description" content="git remote prune 说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 使用举例： 1
 2
 3
 4
 5
 6
-machine1: id: 1 app_id: 1
-machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;">
+7
+8
+9
+10
+11
+$ git branch -a
+* master remotes/origin/master remotes/origin/other &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +89,135 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/">不常用的git命令</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-04T18:18:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/03/04/bu-chang-yong-de-gitcao-zuo/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>git remote prune</h2>
+
+<p>说明：remote上的一个分支被其他人删除后，需要更新本地的分支列表 <br/>
+使用举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git branch -a
+</span><span class='line'>* master
+</span><span class='line'>  remotes/origin/master
+</span><span class='line'>  remotes/origin/other
+</span><span class='line'>$ git remote prune origin
+</span><span class='line'>Pruning origin
+</span><span class='line'>URL: git@github.com:fsword/my_project.git
+</span><span class='line'> * [pruned] origin/other
+</span><span class='line'>$ git branch -a
+</span><span class='line'>* master
+</span><span class='line'>  remotes/origin/master</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>git push -f origin master</h2>
+
+<p>说明：强制push本地代码，例如在本地进行 amend 模式的commit的时候，实际上是重写了原来的commit，如果直接push会出错，此时需要强制push，让remote端与本地一致<br/>
+使用举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git commit --amend -m 'this is a new comment'
+</span><span class='line'>To /home/john/proj_repo
+</span><span class='line'> ! [rejected]        master -&gt; master (non-fast-forward)
+</span><span class='line'>error: failed to push some refs to '/home/john/proj_repo'
+</span><span class='line'>To prevent you from losing history, non-fast-forward updates were rejected
+</span><span class='line'>Merge the remote changes (e.g. 'git pull') before pushing again.  See the
+</span><span class='line'>'Note about fast-forwards' section of 'git push --help' for details.
+</span><span class='line'>~/personal/temp2(master) $ git push -f origin master 
+</span><span class='line'>$ git push -f origin master 
+</span><span class='line'>Counting objects: 3, done.
+</span><span class='line'>Writing objects: 100% (3/3), 260 bytes, done.
+</span><span class='line'>Total 3 (delta 0), reused 0 (delta 0)
+</span><span class='line'>Unpacking objects: 100% (3/3), done.
+</span><span class='line'>To /home/john/proj_repo
+</span><span class='line'> + a11c377...93ef44d master -&gt; master (forced update)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要说明的是，如果要做这个试验，需要确保remote允许push，如果你像我一样remote和work都是本地目录，那么remote那里要设置一下 .git/config 这个文件，增加这么一段</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[receive]
+</span><span class='line'>    denyCurrentBranch = ignore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外，对于pull的一方，操作也要稍微调整一下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git fetch origin
+</span><span class='line'>git reset --hard origin/master</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>git checkout [COMMIT_ID] [FILE_PATH]</h2>
+
+<p>说明：部分恢复。当我们修改很多次之后，可能想恢复之前某个commit时的某个或者某些文件，本命令就提供了这个支持。
+使用举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git checkout acfc7ea462fa6f4425be251c2076d10a5fbde0ba images/old_way_new_way.*</span></code></pre></td></tr></table></div></figure>
+
+
+<p>have fun!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -174,6 +308,10 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/">程序员的洁癖</a>
       </li>
     
@@ -187,10 +325,6 @@ machine1: id: 2 app_id: 1 期望有两条数据，实际只有一条， &hellip;
     
       <li class="post">
         <a href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/">一个bug的修改</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/">分享笔记-服务设计</a>
       </li>
     
   </ul>
