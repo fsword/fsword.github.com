@@ -9,9 +9,8 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="学习语言的过程是比较枯燥的，不过我们可以拿来做一些有趣的事情，在解决具体问题的过程中熟悉语言。
-例如我们可以来练习一下这个问题 找出小于N所有素数 首先复习一下学校里的知识—— 素数（也称质数），指的是一类大于1的自然数，这些自然数有个特点，除了1和它自身，它们不能被其它的任何自然数整除。 1
-2 &hellip;">
+  <meta name="description" content="前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。
+要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +78,106 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/10/ru-he-qiu-su-shu-2/">如何求素数(2)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/10/ru-he-qiu-su-shu-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。<br/>
+要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。回头看筛法的计算过程，主要工作包括两个：选择除数和用除数过滤数列。选择除数是从小到大顺序进行，不能并行，而用除数过滤数列则是各自独立，所以能够并行。<br/>
+我们并行的方式来变换原来的算法。大致思路如下——</p>
+
+<pre><code>1. 生成待过滤的数列
+2. 根据并行数目将数列均匀切分，得到若干子数列
+3. 从小到大循环除数，对每一个除数
+    3.1. 并行同时过滤上述多个子数列
+    3.2. 过滤N的平方根后停止循环
+4. 连接所有子数列，输出最后的结果
+</code></pre>
+
+<p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
+最后的代码应该是这样</p>
+
+<div><script src='https://gist.github.com/2905122.js'></script>
+<noscript><pre><code>def prime n
+
+  full_list = (2..n).to_a
+  prime_list = []
+  stop_index = (n ** 0.5).floor
+  last_prime = 2
+  
+  while(last_prime &lt; stop_index)
+    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
+
+    last_prime = sublists.first.reduce() do |sum, i|
+      break i if i &gt; stop_index
+      workers.each{|cell| worker.filter_by(i)}
+      i
+    end
+    prime_list = prime_list.concat(workers.first.value)
+    full_list = workers[1..-1].map(&amp;:value).flatten
+  end
+  prime_list.concat(full_list.flatten)
+end
+
+def split_range total_num, concurrent_num
+  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
+end
+
+class Worker
+  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
+end</code></pre></noscript></div>
+
+
+<p>执行结果：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby prime_benchmark.rb 
+</span><span class='line'>    user     system      total        real
+</span><span class='line'>    10000   0.050000    0.000000   0.050000 (  0.048889)
+</span><span class='line'>    100000  0.650000    0.000000   0.650000 (  0.649779)
+</span><span class='line'>    1000000 39.810000   0.050000  39.860000 ( 39.961506</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在我的4核机器上改进很明显。</p>
+
+<p><code>注意：之前的代码还有一个遗留问题，被过滤掉的数字其实不用再来做除数，而现在这个版本因为要重新切分数列，所以有机会减少这个浪费，这也是速度明显提升的原因</code></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -886,74 +985,6 @@ end</code></pre></noscript></div>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/07/cucumbershi-yong-bei-wang/">Cucumber使用备忘</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-07T00:59:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/03/07/cucumbershi-yong-bei-wang/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>cucumber 使用的时候默认的环境是 test ，此时配置信息为 config/environments/test.rb<br/>
-当然我们也可以使用独立的 cucumber ，修改 config/database.yml 如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>production:
-</span><span class='line'>  &lt;&lt;: *defaults
-</span><span class='line'>  database: app_development
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>cucumber:
-</span><span class='line'>  &lt;&lt;: *defaults
-</span><span class='line'>  database: app_cucumber</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时需要复制 test.rb 为 cucumber.rb<br/>
-$ cp config/environments/test.rb config/environments/cucumber.rb<br/>
-这时需要注意，如果你使用transaction进行数据清理，那么要设置 <code>config.cache_classes = true</code>，否则会收到错误信息</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>WARNING: You have set Rails' config.cache_classes to false (most likely in config/environments/cucumber.rb).  This setting is known to cause problems with database transactions. Set config.cache_classes to true if you want to use transactions.  For more information see https://rspec.lighthouseapp.com/projects/16211/tickets/165.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过，如果这样，rails s启动的服务器将不会热更新代码，这点需要注意<br/>
-我自己的做法是，支持热更新，但是不使用 transaction 方式支持数据清理</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -971,6 +1002,10 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/18/wei-shi-yao-zuo-yue-zi-shi-lou-xi/">为什么做月子是陋习</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
       </li>
     
@@ -984,10 +1019,6 @@ $ cp config/environments/test.rb config/environments/cucumber.rb<br/>
     
       <li class="post">
         <a href="/blog/2014/03/16/btc-is-money/">为什么说比特币是货币？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/">一个bug的修改</a>
       </li>
     
   </ul>
