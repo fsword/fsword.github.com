@@ -4,7 +4,7 @@
   <title><![CDATA[Category: erlang, | fsword's blog]]></title>
   <link href="http://fsword.github.com/blog/categories/erlang/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2014-05-26T11:42:29+08:00</updated>
+  <updated>2014-05-26T11:45:41+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -18,11 +18,7 @@
     <link href="http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/"/>
     <updated>2014-05-26T11:38:00+08:00</updated>
     <id>http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu</id>
-    <content type="html"><![CDATA[<p>今天想查一下erlang:process_info函数的参数，余锋同学给了一个链接，很不错，记录一下：</p>
-
-<p>https://github.com/ferd/recon/blob/master/src/recon.erl</p>
-
-<p>recon 这个项目值得关注</p>
+    <content type="html"><![CDATA[<p>今天想查一下erlang:process_info函数的参数，余锋同学给了一个<a href="https://github.com/ferd/recon/blob/master/src/recon.erl">链接</a>，结果看到了<a href="https://github.com/ferd/recon">recon</a> 这个项目，感觉很值得关注，记录一下。</p>
 
 <p>不过，如果只是了解process_info函数有哪些key，可以直接用这种方式：</p>
 
