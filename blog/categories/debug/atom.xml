@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: debug, | fsword's blog]]></title>
+  <link href="http://fsword.github.com/blog/categories/debug/atom.xml" rel="self"/>
+  <link href="http://fsword.github.com/"/>
+  <updated>2014-05-26T11:42:29+08:00</updated>
+  <id>http://fsword.github.com/</id>
+  <author>
+    <name><![CDATA[fsword]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[process info函数参数]]></title>
+    <link href="http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/"/>
+    <updated>2014-05-26T11:38:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu</id>
+    <content type="html"><![CDATA[<p>今天想查一下erlang:process_info函数的参数，余锋同学给了一个链接，很不错，记录一下：</p>
+
+<p>https://github.com/ferd/recon/blob/master/src/recon.erl</p>
+
+<p>recon 这个项目值得关注</p>
+
+<p>不过，如果只是了解process_info函数有哪些key，可以直接用这种方式：</p>
+
+<p>```</p>
+
+<p>(server@127.0.0.1)32> erlang:process_info(pid(0,1286,0)         <br/>
+(server@127.0.0.1)32> ).
+[{registered_name,channel@1},
+ {current_function,{gen_fsm,loop,7}},
+ {initial_call,{proc_lib,init_p,5}},
+ {status,waiting},
+ {message_queue_len,0},
+ {messages,[]},
+ {links,[&lt;0.1163.0>]},
+ {dictionary,[{'$ancestors',[essh_client_sup,essh_sup,</p>
+
+<pre><code>                         &lt;0.1103.0&gt;]},
+          {'$initial_call',{essh_client,init,1}}]},
+</code></pre>
+
+<p> {trap_exit,false},
+ {error_handler,error_handler},
+ {priority,normal},
+ {group_leader,&lt;0.1102.0>},
+ {total_heap_size,17730},
+ {heap_size,6772},
+ {stack_size,10},
+ {reductions,15053},
+ {garbage_collection,[{min_bin_vheap_size,46422},</p>
+
+<pre><code>                  {min_heap_size,233},
+                  {fullsweep_after,65535},
+                  {minor_gcs,1}]},
+</code></pre>
+
+<p> {suspending,[]}]
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

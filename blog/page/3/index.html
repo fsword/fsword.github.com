@@ -9,8 +9,8 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="They say the road to hell is paved with good intentions. Well, that’s OAuth 2.0.
-人们常说，通往地狱的路往往都是处于好心铺设的。我想 OAuth 2.0 就是这样。 Last month I reached the &hellip;">
+  <meta name="description" content="使用ruby，一个很有价值的地方就是发明了各种DSL，比如这样： 1
+tags.delete_if{|x| x.nil?}.map{|v| v.sub /^!/,&#39;&#39;}.delete_if{|x| x.empty?} 这种风格通常被称为链式调用，优点是代码比较连贯， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,88 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/">链式调用的代码怎么写</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-26T13:55:00+08:00" pubdate data-updated="true">Aug 26<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/08/26/lian-shi-diao-yong-de-dai-ma-zen-yao-xie/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用ruby，一个很有价值的地方就是发明了各种DSL，比如这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span><span class="o">.</span><span class="n">delete_if</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">nil?</span><span class="p">}</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">delete_if</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种风格通常被称为链式调用，优点是代码比较连贯，去掉了多余的局部变量和赋值语句，符合人类的思维习惯。</p>
+
+<p>但是也有隐含的问题——代码可读性有时候会受影响，例如这里的例子中，对数组的变换包括三个步骤，如果看的不仔细，就可能会遗漏。</p>
+
+<p>按照我自己的经验，一般会改成这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:nil?</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span>
+</span><span class='line'>     <span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:empty?</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，每行都是一个独立单一的逻辑部分，可读性就有了保障。
+问题并没有结束，链式调用的另外一个常见问题是对于故障的处理，使用者有时会搞不清楚到底在哪里出了错。</p>
+
+<p>由于这种api一般会使用延迟计算的方式（延迟计算是个大的话题，请google），之前的环节仅仅是收集计算所需要的逻辑，真正出问题总是在最后，而那时的错误可以输出完整的计算条件，所以大部分情况下故障处理还不是很复杂。</p>
+
+<p>但是如果有的api设计的不好或者出现了意料以外的问题，我们怎么办呢？</p>
+
+<p>处理故障最常用的工具是日志，而链式调用不太好做的也就是日志，好在ruby的标准库提供了一个很好用的api——tap（很多人一开始看到这个函数，发现什么都不做，觉得很奇怪），我们看下面的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">tags</span>                       <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;origin size: </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:nil?</span><span class="p">)</span>     <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;del nil    : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">sub</span><span class="sr"> /^!/</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;sub        : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">delete_if</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:empty?</span><span class="p">)</span>   <span class="o">.</span><span class="n">tap</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="s2">&quot;del empty  : </span><span class="si">#{</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样的代码，既方便了连贯的表达业务逻辑，又能在必要的时候输出需要的日志，基本上就比较靠谱了，顺便在说一句，我专门调整了代码的对齐并不是简单的为了好看，如果有一天你确定这段代码不再需要日志输出，那么使用很多编辑器都支持的列编辑功能就可以一次性删除掉日志了</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1031,89 +1113,6 @@ end</code></pre></noscript></div>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/25/vagranthuan-jing/">Vagrant环境</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-25T11:34:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/04/25/vagranthuan-jing/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>vagrant是一个基于Virtual Box的ruby工具库，它可以很简单的管理你的开发和运行环境
-官方网站：http://vagrantup.com/</p>
-
-<p>今天准备了一个干净的运行环境，步骤如下：</p>
-
-<p><strong> 修改locale </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vi /etc/default/locale #将 LANG 改为 zh_CN.utf8
-</span><span class='line'>sudo locale-gen zh_CN.utf8</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong> 安装必要的本地库 </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mysql-server libmysqlclient-dev git
-</span><span class='line'>sudo apt-get install libxslt-dev libxml2-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong> 用rvm安装ruby </strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -L get.rvm.io | bash -s stable
-</span><span class='line'>source .bashrc
-</span><span class='line'>rvm pkg install zlib
-</span><span class='line'>rvm pkg install readline
-</span><span class='line'>rvm pkg install openssl
-</span><span class='line'>rvm install ruby-1.9.3</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>进入 /vagrant 目录，准备rails环境</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake db:create db:migrate
-</span><span class='line'>rails s</span></code></pre></td></tr></table></div></figure>
-
-
-<p>后续结合puppet来进行环境管理</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1131,6 +1130,10 @@ end</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/26/process-infohan-shu-can-shu/">process info函数参数</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/18/ye-tan-zuo-yue-zi-de-wen-ti/">ZZ：也谈坐月子的问题</a>
       </li>
     
@@ -1144,10 +1147,6 @@ end</code></pre></noscript></div>
     
       <li class="post">
         <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/29/cheng-xu-yuan-de-ji-pi/">程序员的洁癖</a>
       </li>
     
   </ul>

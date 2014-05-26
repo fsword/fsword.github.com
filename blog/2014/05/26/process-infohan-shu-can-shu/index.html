@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>如何求素数(2) - fsword's blog</title>
+  <title>process info函数参数 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。 &hellip;">
+  <meta name="description" content="今天想查一下erlang:process_info函数的参数，余锋同学给了一个链接，很不错，记录一下： https://github.com/ferd/recon/blob/master/src/recon.erl recon 这个项目值得关注 不过， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2">
+  <link rel="canonical" href="http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -81,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">如何求素数(2)</h1>
+      <h1 class="entry-title">Process info函数参数</h1>
     
     
       <p class="meta">
@@ -97,7 +96,7 @@
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2014-05-26T11:38:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -106,69 +105,67 @@
   </header>
 
 
-<div class="entry-content"><p>前一篇我们给出了筛法求素数的基本代码，但是针对比较大的数据量，运算速度难以接受。我们观察到运算资源并不饱和，浪费了CPU。简单的改进方式是变为并行计算，用多线程提高本机并行能力，如果以后有网络，还可以分布到不同机器节点上。<br/>
-要做到并行计算，首先要分析算法中哪些环节可以并行，哪些步骤要顺序执行。回头看筛法的计算过程，主要工作包括两个：选择除数和用除数过滤数列。选择除数是从小到大顺序进行，不能并行，而用除数过滤数列则是各自独立，所以能够并行。<br/>
-我们并行的方式来变换原来的算法。大致思路如下——</p>
+<div class="entry-content"><p>今天想查一下erlang:process_info函数的参数，余锋同学给了一个链接，很不错，记录一下：</p>
 
-<pre><code>1. 生成待过滤的数列
-2. 根据并行数目将数列均匀切分，得到若干子数列
-3. 从小到大循环除数，对每一个除数
-    3.1. 并行同时过滤上述多个子数列
-    3.2. 过滤N的平方根后停止循环
-4. 连接所有子数列，输出最后的结果
-</code></pre>
+<p>https://github.com/ferd/recon/blob/master/src/recon.erl</p>
 
-<p>这么做有个问题，我们切分数列的目的是为了在过滤时充分利用并行能力，但是在若干次过滤后，子数列将陆续被过滤完毕，所以并行计算单元（线程、机器节点等）会逐渐无用，要避免这种情况，应该在每次遇到子数列过滤完毕的时候重新切分数列。<br/>
-最后的代码应该是这样</p>
+<p>recon 这个项目值得关注</p>
 
-<div><script src='https://gist.github.com/2905122.js'></script>
-<noscript><pre><code>def prime n
-
-  full_list = (2..n).to_a
-  prime_list = []
-  stop_index = (n ** 0.5).floor
-  last_prime = 2
-  
-  while(last_prime &lt; stop_index)
-    workers = split_range(n-1,num){ |range| Worker.new(full_list(range)) }
-
-    last_prime = sublists.first.reduce() do |sum, i|
-      break i if i &gt; stop_index
-      workers.each{|cell| worker.filter_by(i)}
-      i
-    end
-    prime_list = prime_list.concat(workers.first.value)
-    full_list = workers[1..-1].map(&amp;:value).flatten
-  end
-  prime_list.concat(full_list.flatten)
-end
-
-def split_range total_num, concurrent_num
-  # 将传入的总数分解为若干个首尾相连的 range ，range 个数为 concurrent_num 
-end
-
-class Worker
-  # 分配独立的并行计算单元（例如线程），然后对给定资源执行 map 函数
-end</code></pre></noscript></div>
-
-
-<p>执行结果：</p>
+<p>不过，如果只是了解process_info函数有哪些key，可以直接用这种方式：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby prime_benchmark.rb 
-</span><span class='line'>    user     system      total        real
-</span><span class='line'>    10000   0.050000    0.000000   0.050000 (  0.048889)
-</span><span class='line'>    100000  0.650000    0.000000   0.650000 (  0.649779)
-</span><span class='line'>    1000000 39.810000   0.050000  39.860000 ( 39.961506</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>(server@127.0.0.1)32&gt; erlang:process_info(pid(0,1286,0)           
+</span><span class='line'>(server@127.0.0.1)32&gt; ).
+</span><span class='line'>[{registered_name,channel@1},
+</span><span class='line'> {current_function,{gen_fsm,loop,7}},
+</span><span class='line'> {initial_call,{proc_lib,init_p,5}},
+</span><span class='line'> {status,waiting},
+</span><span class='line'> {message_queue_len,0},
+</span><span class='line'> {messages,[]},
+</span><span class='line'> {links,[&lt;0.1163.0&gt;]},
+</span><span class='line'> {dictionary,[{'$ancestors',[essh_client_sup,essh_sup,
+</span><span class='line'>                             &lt;0.1103.0&gt;]},
+</span><span class='line'>              {'$initial_call',{essh_client,init,1}}]},
+</span><span class='line'> {trap_exit,false},
+</span><span class='line'> {error_handler,error_handler},
+</span><span class='line'> {priority,normal},
+</span><span class='line'> {group_leader,&lt;0.1102.0&gt;},
+</span><span class='line'> {total_heap_size,17730},
+</span><span class='line'> {heap_size,6772},
+</span><span class='line'> {stack_size,10},
+</span><span class='line'> {reductions,15053},
+</span><span class='line'> {garbage_collection,[{min_bin_vheap_size,46422},
+</span><span class='line'>                      {min_heap_size,233},
+</span><span class='line'>                      {fullsweep_after,65535},
+</span><span class='line'>                      {minor_gcs,1}]},
+</span><span class='line'> {suspending,[]}]</span></code></pre></td></tr></table></div></figure>
 
-
-<p>在我的4核机器上改进很明显。</p>
-
-<p><code>注意：之前的代码还有一个遗留问题，被过滤掉的数字其实不用再来做除数，而现在这个版本因为要重新切分数列，所以有机会减少这个浪费，这也是速度明显提升的原因</code></p>
 </div>
 
 
@@ -191,12 +188,12 @@ end</code></pre></noscript></div>
   
 
 
-<time datetime="2012-06-10T17:30:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2012</time>
+<time datetime="2014-05-26T11:38:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/su-shu/'>素数</a>, <a class='category' href='/blog/categories/bian-cheng-lian-xi/'>编程练习</a>
+    <a class='category' href='/blog/categories/debug/'>debug,</a>, <a class='category' href='/blog/categories/erlang/'>erlang,</a>, <a class='category' href='/blog/categories/process-slash-info/'>process\_info</a>
   
 </span>
 
@@ -205,7 +202,7 @@ end</code></pre></noscript></div>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" data-via="" data-counturl="http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/" data-via="" data-counturl="http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/" >Tweet</a>
   
   
   
@@ -214,10 +211,8 @@ end</code></pre></noscript></div>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/09/ru-he-qiu-su-shu/" title="Previous Post: 如何求素数(1)">&laquo; 如何求素数(1)</a>
+        <a class="basic-alignment left" href="/blog/2014/05/18/ye-tan-zuo-yue-zi-de-wen-ti/" title="Previous Post: ZZ：也谈坐月子的问题">&laquo; ZZ：也谈坐月子的问题</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/06/29/rubyzhong-de-self/" title="Next Post: ruby中的self">ruby中的self &raquo;</a>
       
     </p>
   </footer>
@@ -333,8 +328,8 @@ end</code></pre></noscript></div>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
-        var disqus_url = 'http://fsword.github.com/blog/2012/06/10/ru-he-qiu-su-shu-2/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/';
+        var disqus_url = 'http://fsword.github.com/blog/2014/05/26/process-infohan-shu-can-shu/';
         var disqus_script = 'embed.js';
       
     (function () {
