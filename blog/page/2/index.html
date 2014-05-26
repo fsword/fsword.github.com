@@ -9,7 +9,17 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="本篇是这篇的后续，很早就放进了草稿箱，但是我一直懒得修改好，真是典型的拖延症患者。 我自己在项目中使用erlang时间并不长，而且断断续续，充其量是个初学者。之所以用erlang举例子，是因为它比较有代表性。 学习erlang，OTP是个转折点，接触了gen_server等一系列模式以后， &hellip;">
+  <meta name="description" content="这是公司UI团队的分享，做一个简单的摘要 服务体验的相关要素 空间
+人
+(周边)物体
+界面（包括交互方式）
+传播
+衡量 服务体验分析 分解服务环节
+对每一个服务环节进行分析，分析思路可以是—— 1
+2
+3
+4
+5 -&gt; 参与体验者 -&gt; 提供的服务 -&gt; 体验感走势 -&gt; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +87,88 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/">分享笔记-服务设计</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T15:49:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这是公司UI团队的分享，做一个简单的摘要</p>
+
+<h3>服务体验的相关要素</h3>
+
+<ul>
+<li>空间</li>
+<li>人</li>
+<li>(周边)物体</li>
+<li>界面（包括交互方式）</li>
+<li>传播</li>
+<li>衡量</li>
+</ul>
+
+
+<h3>服务体验分析</h3>
+
+<ul>
+<li>分解服务环节</li>
+<li>对每一个服务环节进行分析，分析思路可以是——</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> -&gt; 参与体验者
+</span><span class='line'>   -&gt; 提供的服务
+</span><span class='line'>     -&gt; 体验感走势 
+</span><span class='line'>       -&gt; 用户的担忧 
+</span><span class='line'>         -&gt; 增加的服务</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>举例</h3>
+
+<ul>
+<li>拔牙的手势: 提供给用户明确的感情交流机会</li>
+<li>51job -> linkedin：产品定位的变化</li>
+</ul>
+
+
+<h3>其它</h3>
+
+<p>和客户沟通的时候需要有一定的方法，避免开放式的讨论</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1023,173 +1115,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/05/mo-kuai-de-shi-yong/">模块的使用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-05T22:23:00+08:00" pubdate data-updated="true">Dec 5<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/05/mo-kuai-de-shi-yong/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我们常常使用模块，一般是这样</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用起来很简单</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span>   <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过，有时候我不想先要include一下才能使用，这是会遇到错误</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'><span class="no">NoMethodError</span><span class="p">:</span> <span class="n">undefined</span> <span class="nb">method</span> <span class="sb">`hello&#39; for X:Module</span>
-</span><span class='line'><span class="sb">    from (irb):6</span>
-</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是因为使用 def 定义的方法都是 module 的实例方法，当然，就象可以在class里定义类方法一样，module也可以这么做</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># in irb</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于方法很多的 module ，我们可以少写几个<code>self.</code>，只要借助 extend 机制</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="nb">self</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># in irb</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span>   <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个 extend 的作用是把当前这个module extend出去，使实例方法同时承担类方法的职责，那么，如果我们不希望这些方法被include呢，今天看 I18n的代码，学了一招</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于extend的不是当前module，而是一个匿名module，这块“领地”其它代码接触不到，所以其内部的方法不能被include，达到了我们的要求</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">010</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'><span class="no">NameError</span><span class="p">:</span> <span class="n">undefined</span> <span class="n">local</span> <span class="n">variable</span> <span class="ow">or</span> <span class="nb">method</span> <span class="sb">`hello&#39; for main:Object</span>
-</span><span class='line'><span class="sb">    from (irb):10</span>
-</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>灵活运用module，可以很好的提高代码的复用性，同时保护好必要的封装，have fun !</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1207,6 +1132,10 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/26/process-infohan-shu-can-shu/">process info函数参数</a>
       </li>
     
@@ -1220,10 +1149,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
     
       <li class="post">
         <a href="/blog/2014/05/18/wei-shi-yao-zuo-yue-zi-shi-lou-xi/">ZZ：为什么坐月子是陋习</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
       </li>
     
   </ul>

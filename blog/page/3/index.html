@@ -9,8 +9,17 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="使用ruby，一个很有价值的地方就是发明了各种DSL，比如这样： 1
-tags.delete_if{|x| x.nil?}.map{|v| v.sub /^!/,&#39;&#39;}.delete_if{|x| x.empty?} 这种风格通常被称为链式调用，优点是代码比较连贯， &hellip;">
+  <meta name="description" content="我们常常使用模块，一般是这样 1
+2
+3
+4
+module X def hello; &#39;hello&#39;; end def world; &#39;world&#39;; end
+end 使用起来很简单 1
+2
+3
+4
+1.9.3p327 :006 &gt; include X
+=& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +87,173 @@ tags.delete_if{|x| x.nil?}.map{|v| v.sub /^!/,&#39;&#39;}.delete_if{|x| x.empty?
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/05/mo-kuai-de-shi-yong/">模块的使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-05T22:23:00+08:00" pubdate data-updated="true">Dec 5<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/05/mo-kuai-de-shi-yong/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我们常常使用模块，一般是这样</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用起来很简单</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span>   <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">hello</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过，有时候我不想先要include一下才能使用，这是会遇到错误</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
+</span><span class='line'><span class="no">NoMethodError</span><span class="p">:</span> <span class="n">undefined</span> <span class="nb">method</span> <span class="sb">`hello&#39; for X:Module</span>
+</span><span class='line'><span class="sb">    from (irb):6</span>
+</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是因为使用 def 定义的方法都是 module 的实例方法，当然，就象可以在class里定义类方法一样，module也可以这么做</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># in irb</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于方法很多的 module ，我们可以少写几个<code>self.</code>，只要借助 extend 机制</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># in irb</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span>   <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="n">hello</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个 extend 的作用是把当前这个module extend出去，使实例方法同时承担类方法的职责，那么，如果我们不希望这些方法被include呢，今天看 I18n的代码，学了一招</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于extend的不是当前module，而是一个匿名module，这块“领地”其它代码接触不到，所以其内部的方法不能被include，达到了我们的要求</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">010</span> <span class="o">&gt;</span> <span class="n">hello</span>
+</span><span class='line'><span class="no">NameError</span><span class="p">:</span> <span class="n">undefined</span> <span class="n">local</span> <span class="n">variable</span> <span class="ow">or</span> <span class="nb">method</span> <span class="sb">`hello&#39; for main:Object</span>
+</span><span class='line'><span class="sb">    from (irb):10</span>
+</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>灵活运用module，可以很好的提高代码的复用性，同时保护好必要的封装，have fun !</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1012,107 +1188,6 @@ end</code></pre></noscript></div>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/">Vagrant使用步骤总结</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-26T01:04:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/04/26/vagrantshi-yong-bu-zou-zong-jie/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>使用vagrant把AppOSS的项目环境打了一个包，这个东西确实很适合统一开发环境，总结一下过程吧。</p>
-
-<p><strong>基于base.box或者某个os的iso文件建立基础系统环境，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant add base &lt;base box url&gt;
-</span><span class='line'>cd &lt;your rails project&gt;
-</span><span class='line'>vagrnat init base
-</span><span class='line'>vagrant up</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>调整系统环境，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant ssh
-</span><span class='line'>curl -L get.rvm.io | bash -s stable</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>将调整过的环境打包为新的base文件，以备将来使用，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output base-ubuntu-rvm.box</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>修改Vagrantfile，添加puppet支持，相关内容为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># Vagrantfile
-</span><span class='line'>config.vm.provision :puppet do |puppet|
-</span><span class='line'>  puppet.manifests_path = "manifests"
-</span><span class='line'>  puppet.manifest_file  = "ubuntu.pp"
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>将项目依赖的软件包（例如：libxml2-dev，libmysqlclient-dev之类），通过puppet安装好，相关命令为</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant reload</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>重新打包为box文件，这就是可以重复使用的项目环境了</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vagrant package --output apposs-center.box</span></code></pre></td></tr></table></div></figure>
-
-
-<p>说明：<br/>
-1. 对于团队协作而言，如果环境有了变化，重复5、6两步即可 <br/>
-2. 将rvm放在自己定制的base中是考虑到其它项目也会用到rvm，原则上，项目专用的环境通过puppet进行统一，各项目都有的环境使用同一个base box来解决<br/>
-3. ruby项目通过bundle管理的gem包，可以采用下面的命令进行安装，这样可以减少内外系统的重复文件</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install --path ./vendor/bundle</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个做法是来自saberma同学，原文在此： http://saberma.me/linux/2011/03/03/vagrant-virtual-develop-enviroment.html</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1130,6 +1205,10 @@ end</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/26/process-infohan-shu-can-shu/">process info函数参数</a>
       </li>
     
@@ -1143,10 +1222,6 @@ end</code></pre></noscript></div>
     
       <li class="post">
         <a href="/blog/2014/05/18/wei-shi-yao-zuo-yue-zi-shi-lou-xi/">ZZ：为什么坐月子是陋习</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2014-05-26T11:45:41+08:00</updated>
+  <updated>2014-05-26T12:57:03+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[编译]ubuntu下自定义用户目录]]></title>
+    <link href="http://fsword.github.com/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/"/>
+    <updated>2014-05-26T12:48:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu</id>
+    <content type="html"><![CDATA[<p>内容来源： <a href="https://blog.dbrgn.ch/2010/5/21/fix-ubuntu-user-directories-desktopmusictemplates-etc/">链接</a></p>
+
+<p>有的linux桌面(例如ubuntu/xbuntu)会按照xdg-user-dirs规范将一些目录作为缺省目录(例如 Desktop, Music, Pictures, Templates 等等)，这些内容是可以自己修改和维护的，配置文件在 ~/.config/user-dirs.dirs</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># This file is written by xdg-user-dirs-update
+</span><span class='line'># If you want to change or add directories, just edit the line you're
+</span><span class='line'># interested in. All local changes will be retained on the next run
+</span><span class='line'># Format is XDG_xxx_DIR="$HOME/yyy", where yyy is a shell-escaped
+</span><span class='line'># homedir-relative path, or XDG_xxx_DIR="/yyy", where /yyy is an
+</span><span class='line'># absolute path. No other format is supported.
+</span><span class='line'>#
+</span><span class='line'>XDG_DESKTOP_DIR="$HOME/Desktop"
+</span><span class='line'>XDG_DOWNLOAD_DIR="$HOME/Downloads"
+</span><span class='line'>XDG_TEMPLATES_DIR="$HOME/Templates"
+</span><span class='line'>XDG_PUBLICSHARE_DIR="$HOME/Public"
+</span><span class='line'>XDG_DOCUMENTS_DIR="$HOME/Documents"
+</span><span class='line'>XDG_MUSIC_DIR="$HOME/Music"
+</span><span class='line'>XDG_PICTURES_DIR="$HOME/Pictures"
+</span><span class='line'>XDG_VIDEOS_DIR="$HOME/Videos"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于这些 xdg user dirs ，更详细的信息参见<a href="http://www.freedesktop.org/wiki/Software/xdg-user-dirs">这里</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[process info函数参数]]></title>
@@ -1471,144 +1516,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[模块的使用]]></title>
-    <link href="http://fsword.github.com/blog/2012/12/05/mo-kuai-de-shi-yong/"/>
-    <updated>2012-12-05T22:23:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/12/05/mo-kuai-de-shi-yong</id>
-    <content type="html"><![CDATA[<p>我们常常使用模块，一般是这样</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用起来很简单</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span>   <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过，有时候我不想先要include一下才能使用，这是会遇到错误</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">006</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'><span class="no">NoMethodError</span><span class="p">:</span> <span class="n">undefined</span> <span class="nb">method</span> <span class="sb">`hello&#39; for X:Module</span>
-</span><span class='line'><span class="sb">    from (irb):6</span>
-</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是因为使用 def 定义的方法都是 module 的实例方法，当然，就象可以在class里定义类方法一样，module也可以这么做</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># in irb</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于方法很多的 module ，我们可以少写几个<code>self.</code>，只要借助 extend 机制</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="nb">self</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># in irb</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">007</span> <span class="o">&gt;</span>   <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个 extend 的作用是把当前这个module extend出去，使实例方法同时承担类方法的职责，那么，如果我们不希望这些方法被include呢，今天看 I18n的代码，学了一招</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">hello</span><span class="p">;</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">world</span><span class="p">;</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于extend的不是当前module，而是一个匿名module，这块“领地”其它代码接触不到，所以其内部的方法不能被include，达到了我们的要求</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">hello</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">00</span><span class="mi">9</span> <span class="o">&gt;</span> <span class="kp">include</span> <span class="n">X</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">.</span><span class="mi">3</span><span class="n">p327</span> <span class="p">:</span><span class="mo">010</span> <span class="o">&gt;</span> <span class="n">hello</span>
-</span><span class='line'><span class="no">NameError</span><span class="p">:</span> <span class="n">undefined</span> <span class="n">local</span> <span class="n">variable</span> <span class="ow">or</span> <span class="nb">method</span> <span class="sb">`hello&#39; for main:Object</span>
-</span><span class='line'><span class="sb">    from (irb):10</span>
-</span><span class='line'><span class="sb">    from /home/john/.rvm/rubies/ruby-1.9.3-p327-falcon/bin/irb:16:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>灵活运用module，可以很好的提高代码的复用性，同时保护好必要的封装，have fun !</p>
 ]]></content>
   </entry>
   

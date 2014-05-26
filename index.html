@@ -9,21 +9,7 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="今天想查一下erlang:process_info函数的参数，余锋同学给了一个链接，结果看到了recon 这个项目，感觉很值得关注，记录一下。 不过，如果只是了解process_info函数有哪些key，可以直接用这种方式： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15 &hellip;">
+  <meta name="description" content="内容来源： 链接 有的linux桌面(例如ubuntu/xbuntu)会按照xdg-user-dirs规范将一些目录作为缺省目录(例如 Desktop, Music, Pictures, Templates 等等)，这些内容是可以自己修改和维护的，配置文件在 ~/.config/user-dirs &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,6 +77,80 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-26T12:48:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>内容来源： <a href="https://blog.dbrgn.ch/2010/5/21/fix-ubuntu-user-directories-desktopmusictemplates-etc/">链接</a></p>
+
+<p>有的linux桌面(例如ubuntu/xbuntu)会按照xdg-user-dirs规范将一些目录作为缺省目录(例如 Desktop, Music, Pictures, Templates 等等)，这些内容是可以自己修改和维护的，配置文件在 ~/.config/user-dirs.dirs</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># This file is written by xdg-user-dirs-update
+</span><span class='line'># If you want to change or add directories, just edit the line you're
+</span><span class='line'># interested in. All local changes will be retained on the next run
+</span><span class='line'># Format is XDG_xxx_DIR="$HOME/yyy", where yyy is a shell-escaped
+</span><span class='line'># homedir-relative path, or XDG_xxx_DIR="/yyy", where /yyy is an
+</span><span class='line'># absolute path. No other format is supported.
+</span><span class='line'>#
+</span><span class='line'>XDG_DESKTOP_DIR="$HOME/Desktop"
+</span><span class='line'>XDG_DOWNLOAD_DIR="$HOME/Downloads"
+</span><span class='line'>XDG_TEMPLATES_DIR="$HOME/Templates"
+</span><span class='line'>XDG_PUBLICSHARE_DIR="$HOME/Public"
+</span><span class='line'>XDG_DOCUMENTS_DIR="$HOME/Documents"
+</span><span class='line'>XDG_MUSIC_DIR="$HOME/Music"
+</span><span class='line'>XDG_PICTURES_DIR="$HOME/Pictures"
+</span><span class='line'>XDG_VIDEOS_DIR="$HOME/Videos"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于这些 xdg user dirs ，更详细的信息参见<a href="http://www.freedesktop.org/wiki/Software/xdg-user-dirs">这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1077,88 +1137,6 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/">分享笔记-服务设计</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-02T15:49:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/02/fen-xiang-bi-ji-fu-wu-she-ji/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这是公司UI团队的分享，做一个简单的摘要</p>
-
-<h3>服务体验的相关要素</h3>
-
-<ul>
-<li>空间</li>
-<li>人</li>
-<li>(周边)物体</li>
-<li>界面（包括交互方式）</li>
-<li>传播</li>
-<li>衡量</li>
-</ul>
-
-
-<h3>服务体验分析</h3>
-
-<ul>
-<li>分解服务环节</li>
-<li>对每一个服务环节进行分析，分析思路可以是——</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> -&gt; 参与体验者
-</span><span class='line'>   -&gt; 提供的服务
-</span><span class='line'>     -&gt; 体验感走势 
-</span><span class='line'>       -&gt; 用户的担忧 
-</span><span class='line'>         -&gt; 增加的服务</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>举例</h3>
-
-<ul>
-<li>拔牙的手势: 提供给用户明确的感情交流机会</li>
-<li>51job -> linkedin：产品定位的变化</li>
-</ul>
-
-
-<h3>其它</h3>
-
-<p>和客户沟通的时候需要有一定的方法，避免开放式的讨论</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1174,6 +1152,10 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/26/process-infohan-shu-can-shu/">process info函数参数</a>
       </li>
     
@@ -1187,10 +1169,6 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
     
       <li class="post">
         <a href="/blog/2014/05/18/wei-shi-yao-zuo-yue-zi-shi-lou-xi/">ZZ：为什么坐月子是陋习</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/18/zz%3Azuo-yue-zi-%28bai-yi-xian-fan-%29/">ZZ：坐月子（白衣咸饭）</a>
       </li>
     
   </ul>

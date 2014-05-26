@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux | fsword's blog]]></title>
+  <link href="http://fsword.github.com/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://fsword.github.com/"/>
+  <updated>2014-05-26T12:57:03+08:00</updated>
+  <id>http://fsword.github.com/</id>
+  <author>
+    <name><![CDATA[fsword]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[[编译]ubuntu下自定义用户目录]]></title>
+    <link href="http://fsword.github.com/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/"/>
+    <updated>2014-05-26T12:48:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu</id>
+    <content type="html"><![CDATA[<p>内容来源： <a href="https://blog.dbrgn.ch/2010/5/21/fix-ubuntu-user-directories-desktopmusictemplates-etc/">链接</a></p>
+
+<p>有的linux桌面(例如ubuntu/xbuntu)会按照xdg-user-dirs规范将一些目录作为缺省目录(例如 Desktop, Music, Pictures, Templates 等等)，这些内容是可以自己修改和维护的，配置文件在 ~/.config/user-dirs.dirs</p>
+
+<p>```</p>
+
+<h1>This file is written by xdg-user-dirs-update</h1>
+
+<h1>If you want to change or add directories, just edit the line you're</h1>
+
+<h1>interested in. All local changes will be retained on the next run</h1>
+
+<h1>Format is XDG_xxx_DIR="$HOME/yyy", where yyy is a shell-escaped</h1>
+
+<h1>homedir-relative path, or XDG_xxx_DIR="/yyy", where /yyy is an</h1>
+
+<h1>absolute path. No other format is supported.</h1>
+
+<p>#
+XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_TEMPLATES_DIR="$HOME/Templates"
+XDG_PUBLICSHARE_DIR="$HOME/Public"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_MUSIC_DIR="$HOME/Music"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_VIDEOS_DIR="$HOME/Videos"
+```
+关于这些 xdg user dirs ，更详细的信息参见<a href="http://www.freedesktop.org/wiki/Software/xdg-user-dirs">这里</a></p>
+]]></content>
+  </entry>
+  
+</feed>
