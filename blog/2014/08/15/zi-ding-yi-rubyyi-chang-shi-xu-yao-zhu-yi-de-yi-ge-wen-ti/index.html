@@ -5,12 +5,30 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ZZ：也谈坐月子的问题 - fsword's blog</title>
+  <title>自定义ruby异常时需要注意的一个问题 - fsword's blog</title>
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="◇◇新语丝(www.xys.org)(xys5.dxiong.com)(www.xinyusi.info)(xys2.dropin.org)◇◇ 　　也谈坐月子的问题 　　作者：王永祯 　　方舟子先生“中国人坐月子的陋习”一文，所述事实符合实际，分析批判正
-确。为什么却招徕了一片骂声？ 　　 &hellip;">
+  <meta name="description" content="有时我们会有这样的场景，对于依次调用的函数 A 、B、 C，存在这样的职责： 1
+2
+3
+A [处理指定异常类] -----&gt; B[转换异常类] -----&gt; C[抛出原始异常] 有人会写出这样的代码： 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +37,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://fsword.github.com/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti">
+  <link rel="canonical" href="http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
@@ -81,7 +99,7 @@
   
   <header>
     
-      <h1 class="entry-title">ZZ：也谈坐月子的问题</h1>
+      <h1 class="entry-title">自定义ruby异常时需要注意的一个问题</h1>
     
     
       <p class="meta">
@@ -97,7 +115,7 @@
   
 
 
-<time datetime="2014-05-18T22:04:00+08:00" pubdate data-updated="true">May 18<span>th</span>, 2014</time>
+<time datetime="2014-08-15T12:12:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -106,39 +124,73 @@
   </header>
 
 
-<div class="entry-content"><p>◇◇新语丝(www.xys.org)(xys5.dxiong.com)(www.xinyusi.info)(xys2.dropin.org)◇◇</p>
+<div class="entry-content"><p>有时我们会有这样的场景，对于依次调用的函数 A 、B、 C，存在这样的职责：</p>
 
-<p>　　也谈坐月子的问题</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>A [处理指定异常类]
+</span><span class='line'>    -----&gt; B[转换异常类] 
+</span><span class='line'>                -----&gt; C[抛出原始异常]</span></code></pre></td></tr></table></div></figure>
 
-<p>　　作者：王永祯</p>
 
-<p>　　方舟子先生“中国人坐月子的陋习”一文，所述事实符合实际，分析批判正
-确。为什么却招徕了一片骂声？</p>
+<p>有人会写出这样的代码：</p>
 
-<p>　　60年代，我是乡级医院的一名医生。对农村生孩子，坐月子，实在是太熟悉
-了。因为坐月子，对产妇母子的伤害见的太多了。</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">WrappedError</span> <span class="o">&lt;</span> <span class="no">StandardError</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
+</span><span class='line'>  <span class="n">second</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">WrappedError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">second</span>
+</span><span class='line'>  <span class="n">third</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">StandardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="c1"># do some things</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">WrappedError</span><span class="o">.</span><span class="n">new</span> <span class="n">e</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">third</span>
+</span><span class='line'>  <span class="nb">fail</span> <span class="s1">&#39;I am wrong&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">first</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>　　说一个我亲身经历的真实故事吧：</p>
 
-<p>　　某产妇生小孩，由我院接生员接生，生产很顺利。本来无事。可是两天后，
-我们的接生员突然来找我，“王大夫你快去看看吧，孩子发高烧，母亲也象昏迷
-的样子”。我于是背起出诊包，急忙赶到孕妇家。一近产妇的房间，屋内有几个
-邻居的老太太，象在照料病人，表情沉重。母子都昏昏然，经检查，除孩子体温
-接近40℃外，没有任何有产期感染迹象。时值三伏高温季节，屋子门窗紧闭，孩
-子还用棉被包裹，屋内凭感觉，室温估计会接近40℃，空气也相当不好。我全明
-白了。我告诉在场的人：我看不出来孩子和母亲有什么病，屋子太热了。于是我
-亲自动手，解除了孩子包身的棉被，打开了屋子的窗户，并要求母亲只穿内衣，
-勿盖棉被。我的举措，可谓大逆不道，令在场的人目瞪口呆。可他们不敢对我进
-行阻拦。过一会，效果显现了，孩子体温降下来了，母亲也精神好转。在场的所
-有人都松了一口气。我也轻松地离开了产妇家。</p>
+<p>这个写法有两个错误：</p>
 
-<p>　　这样的故事，决不是虚构，可以讲很多。</p>
+<ul>
+<li>java的异常类通常会在构造器方法里传入root cause对象，但ruby不需要，它可以直接从 $! 上得到，所以 <code>WrappedError.new e</code>其实多余。</li>
+<li>ruby的异常经过包装后就不会在backtrace中输出之前的root cause信息，不过异常对象有cause属性可以用来访问，所以在first函数里应该这么写——</li>
+</ul>
 
-<p>　　我已不在农村，据说还有这种陋习。</p>
 
-<p>(XYS20110717)</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">cause</span><span class="o">||</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>◇◇新语丝(www.xys.org)(xys5.dxiong.com)(www.xinyusi.info)(xys2.dropin.org)◇◇</p>
+
+<p>have fun!</p>
 </div>
 
 
@@ -161,21 +213,15 @@
   
 
 
-<time datetime="2014-05-18T22:04:00+08:00" pubdate data-updated="true">May 18<span>th</span>, 2014</time>
+<time datetime="2014-08-15T12:12:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2014</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/zuo-yue-zi/'>坐月子</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti/" data-via="" data-counturl="http://fsword.github.com/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/" data-via="" data-counturl="http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/" >Tweet</a>
   
   
   
@@ -184,10 +230,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/05/18/zz%3Aye-shuo-zuo-yue-zi/" title="Previous Post: ZZ：也说坐月子">&laquo; ZZ：也说坐月子</a>
+        <a class="basic-alignment left" href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/" title="Previous Post: [编译]ubuntu下自定义用户目录">&laquo; [编译]ubuntu下自定义用户目录</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/05/26/process-infohan-shu-can-shu/" title="Next Post: process info函数参数">process info函数参数 &raquo;</a>
       
     </p>
   </footer>
@@ -303,8 +347,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://fsword.github.com/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti/';
-        var disqus_url = 'http://fsword.github.com/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti/';
+        var disqus_identifier = 'http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/';
+        var disqus_url = 'http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/';
         var disqus_script = 'embed.js';
       
     (function () {

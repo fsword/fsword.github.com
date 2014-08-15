@@ -4,7 +4,7 @@
   <title><![CDATA[fsword's blog]]></title>
   <link href="http://fsword.github.com/atom.xml" rel="self"/>
   <link href="http://fsword.github.com/"/>
-  <updated>2014-06-11T17:55:48+08:00</updated>
+  <updated>2014-08-15T12:15:28+08:00</updated>
   <id>http://fsword.github.com/</id>
   <author>
     <name><![CDATA[fsword]]></name>
@@ -12,6 +12,81 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[自定义ruby异常时需要注意的一个问题]]></title>
+    <link href="http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/"/>
+    <updated>2014-08-15T12:12:00+08:00</updated>
+    <id>http://fsword.github.com/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti</id>
+    <content type="html"><![CDATA[<p>有时我们会有这样的场景，对于依次调用的函数 A 、B、 C，存在这样的职责：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>A [处理指定异常类]
+</span><span class='line'>    -----&gt; B[转换异常类] 
+</span><span class='line'>                -----&gt; C[抛出原始异常]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有人会写出这样的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">WrappedError</span> <span class="o">&lt;</span> <span class="no">StandardError</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
+</span><span class='line'>  <span class="n">second</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">WrappedError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">second</span>
+</span><span class='line'>  <span class="n">third</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">StandardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="c1"># do some things</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">WrappedError</span><span class="o">.</span><span class="n">new</span> <span class="n">e</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">third</span>
+</span><span class='line'>  <span class="nb">fail</span> <span class="s1">&#39;I am wrong&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">first</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个写法有两个错误：</p>
+
+<ul>
+<li>java的异常类通常会在构造器方法里传入root cause对象，但ruby不需要，它可以直接从 $! 上得到，所以 <code>WrappedError.new e</code>其实多余。</li>
+<li>ruby的异常经过包装后就不会在backtrace中输出之前的root cause信息，不过异常对象有cause属性可以用来访问，所以在first函数里应该这么写——</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">cause</span><span class="o">||</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>have fun!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[[编译]ubuntu下自定义用户目录]]></title>
@@ -1461,61 +1536,6 @@ interface这类技术进行约束，即使实现了同样的interface，我们�
 <p>如前所述，基本的思路还是自动化，只不过现在我们要处理多个系统的自动部署和测试，相对而言，这种场景中的测试更接近验收测试，相对不是很复杂，所以关键就在部署上，我们希望实现这样的一张图</p>
 
 <p><img src="http://fsword.github.com/images/new_way.png" alt="new way" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[erlang环境安装FAQ]]></title>
-    <link href="http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/"/>
-    <updated>2012-12-09T15:46:00+08:00</updated>
-    <id>http://fsword.github.com/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq</id>
-    <content type="html"><![CDATA[<h3>如何添加 wx 支持</h3>
-
-<p>erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1&gt; reltool:start().
-</span><span class='line'>
-</span><span class='line'>=ERROR REPORT==== 9-Dec-2012::15:28:51 ===
-</span><span class='line'>ERROR: Could not find 'wxe_driver.so' in: /home/john/software/otp/lib/erlang/lib/wx-0.99.1/priv
-</span><span class='line'>** exception exit: {load_driver,"No driver found"}
-</span><span class='line'>     in function  wxe_server:start/0 (wxe_server.erl, line 64)
-</span><span class='line'>         in call from wx:new/1 (wx.erl, line 99)
-</span><span class='line'>         in call from reltool_sys_win:do_init/1 (reltool_sys_win.erl, line 140)
-</span><span class='line'>         in call from reltool_sys_win:init/1 (reltool_sys_win.erl, line 130)
-</span><span class='line'>         in call from proc_lib:init_p_do_apply/3 (proc_lib.erl, line 227)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有经验的人一般会尝试自己编译erlang环境，但可能会发现编译时找不到wx库。实际上，ubuntu环境一般确实会安装 libwxgtk2.8-dev 这个包，但是需要添加一个 link （参考<a href="http://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu">官方说明</a>）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/include
-</span><span class='line'>sudo ln -sv wx-2.8/wx wx</span></code></pre></td></tr></table></div></figure>
-
-
-<p>另外，提醒一下，你可以在 configure 阶段验证是否支持 wx ，方法是看是否有下面的输出：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>checking for debug build of wxWidgets... checking for wx-config... /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=yes)... no
-</span><span class='line'>checking for standard build of wxWidgets... checking for wx-config... (cached) /usr/bin/wx-config
-</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=no)... yes (version 2.8.12)</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   

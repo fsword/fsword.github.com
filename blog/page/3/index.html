@@ -9,17 +9,17 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="我们常常使用模块，一般是这样 1
+  <meta name="description" content="如何添加 wx 支持 erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样 1
 2
 3
 4
-module X def hello; &#39;hello&#39;; end def world; &#39;world&#39;; end
-end 使用起来很简单 1
-2
-3
-4
-1.9.3p327 :006 &gt; include X
-=& &hellip;">
+5
+6
+7
+8
+9
+10
+1&gt; reltool:start(). =ERROR REPORT==== &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +87,90 @@ end 使用起来很简单 1
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/">erlang环境安装FAQ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-09T15:46:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/09/erlanghuan-jing-an-zhuang-faq/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>如何添加 wx 支持</h3>
+
+<p>erlang的很多GUI工具都是基于wx库的，比如: reltool，但是缺省的ubuntu环境中的 erlang 包是没有wx支持的，常见错误是这样</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1&gt; reltool:start().
+</span><span class='line'>
+</span><span class='line'>=ERROR REPORT==== 9-Dec-2012::15:28:51 ===
+</span><span class='line'>ERROR: Could not find 'wxe_driver.so' in: /home/john/software/otp/lib/erlang/lib/wx-0.99.1/priv
+</span><span class='line'>** exception exit: {load_driver,"No driver found"}
+</span><span class='line'>     in function  wxe_server:start/0 (wxe_server.erl, line 64)
+</span><span class='line'>         in call from wx:new/1 (wx.erl, line 99)
+</span><span class='line'>         in call from reltool_sys_win:do_init/1 (reltool_sys_win.erl, line 140)
+</span><span class='line'>         in call from reltool_sys_win:init/1 (reltool_sys_win.erl, line 130)
+</span><span class='line'>         in call from proc_lib:init_p_do_apply/3 (proc_lib.erl, line 227)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有经验的人一般会尝试自己编译erlang环境，但可能会发现编译时找不到wx库。实际上，ubuntu环境一般确实会安装 libwxgtk2.8-dev 这个包，但是需要添加一个 link （参考<a href="http://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu">官方说明</a>）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/include
+</span><span class='line'>sudo ln -sv wx-2.8/wx wx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外，提醒一下，你可以在 configure 阶段验证是否支持 wx ，方法是看是否有下面的输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>checking for debug build of wxWidgets... checking for wx-config... /usr/bin/wx-config
+</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=yes)... no
+</span><span class='line'>checking for standard build of wxWidgets... checking for wx-config... (cached) /usr/bin/wx-config
+</span><span class='line'>checking for wxWidgets version &gt;= 2.8.4 (--unicode --debug=no)... yes (version 2.8.12)</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1116,78 +1200,6 @@ end</code></pre></noscript></div>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/04/active-recordcuo-wu-hui-zong/">Active Record错误汇总</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-04T14:25:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/05/04/active-recordcuo-wu-hui-zong/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这个帖子专门记录一些使用active record时遇到的错误<br/>
-1. 错误描述：directive找不到自己的template<br/>
-错误代码</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Directive</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:template</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;DirectiveTemplate&#39;</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">create_table</span> <span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">integer</span>  <span class="s2">&quot;directive_template_id&quot;</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>解释：这段代码本身并没有错误，问题是建立directives表的时候给字段命名为 directive_template_id。事实上，active record使用关联对象的外键，是根据field名称来进行的，它和设置的class_name，所以ar会根据directive对象的template_id字段查找关联的template<br/>
-解决方法：更改数据库字段名，或者在模型代码中指定foreign_key</p>
-
-<ol>
-<li>错误描述：db:seed_fu 创建模型遇到表结构错误<br/>
-解释：初步试验发现，如果执行 <code>rake db:create db:migrate db:seed_fu</code> 会遇到这个问题，而将seed_fu单独执行则是正常的，考虑到发生错误的表在migrate阶段有过结构变更，估计是数据库事务导致alter语句没有提交，从而使得seed_fu失败</li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1205,6 +1217,10 @@ end</code></pre></noscript></div>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/">自定义ruby异常时需要注意的一个问题</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
       </li>
     
@@ -1218,10 +1234,6 @@ end</code></pre></noscript></div>
     
       <li class="post">
         <a href="/blog/2014/05/18/zz%3Aye-shuo-zuo-yue-zi/">ZZ：也说坐月子</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/18/zz%3Awei-shi-yao-zuo-yue-zi-shi-lou-xi/">ZZ：为什么坐月子是陋习</a>
       </li>
     
   </ul>

@@ -9,7 +9,26 @@
   <meta name="author" content="fsword">
 
   
-  <meta name="description" content="内容来源： 链接 有的linux桌面(例如ubuntu/xbuntu)会按照xdg-user-dirs规范将一些目录作为缺省目录(例如 Desktop, Music, Pictures, Templates 等等)，这些内容是可以自己修改和维护的，配置文件在 ~/.config/user-dirs &hellip;">
+  <meta name="description" content="有时我们会有这样的场景，对于依次调用的函数 A 、B、 C，存在这样的职责： 1
+2
+3
+A [处理指定异常类] -----&gt; B[转换异常类] -----&gt; C[抛出原始异常] 有人会写出这样的代码： 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +96,110 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/">自定义ruby异常时需要注意的一个问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-15T12:12:00+08:00" pubdate data-updated="true">Aug 15<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>有时我们会有这样的场景，对于依次调用的函数 A 、B、 C，存在这样的职责：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>A [处理指定异常类]
+</span><span class='line'>    -----&gt; B[转换异常类] 
+</span><span class='line'>                -----&gt; C[抛出原始异常]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有人会写出这样的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">WrappedError</span> <span class="o">&lt;</span> <span class="no">StandardError</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
+</span><span class='line'>  <span class="n">second</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">WrappedError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">second</span>
+</span><span class='line'>  <span class="n">third</span>
+</span><span class='line'><span class="k">rescue</span> <span class="no">StandardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>  <span class="c1"># do some things</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">WrappedError</span><span class="o">.</span><span class="n">new</span> <span class="n">e</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">third</span>
+</span><span class='line'>  <span class="nb">fail</span> <span class="s1">&#39;I am wrong&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">first</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个写法有两个错误：</p>
+
+<ul>
+<li>java的异常类通常会在构造器方法里传入root cause对象，但ruby不需要，它可以直接从 $! 上得到，所以 <code>WrappedError.new e</code>其实多余。</li>
+<li>ruby的异常经过包装后就不会在backtrace中输出之前的root cause信息，不过异常对象有cause属性可以用来访问，所以在first函数里应该这么写——</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="se">\n</span><span class="si">#{</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">cause</span><span class="o">||</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>have fun!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1018,125 +1141,6 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/">一个bug的修改</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-27T16:28:00+08:00" pubdate data-updated="true">Aug 27<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/27/yi-ge-bugde-xiu-gai/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>下面是一段工作中编写的代码，为便于理解修改如下——</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Order</span>
-</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:sub_orders</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># 统计订单及其包含子订单的数量，按照订单类型归类</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
-</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
-</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">result</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>乍一看没问题，但是计算出来的数字始终不对，细看才发现问题，修改一下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
-</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
-</span><span class='line'>        <span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>      <span class="n">result</span> <span class="c1">#添加这一行</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>    <span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="n">type</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">result</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>分析原因，是对reduce的使用不够细致：each和map容易和以前写java代码时的思维方式一致，所以不容易犯错；而reduce的返回值用于进一步迭代，这种做法以前用的较少，潜意识里还是将result和s看作是一个服务于循环的变量。</p>
-
-<p>想明白以后再带着新的角度看这个代码，于是发现还可以简化，reduce操作的最大特点就是将初始值和结果纳入到计算框架中，这样可以减少很多重复劳动，最后改成这样</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">count_items</span>
-</span><span class='line'>    <span class="n">sub_orders</span><span class="o">.</span><span class="n">reduce</span><span class="p">({</span> <span class="n">type</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="p">})</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="p">,</span> <span class="n">order</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">order</span><span class="o">.</span><span class="n">count_items</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">|</span>
-</span><span class='line'>        <span class="n">s</span><span class="o">.</span><span class="n">update</span> <span class="n">key</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">s</span><span class="o">[</span><span class="n">key</span><span class="o">]||</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其实就两点：1. block参数的模式匹配；2. update的返回值就是当前对象</p>
-
-<p>试验代码在 <a href="https://gist.github.com/fsword/6353526">这里</a> ，Be fun!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1152,6 +1156,10 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/">自定义ruby异常时需要注意的一个问题</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
       </li>
     
@@ -1165,10 +1173,6 @@ B12在食物中的含量，绝大多数情况下可以满足需要，不必特�
     
       <li class="post">
         <a href="/blog/2014/05/18/zz%3Aye-shuo-zuo-yue-zi/">ZZ：也说坐月子</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/18/zz%3Awei-shi-yao-zuo-yue-zi-shi-lou-xi/">ZZ：为什么坐月子是陋习</a>
       </li>
     
   </ul>
