@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>多级module避免使用双冒号 - fsword's blog</title>
+  <meta name="author" content="fsword">
+
+  
+  <meta name="description" content="在多层模块中定义类或者模块一般有两种做法： 1
+2
+3
+4
+5
+6
+7
+module A module B class C ... end end
+end 和 1
+2
+3
+4
+5
+module A::B class C ... end
+end 直观看，后者显然要简洁一些，所以我们常常使用这种写法， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://fsword.github.com/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="fsword's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29872638-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">fsword's blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:fsword.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">多级module避免使用双冒号</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T11:48:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在多层模块中定义类或者模块一般有两种做法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>和</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">A::B</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>直观看，后者显然要简洁一些，所以我们常常使用这种写法，不过，其实后者更灵活。</p>
+
+<p>这两种写法并不是等价的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>    <span class="no">Sth</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">C</span>
+</span><span class='line'>      <span class="k">class</span> <span class="nc">X</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">hello</span>
+</span><span class='line'>          <span class="nb">puts</span> <span class="no">Sth</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="ss">A</span><span class="p">:</span><span class="ss">:B</span><span class="o">::</span><span class="ss">C</span><span class="p">:</span><span class="ss">:X</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行上述代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">sample</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>改为双冒号：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>    <span class="no">Sth</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">A::B::C</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">X</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">hello</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="no">Sth</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="ss">A</span><span class="p">:</span><span class="ss">:B</span><span class="o">::</span><span class="ss">C</span><span class="p">:</span><span class="ss">:X</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再执行就会出错了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">ruby</span> <span class="n">sample</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">v</span><span class="o">.</span><span class="n">rb</span><span class="p">:</span><span class="mi">9</span><span class="ss">:in</span> <span class="sb">`hello&#39;: uninitialized constant A::B::C::X::Sth (NameError)</span>
+</span><span class='line'><span class="sb">    from v.rb:15:in `</span><span class="o">&lt;</span><span class="n">main</span><span class="o">&gt;</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你感觉奇怪，说明对ruby的语法理解的还不充分。初学者常以为module和class这两个关键字是&#8221;<code>定义</code>一个类/模块&#8221;，但其实它们的意思是&#8221;<code>打开</code>一个类/模块&#8221;（正是这一特性让ruby具备了open class的能力），而对于<code>打开</code>这个概念，随之而来的自然是可以访问这个类/模块上下文的各种常量。</p>
+
+<p>在前一种写法中，我们实际上是在<code>依次打开</code>模块A、B、C，因此X可以访问这些模块中的常量，而<code>module A::B::C</code>这种写法只是打开了<code>A::B::C</code>这个模块，于是X就不能访问 A::B 这个模块的常量了。</p>
+
+<p>module中的常量，通常是一些模块级的共享对象和数据，因此，为了让我们的代码能够访问这些位置，写成层次module显然比使用双引号的代码更有灵活性。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">fsword</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T11:48:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/double-slash-colon/'>double\_colon</a>, <a class='category' href='/blog/categories/ruby/'>ruby,</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://fsword.github.com/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao/" data-via="" data-counturl="http://fsword.github.com/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/" title="Previous Post: 自定义ruby异常时需要注意的一个问题">&laquo; 自定义ruby异常时需要注意的一个问题</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao/">多级module避免使用双冒号</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/15/zi-ding-yi-rubyyi-chang-shi-xu-yao-zhu-yi-de-yi-ge-wen-ti/">自定义ruby异常时需要注意的一个问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/26/ubuntuxia-zi-ding-yi-yong-hu-mu-lu/">[编译]ubuntu下自定义用户目录</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/26/process-infohan-shu-can-shu/">process info函数参数</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/zz%3Aye-tan-zuo-yue-zi-de-wen-ti/">ZZ：也谈坐月子的问题</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fsword',
+            count: 4,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+<h1>My slides</h1>
+<ul id="my_slide">
+	<li class="post">
+		<a href="/slide/ruby/index.html" target="_blank">Magic Ruby</a>
+	</li>
+	<li class="post">
+		<a href="/slide/yan-fa-ce-shi/index.html" target="_blank">AppOSS中的研发测试</a>
+	</li>
+	<li class="post">
+		<a href="/slide/ci_con/index.html" target="_blank">持续集成实践</a>
+	</li>
+</ul>
+</section>
+<section>
+<h1>Recommended</h1>
+<ul id="my_slide">
+	<li class="post">
+		<a href="/recommend/Scale2.swf" target="_blank">宇宙的刻度（flash动画）</a>
+	</li>
+</ul>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - fsword -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'fswordsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://fsword.github.com/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao/';
+        var disqus_url = 'http://fsword.github.com/blog/2014/10/04/duo-ji-module-bi-mian-shi-yong-shuang-mou-hao/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
