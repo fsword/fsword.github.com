@@ -19,254 +19,221 @@
 	<link rel="stylesheet" href="deck.js/extensions/scale/deck.scale.css">
 
 	<!-- Style theme. More available in /themes/style/ or create your own. -->
-	<link rel="stylesheet" href="deck.js/themes/style/swiss.css">
+	<link rel="stylesheet" href="deck.js/themes/style/neon.css">
 	
 	<!-- Transition theme. More available in /themes/transition/ or create your own. -->
 	<link rel="stylesheet" href="deck.js/themes/transition/fade.css">
   <style type="text/css">
     code.comment { display: none; }
+    .timer {
+      position: absolute;
+      color: green;
+      z-index: 3;
+      top: 2%;
+      right: 2%;
+      margin-top: -16px;
+      vertical-align: middle;
+      text-align: center;
+    }
   </style>
 	<!-- Required Modernizr file -->
 	<script src="deck.js/modernizr.custom.js"></script>
 
-	<style type="text/css">
+  <style type="text/css">
     .deck-container { font-size: 30px; } /* optimize the font display in 1366x768 computer */
     .slide ul, .slide ol { margin-bottom: 0 }
-	</style>
+  </style>
+  <script type="text/javascript">
+    function start_timer(){
+      document.start = new Date();
+      document.total = prompt("输入计划时间","45");
+      var trigger = function(){
+        var min = document.total - Math.floor(((new Date().getTime()) - document.start.getTime())/60000);
+        document.getElementById('timer').innerHTML = '还剩'+min+'分钟';
+      };
+      trigger();
+      setInterval(trigger,30000);
+      document.getElementById('timer_trigger').style.display = "none";
+    }
+  </script>
 </head>
 <body class="deck-container">
-
+  <div class="timer">
+    <a id="timer_trigger" href="javascript:start_timer();void(0);">开始</a>
+    <span id="timer"></span>
+  </div>
 <!-- Begin slides. Just make elements with a class of slide. -->
 
 <section class="slide">
-<h1>实践中的CI</h1>
+<h1>持续集成和&quot;云&quot;</h1>
 </section>
 <section class="slide">
 <h2>自我介绍</h2>
 
 <ul>
-<li>李建业(淘宝花名：李福)
+<li>阿里巴巴员工
 </li>
-<li>2002年毕业后一直从事软件开发
-</li>
-<li>研发经历：办公自动化，电信网管、增值业务，互联网创业
-</li>
-<li>2009年底加入淘宝 广告应用开发
+<li>在技术质量部从事持续集成服务引擎开发
 </li>
 </ul>
 </section>
 <section class="slide">
-<h2>背景</h2>
+<h2>在阿里的故事</h2>
+<h3 class="slide">rspec/vagrant</h3>
+<h3 class="slide">团队质量小组</h3>
+<h3 class="slide">KVM/UMP( Green Arrow )</h3>
+<h3 class="slide">机器池( CISE )</h3>
+</section>
+<section class="slide">
+<h1>CISE做了什么</h1>
+</section>
+<section class="slide">
+<h2>持续集成</h2>
+<h3 class="slide">自动化</h3>
 
 <ul>
-<li class="slide">主要是应用系统，数据库操作居多
+<li class="slide">构建
 </li>
-<li class="slide">架构逐渐趋向分布式、服务化
-</li>
-<li class="slide">研发水平参差不齐
+<li class="slide">测试
 </li>
 </ul>
-</section>
-<section class="slide">
-<h2>对持续集成的理解</h2>
+<h3 class="slide">集成</h3>
 
 <ul>
-<li class="slide">真实环境中的验证工作
+<li class="slide">分支
 </li>
-<li class="slide">彻底的自动化: 部署 + 测试
-</li>
-</ul>
-</section>
-<section class="slide">
-<h2>遇到问题</h2>
-<h4>自动化测试失败</h4>
-
-<p><img src="./images/ut_failure.png" alt=""></p>
-</section>
-<section class="slide">
-<h2>遇到问题</h2>
-
-<p><img src="./images/ut_failure02.png" alt=""></p>
-<pre class="slide">共用外部资源(数据库)，存在干扰
-</pre>
-</section>
-<section class="slide">
-<h2>遇到问题</h2>
-
-<p><img src="./images/ut_failure03.png" alt=""></p>
-<pre class="slide">分支间没有服务隔离(配置环境更复杂了)
-</pre>
-</section>
-<section class="slide">
-<h2>遇到问题</h2>
-<h4 class="slide">联调基本靠手工，时间和人力成本很高</h4>
-<pre class="slide">L项目，准备联调环境需要近一周  
-</pre>
-<h4 class="slide">系统依赖增多，对集成需求增加</h4>
-<pre class="slide">日常项目可能涉及5、6个系统
-</pre>
-<h4 class="slide">重复使用旧环境，结果不确定</h4>
-<pre class="slide">遗留jar包的陷阱...
-</pre>
-</section>
-<section class="slide">
-<h2>解决思路</h2>
-<h4 class="slide">隔离、独立</h4>
-<pre class="slide">独立数据库 + 干净的虚拟机构建
-</pre>
-<h4 class="slide">建立“真实”分布式环境</h4>
-<pre class="slide">Mock成本
-</pre>
-<h4 class="slide">自动化部署</h4>
-<pre class="slide">分布式环境，缩短验证和发布周期
-</pre>
-</section>
-<section class="slide">
-<h2>整体的方案</h2>
-
-<p><img src="./images/green_arrow.png" alt=""></p>
-</section>
-<section class="slide">
-<h2>整体的方案</h2>
-
-<p><img src="./images/arch3.png" alt=""></p>
-</section>
-<section class="slide">
-<h2>分工</h2>
-
-<ul>
-<li class="slide">研发工程师
-
-<ul>
-<li class="slide">根据系统设计编写和维护部署脚本
-</li>
-<li class="slide">编写配置文件描述系统
-<pre>
-# ceres.rb
-app<em>server :tomcat
-source :svn =&gt; &#39;http://svn....com/.../trunk/&#39;
-use :hsf
-vm &quot;hsf</em>service_6.0&quot;
-use :toast
-after :mercury
-</pre>
-</li>
-</ul>
+<li class="slide">模块、子系统 
 </li>
 </ul>
 </section>
 <section class="slide">
-<h2>分工</h2>
+<h2>持续集成</h2>
 
-<ul>
-<li class="slide">测试工程师
-
-<ul>
-<li class="slide">初期与线上PE协作参与部署脚本的编写
-</li>
-<li class="slide">维护联调测试用例
-</li>
-</ul>
-</li>
-</ul>
+<p><img src="./images/software_layer2.png" alt=""></p>
 </section>
 <section class="slide">
-<h2>困难</h2>
-<h3 class="slide">处理大量数据</h3>
-<pre class="slide">直接数据clone
-</pre>
-<h3 class="slide">脚本 vs. 镜像模板</h3>
-<pre class="slide">使用pp脚本，避免过度利用虚拟机镜像
-</pre>
-</section>
-<section class="slide">
-<h2>困难-中间件</h2>
-
-<p><img src="./images/middleware.png" alt=""></p>
-<h5 class="slide">推动中间件的自动化部署!</h5>
-</section>
-<section class="slide">
-<h2>困难-中间件</h2>
-
-<p><img src="./images/middleware01.png" alt="">
-<img src="./images/middleware02.png" alt=""></p>
-<h5 class="slide">workaround!</h5>
-</section>
-<section class="slide">
-<h2>困难-配置项统一管理</h2>
-
-<ul>
-<li class="slide">现状：数据库脚本由DBA负责
-
-<ul>
-<li class="slide">以CI的名义：团队维护数据库建构和初始化脚本
-</li>
-</ul>
-</li>
-<li class="slide">现状：系统配置信息分散在运维系统和研发系统的数据库中
-
-<ul>
-<li class="slide">输出pp文件
-</li>
-<li class="slide">构建系统统一推送
-</li>
-<li class="slide">本地执行
-</li>
-<li class="slide">我们还在尝试......
-</li>
-</ul>
-</li>
-</ul>
-</section>
-<section class="slide">
-<h2>目前的结果</h2>
-
-<ul>
-<li class="slide">Q项目
-
-<ul>
-<li class="slide">联调环境(多应用): 构建自动化，5分钟完成构建和测试
-</li>
-<li class="slide">遇到不知名的原因导致联调环境出现错误，直接重建
-</li>
-</ul>
-</li>
-<li class="slide">U项目
-
-<ul>
-<li class="slide">发现了遗留jar包的陷阱
-</li>
-</ul>
-</li>
-</ul>
-</section>
-<section class="slide">
-<h2>总结一下</h2>
-<h3>两个重点</h3>
-
-<ul>
-<li class="slide">构建干净的环境
-:云技术
-</li>
-<li class="slide">单一应用到分布式
-:自动化大集成
-</li>
-</ul>
-<h3>一个干扰</h3>
-<pre class="slide">传统的分工: DBA, PE, QA
-</pre>
-</section>
-<section class="slide">
-<h2>心得</h2>
+<h2>持续集成</h2>
 
 <p><img src="./images/software_layer.png" alt=""></p>
-<pre class="slide">TDD vs. BDD
+</section>
+<section class="slide">
+<h2>持续集成系统</h2>
+
+<ul>
+<li class="slide">驱动能力（自动化）
+</li>
+<li class="slide">资源就绪能力（简化部署）
+</li>
+<li class="slide">数据能力: 整合关键质量指标，对比历史数据......
+</li>
+</ul>
+</section>
+<section class="slide">
+<h2>处理资源</h2>
+
+<p><img src="./images/old_way_new_way.png" alt=""></p>
+</section>
+<section class="slide">
+<h2>处理分布式 - 掌控全局</h2>
+<pre># .cise.yml
+image: xxx
+count: 3
+prepare:
+  exec: 
+    - deploy.sh $ip1, $ip2, $ip3
 </pre>
 </section>
 <section class="slide">
-<h2>愿景</h2>
+<h2>处理分布式 - 各司其职</h2>
+<pre># project a: .cise.yml
+depend_on:
+  url: b_url
+  run: bind.sh $self_ip
 
-<p><img src="./images/arch2.png" alt=""></p>
+# project b: .cise.yml
+start:
+  exec: start.sh
+</pre>
+</section>
+<section class="slide">
+<h2>其它重要的地方</h2>
+<h3 class="slide">大数据量测试：数据库clone</h3>
+<h3 class="slide">故障处理：保留现场</h3>
+<h3 class="slide">软件包服务: 专有的yum repo</h3>
+</section>
+<section class="slide">
+<h2>小结</h2>
+
+<ul>
+<li class="slide">持续集成平台最终提供的是配管服务
+</li>
+<li class="slide">服务不是 do sth ，而是 -&gt; { do sth }
+</li>
+<li class="slide">环境的管理很重要
+</li>
+</ul>
+</section>
+<section class="slide">
+<h1>云时代的研发</h1>
+</section>
+<section class="slide">
+<h2>云时代的研发</h2>
+
+<p><img src="./images/vagrant_show.png" alt=""></p>
+</section>
+<section class="slide">
+<h2>云时代的研发</h2>
+
+<p><img src="./images/XEN-schema.png" alt=""></p>
+</section>
+<section class="slide">
+<h2>云时代的研发</h2>
+
+<p><img src="./images/qingcloud.png" alt=""></p>
+</section>
+<section class="slide">
+<h2>云时代的研发</h2>
+
+<p><img src="./images/docker_show.png" alt=""></p>
+</section>
+<section class="slide">
+<h1>IAAS vs. PAAS</h1>
+</section>
+<section class="slide">
+<h2>其它重要的话题</h2>
+
+<ul>
+<li>分工
+
+<ul>
+<li class="slide">某些分工变得更清晰
+</li>
+<li class="slide">某些角色会整合
+</li>
+</ul>
+</li>
+<li>组织形式
+
+<ul>
+<li class="slide">市场 vs. 企业
+</li>
+<li class="slide">交易费用 vs. 组织费用
+</li>
+<li class="slide">更精确的计费方式降低交易费用
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="slide">
+<h2>小结</h2>
+
+<ul>
+<li>云时代，研发将会不同
+</li>
+<li>做好自己的事
+</li>
+</ul>
 </section>
 <!-- End slides. -->
 
